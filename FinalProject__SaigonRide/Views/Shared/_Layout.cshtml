@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FinalProject__SaigonRide.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+
 </head>
 <body>   
     <div class="container-fluid">
@@ -15,24 +17,28 @@
                 <div class="sidebar-sticky">
                     <h3 class="brand-name">SaigonRide</h3>
                     <ul class="nav flex-column" id="sidebar">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Vehicle</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Station</a>
-                        </li>
+                        <ul class="nav flex-column" id="sidebar">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Vehicles" asp-action="IndexVehicles">Vehicle</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Stations" asp-action="IndexStations">Station</a>
+                            </li>
+                        </ul>
                     </ul>
                 </div>
             </nav>
 
             <main role="main" class="col-md-7 px-md-4 main-content">
+                <partial name="_LoginPartial" />
                 @RenderBody()
             </main>
 
             <aside id="right-container" class="col-md-3 sidebar-dark">
+                @RenderSection("RightContent", required: false)
             </aside>
         </div>
     </div>

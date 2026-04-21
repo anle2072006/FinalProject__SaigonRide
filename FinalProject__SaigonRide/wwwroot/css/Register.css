@@ -1,0 +1,121 @@
+﻿:root {
+    --primary-dark: #1a1a2e;
+    --neon-yellow: #d4ff00;
+    --bg-gray: #f0f2f5;
+    --input-bg: #f1f3f6;
+}
+
+.full-page-wrapper {
+    transform: scale(1.2); 
+    min-height: 100vh;
+    background-color: var(--bg-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.main-card {
+    background-color: #ffffff;
+    width: 1100px;
+    max-width: 100%;
+    min-height: 600px;
+    border-radius: 40px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+
+.left-half {
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.regis-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.login-link-wrapper {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.login-link {
+    color: var(--primary-dark);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid var(--neon-yellow);
+}
+
+.custom-input-group {
+    background-color: var(--input-bg);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.custom-input-group input {
+    background: transparent;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+}
+
+.custom-input-group i {
+    color: #888;
+    font-size: 1.4rem;
+    margin-left: 10px;
+}
+
+.btn-register-action {
+    background-color: var(--primary-dark);
+    color: var(--neon-yellow);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.right-half {
+    background-color: var(--primary-dark);
+    color: var(--neon-yellow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+    border-top-left-radius: 250px;
+    border-bottom-left-radius: 250px;
+}
+
+.right-half h1 {
+    font-size: 45px; 
+    font-weight: bold;
+}
+
+.bike-icon i {
+    display: inline-block; 
+    font-size: 100px !important; 
+    margin-top: -50px;
+}
+
+.lightning-bolt i {
+    display: inline-block;
+    transform: translateY(-50px) rotate(90deg) scaleY(1.4);
+}
+
+.btn-register-action:hover {
+    color: var(--neon-yellow) !important;
+}
