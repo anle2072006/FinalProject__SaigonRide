@@ -2,13 +2,84 @@
     ViewData["Title"] = "Station Management";
 }
 
-<h1 style="color: #d4ff00;">NOTE 3</h1>
-<p>Đây là nội dung chính của trang Station.</p>
+<div class="main-content">
+
+    <!-- Header -->
+    <div class="header">
+        <input type="text" placeholder="Search..." />
+        <button>Search</button>
+    </div>
+
+    <!-- Grid Station -->
+    <div class="grid">
+
+        <div class="card">
+            <img src="https://picsum.photos/80" />
+            <div class="info">
+                <h3>Ben Thanh</h3>
+                <p>District 1</p>
+            </div>
+            <button>Choose</button>
+        </div>
+
+        <div class="card">
+            <img src="https://picsum.photos/81" />
+            <div class="info">
+                <h3>Ba Son</h3>
+                <p>District 1</p>
+            </div>
+            <button>Choose</button>
+        </div>
+
+        <div class="card">
+            <img src="https://picsum.photos/82" />
+            <div class="info">
+                <h3>Sai Gon</h3>
+                <p>District 3</p>
+            </div>
+            <button>Choose</button>
+        </div>
+
+        <div class="card">
+            <img src="https://picsum.photos/83" />
+            <div class="info">
+                <h3>Van Thanh</h3>
+                <p>Binh Thanh</p>
+            </div>
+            <button>Choose</button>
+        </div>
+
+        <div class="card">
+            <img src="https://picsum.photos/84" />
+            <div class="info">
+                <h3>Thao Dien</h3>
+                <p>Thu Duc</p>
+            </div>
+            <button>Choose</button>
+        </div>
+
+        <div class="card">
+            <img src="https://picsum.photos/85" />
+            <div class="info">
+                <h3>An Phu</h3>
+                <p>Thu Duc</p>
+            </div>
+            <button>Choose</button>
+        </div>
+
+    </div>
+
+</div>
 
 @section RightContent {
     <h5 class="right-panel-title">Station Sidebar</h5>
-    <p>Thông tin phụ của Note 3 nằm ở bên phải này.</p>
+    <p>Thông tin phụ của Station nằm ở bên phải này.</p>
 }
+
 @section Styles {
     <link rel="stylesheet" href="~/css/station.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/station.js"></script>
 }
