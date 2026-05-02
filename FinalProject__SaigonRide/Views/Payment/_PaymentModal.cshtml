@@ -1,0 +1,163 @@
+﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
+@{
+
+    var danhSachPhieu = new Dictionary<int, string>
+    {
+        { 10000, "Coupon A (-10.000 VND)" },
+        { 5000, "Coupon B (-5.000 VND)" },
+        { 20000, "Coupon for new customer (-20.000 VND)" }
+    };
+}
+
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
+        <div class="modal-content" style="background-color: transparent; border: none;">
+            
+            <div class="payment-container">
+                <!-- Nút X để đóng -->
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <h2 class="text-neon text-center mt-0">PAYMENT</h2>
+
+                <div class="section-card">
+                    <h3 class="section-title text-neon">Customer Information</h3>
+                    <div class="grid-2">
+                        <div class="grid-item"><span>First Name:</span> Van A</div>
+                        <div class="grid-item"><span>Last Name:</span> Nguyen</div>
+                        <div class="grid-item"><span>Email:</span> User@Gmail.Com</div>
+                        <div class="grid-item"><span>Phone:</span> 0987654321</div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h3 class="section-title text-neon">Order Summary</h3>
+                    <div class="grid-2">
+                        <div class="grid-item"><span>Pickup:</span> Ben Thanh</div>
+                        <div class="grid-item"><span>Drop-off:</span> Ba Son</div>
+                        <div class="grid-item"><span>Vehicles:</span> electric scooter</div>
+                        <span id="originalCostText" data-cost="@Model.EstimatedCost">@Model.EstimatedCost.ToString("#,##0") VND</span>
+                    </div>
+                </div>
+
+                <!-- Apply Coupon -->
+                <div class="section-card">
+                    <h3 class="section-title text-neon">Apply Coupon</h3>
+                    <div class="coupon-flex">
+        
+                        <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
+                            <option value="0" disabled selected hidden>Select coupon</option>
+
+                            @foreach (var phieu in danhSachPhieu)
+                            {
+                                <option value="@phieu.Key">@phieu.Value</option>
+                            }
+
+                        </select>
+        
+                        <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
+                    </div>
+
+                    <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
+                        Please choose a discount coupon!
+                    </div>
+
+                    <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
+                </div>
+
+                <div class="section-card" style="width: 100%;">
+                    <h3 class="section-title text-neon">Payment Method</h3>
+                    <div class="payment-methods">
+                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" width="50" alt="PayPal" /></div>
+                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" width="45" alt="Visa" /></div>
+                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="35" alt="MoMo" /></div>
+                        <div class="pm-logo"><img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418186387.png" width="55" alt="VNPay" /></div>
+                    </div>
+                </div>
+
+                <div class="footer-flex">
+                    <div class="total-text">
+                        <!-- Lúc ban đầu, Total sẽ hiển thị y hệt Cost -->
+                        Total: <span id="totalDisplay" class="text-neon">@Model.EstimatedCost.ToString("#,##0") VND</span>
+                    </div>
+                    <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var select = document.getElementById("couponSelect");
+        var btnApply = document.getElementById("btnApplyCoupon");
+        var msg = document.getElementById("couponMsg");
+        var errorMsg = document.getElementById("couponErrorMsg");
+        
+        var totalDisplay = document.getElementById("totalDisplay");
+        var costElement = document.getElementById("originalCostText");
+        var baseCost = parseInt(costElement.getAttribute("data-cost"));
+
+        btnApply.addEventListener("click", function () {
+            // SỬA Ở ĐÂY: Chữ phải khớp chính xác với trạng thái của nút
+            if (btnApply.innerText === "Applied") {
+                select.value = "0";
+                btnApply.innerText = "Apply";
+                btnApply.style.backgroundColor = "#cbfb45";
+                btnApply.style.color = "#1a1b2f";
+                msg.style.display = "none";
+                errorMsg.style.display = "none";
+                
+                totalDisplay.innerText = baseCost.toLocaleString("vi-VN") + " VND";
+                return;
+            }
+
+            var discountValue = parseInt(select.value);
+            
+            if (!isNaN(discountValue) && discountValue > 0) {
+                var couponText = select.options[select.selectedIndex].text;
+                
+                btnApply.innerText = "Applied";
+                btnApply.style.backgroundColor = "#ff4d4d";
+                btnApply.style.color = "#ffffff";
+                
+                msg.innerText = "Using " + couponText;
+                msg.style.display = "block";
+                errorMsg.style.display = "none";
+
+                var finalTotal = baseCost - discountValue;
+                totalDisplay.innerText = finalTotal.toLocaleString("vi-VN") + " VND";
+            } else {
+                errorMsg.style.display = "block";
+                msg.style.display = "none";
+            }
+        });
+
+        select.addEventListener("change", function () {
+            btnApply.innerText = "Apply";
+            btnApply.style.backgroundColor = "#cbfb45";
+            btnApply.style.color = "#1a1b2f";
+            
+            msg.style.display = "none";
+            errorMsg.style.display = "none";
+            
+            totalDisplay.innerText = baseCost.toLocaleString("vi-VN") + " VND";
+        });
+
+        var paymentModal = document.getElementById("paymentModal");
+        if (paymentModal) {
+            paymentModal.addEventListener("hidden.bs.modal", function () {
+                // Reset toàn bộ về trạng thái mặc định
+                select.value = "0";
+                btnApply.innerText = "Apply";
+                btnApply.style.backgroundColor = "#cbfb45";
+                btnApply.style.color = "#1a1b2f";
+                msg.style.display = "none";
+                errorMsg.style.display = "none";
+                totalDisplay.innerText = baseCost.toLocaleString("vi-VN") + " VND";
+            });
+        }
+    });
+</script>

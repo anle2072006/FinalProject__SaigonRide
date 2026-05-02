@@ -3,15 +3,17 @@
     ViewData["Title"] = "Home Page";
 
 }
+
 <div class="container-fluid">
 
     <div class="row">
 
         <div class="col-md-4">
 
-            <div class="empty-column-box">
-            </div>
-
+            <button type="button" class="btn" style="background-color: #cbfb45; color: #1a1b2f; font-weight: bold; padding: 10px 20px; border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                Thanh toán
+            </button>
         </div>
 
-    </div></div> nè trang index
+        <partial name="~/Views/Payment/_PaymentModal.cshtml" model="Model" />    </div>
+    </div> nè trang index
