@@ -1,12 +1,14 @@
 ﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
 @{
-
     var danhSachPhieu = new Dictionary<int, string>
     {
         { 10000, "Coupon A (-10.000 VND)" },
         { 5000, "Coupon B (-5.000 VND)" },
         { 20000, "Coupon for new customer (-20.000 VND)" }
     };
+
+    // Đã thêm 'm' để tương thích tuyệt đối với kiểu dữ liệu tiền tệ (decimal)
+    var roundedCost = Math.Round(Model.EstimatedCost / 1000m, MidpointRounding.AwayFromZero) * 1000m;
 }
 
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
@@ -37,7 +39,7 @@
                         <div class="grid-item"><span>Pickup:</span> Ben Thanh</div>
                         <div class="grid-item"><span>Drop-off:</span> Ba Son</div>
                         <div class="grid-item"><span>Vehicles:</span> electric scooter</div>
-                        <span id="originalCostText" data-cost="@Model.EstimatedCost">@Model.EstimatedCost.ToString("#,##0") VND</span>
+                        <span id="originalCostText" data-cost="@roundedCost">@roundedCost.ToString("#,##0") VND</span>
                     </div>
                 </div>
 
@@ -45,17 +47,13 @@
                 <div class="section-card">
                     <h3 class="section-title text-neon">Apply Coupon</h3>
                     <div class="coupon-flex">
-        
                         <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
                             <option value="0" disabled selected hidden>Select coupon</option>
-
                             @foreach (var phieu in danhSachPhieu)
                             {
                                 <option value="@phieu.Key">@phieu.Value</option>
                             }
-
                         </select>
-        
                         <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
                     </div>
 
@@ -78,8 +76,7 @@
 
                 <div class="footer-flex">
                     <div class="total-text">
-                        <!-- Lúc ban đầu, Total sẽ hiển thị y hệt Cost -->
-                        Total: <span id="totalDisplay" class="text-neon">@Model.EstimatedCost.ToString("#,##0") VND</span>
+                        Total: <span id="totalDisplay" class="text-neon">@roundedCost.ToString("#,##0") VND</span>
                     </div>
                     <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
                 </div>
@@ -89,6 +86,7 @@
     </div>
 </div>
 
+<!-- ĐÃ GỘP LẠI THÀNH 1 ĐOẠN SCRIPT DUY NHẤT & CHUẨN XÁC -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var select = document.getElementById("couponSelect");
@@ -98,19 +96,29 @@
         
         var totalDisplay = document.getElementById("totalDisplay");
         var costElement = document.getElementById("originalCostText");
+        
+        // Bảo vệ JS không bị sập nếu thiếu HTML
+        if (!select || !btnApply || !costElement || !totalDisplay) return;
+
         var baseCost = parseInt(costElement.getAttribute("data-cost"));
 
+        function lamTronTien(soTien) {
+            return Math.round(soTien / 1000) * 1000;
+        }
+
+        function resetCouponState() {
+            select.value = "0";
+            btnApply.innerText = "Apply";
+            btnApply.style.backgroundColor = "#cbfb45";
+            btnApply.style.color = "#1a1b2f";
+            msg.style.display = "none";
+            errorMsg.style.display = "none";
+            totalDisplay.innerText = lamTronTien(baseCost).toLocaleString("vi-VN") + " VND";
+        }
+
         btnApply.addEventListener("click", function () {
-            // SỬA Ở ĐÂY: Chữ phải khớp chính xác với trạng thái của nút
-            if (btnApply.innerText === "Applied") {
-                select.value = "0";
-                btnApply.innerText = "Apply";
-                btnApply.style.backgroundColor = "#cbfb45";
-                btnApply.style.color = "#1a1b2f";
-                msg.style.display = "none";
-                errorMsg.style.display = "none";
-                
-                totalDisplay.innerText = baseCost.toLocaleString("vi-VN") + " VND";
+            if (btnApply.innerText.trim() === "Applied") {
+                resetCouponState();
                 return;
             }
 
@@ -127,7 +135,7 @@
                 msg.style.display = "block";
                 errorMsg.style.display = "none";
 
-                var finalTotal = baseCost - discountValue;
+                var finalTotal = lamTronTien(baseCost - discountValue);
                 totalDisplay.innerText = finalTotal.toLocaleString("vi-VN") + " VND";
             } else {
                 errorMsg.style.display = "block";
@@ -135,28 +143,20 @@
             }
         });
 
+        // Đã sửa sự kiện Change: Chỉ reset UI, không can thiệp vào select.value
         select.addEventListener("change", function () {
             btnApply.innerText = "Apply";
             btnApply.style.backgroundColor = "#cbfb45";
             btnApply.style.color = "#1a1b2f";
-            
             msg.style.display = "none";
             errorMsg.style.display = "none";
-            
-            totalDisplay.innerText = baseCost.toLocaleString("vi-VN") + " VND";
+            totalDisplay.innerText = lamTronTien(baseCost).toLocaleString("vi-VN") + " VND";
         });
 
         var paymentModal = document.getElementById("paymentModal");
         if (paymentModal) {
             paymentModal.addEventListener("hidden.bs.modal", function () {
-                // Reset toàn bộ về trạng thái mặc định
-                select.value = "0";
-                btnApply.innerText = "Apply";
-                btnApply.style.backgroundColor = "#cbfb45";
-                btnApply.style.color = "#1a1b2f";
-                msg.style.display = "none";
-                errorMsg.style.display = "none";
-                totalDisplay.innerText = baseCost.toLocaleString("vi-VN") + " VND";
+                resetCouponState();
             });
         }
     });

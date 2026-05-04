@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\InUse\IndexInUse.cshtml" />
+    <Content Remove="Views\Setting\IndexSetting.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Views\InUse\IndexInUse.cshtml" />
+    <Compile Include="Views\Setting\IndexSetting.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.25" />
@@ -15,6 +25,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.23" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.25" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.23" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\InUse\" />
+    <Folder Include="Views\Setting\" />
   </ItemGroup>
 
 </Project>

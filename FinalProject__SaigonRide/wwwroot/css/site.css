@@ -150,6 +150,165 @@ html, body {
     overflow: hidden;
     display: flex;
     box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+
+}
+
+.custom-input-group {
+    background-color: var(--input-bg);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+}
+
+    .custom-input-group input {
+        background: transparent;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        outline: none;
+        font-size: 16px;
+    }
+
+    .custom-input-group i {
+        color: #888;
+        font-size: 1.4rem;
+        margin-left: 10px;
+    }
+
+.bike-icon i {
+    display: inline-block;
+    font-size: 100px !important;
+    margin-top: -50px;
+}
+
+.lightning-bolt i {
+    display: inline-block;
+    transform: translateY(-50px) rotate(90deg) scaleY(1.4);
+}
+
+/* Các class dùng chung cho phần Dark Welcome Area */
+.welcome-dark-panel {
+    background-color: var(--primary-dark);
+    color: var(--neon-yellow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+}
+
+/* =========================================
+   4. REGISTER PAGE SPECIFIC
+   ========================================= */
+.regis-form-half {
+    flex: 1;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.side-welcome h1 {
+    font-size: 40px;
+}
+
+.regis-welcome-half {
+    flex: 1;
+    border-top-left-radius: 250px;
+    border-bottom-left-radius: 250px;
+}
+
+.regis-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.login-link-wrapper {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.login-link {
+    color: var(--primary-dark);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid var(--neon-yellow);
+}
+
+.btn-register-action {
+    background-color: var(--primary-dark);
+    color: var(--neon-yellow);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    width: 100%;
+}
+
+    .btn-register-action:hover {
+        color: var(--neon-yellow) !important;
+    }
+
+/* =========================================
+   5. LOGIN PAGE SPECIFIC
+   ========================================= */
+.side-login {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.side-welcome {
+    flex: 1;
+    padding: 40px;
+    border-top-right-radius: 250px;
+    border-bottom-right-radius: 250px;
+}
+
+    .side-welcome h1 {
+        font-size: 40px;
+    }
+
+.login-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.register-link-wrapper {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.register-link {
+    color: var(--primary-dark);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid var(--neon-yellow);
+}
+
+.btn-login-action {
+    background-color: var(--primary-dark);
+    color: var(--neon-yellow);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    width: 100%;
 }
 
 .custom-input-group {

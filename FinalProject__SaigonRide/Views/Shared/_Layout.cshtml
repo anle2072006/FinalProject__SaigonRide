@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FinalProject__SaigonRide</title>
+    <title>@ViewData["Title"] - FinalProject__SaiGonRide</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FinalProject__SaigonRide.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FinalProject__SaiGonRide.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 
 </head>
@@ -15,17 +15,23 @@
         <div class="row">
             <nav id="left-sidebar" class="col-md-2 d-none d-md-block sidebar-dark">
                 <div class="sidebar-sticky">
-                    <h3 class="brand-name">SaigonRide</h3>
+                    <h3 class="brand-name">SaiGonRide</h3>
                     <ul class="nav flex-column" id="sidebar">
                         <ul class="nav flex-column" id="sidebar">
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Vehicles" asp-action="IndexVehicles">Vehicle</a>
+                                <a class="nav-link" asp-controller="Station" asp-action="IndexStation">Station</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Stations" asp-action="IndexStations">Station</a>
+                                <a class="nav-link" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" asp-controller="History" asp-action="IndexHistory">History</a>
+                            </li>
+                            <li>
+                                <a class="nav-link" asp-controller="Setting" asp-action="IndexSetting">Setting</a>
                             </li>
                         </ul>
                     </ul>
