@@ -9,12 +9,10 @@
 
   <ItemGroup>
     <Content Remove="Views\InUse\IndexInUse.cshtml" />
-    <Content Remove="Views\Setting\IndexSetting.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Views\InUse\IndexInUse.cshtml" />
-    <Compile Include="Views\Setting\IndexSetting.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
