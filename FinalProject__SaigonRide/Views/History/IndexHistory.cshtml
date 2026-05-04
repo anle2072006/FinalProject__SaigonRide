@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "History";
+}
+
+<div class="main-content">
+    <div class="table-container">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Mã chuyến xe</th>
+                    <th>Địa điểm</th>
+                    <th>Loại xe</th>
+                    <th>Giá</th>
+                    <th>Thời gian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row-gray">
+                    <td>03667</td>
+                    <td>Bến Thành</td>
+                    <td>scooter</td>
+                    <td>67.677 VND</td>
+                    <td>21-04-2026</td>
+                </tr>
+                <tr class="row-white">
+                    <td>03563</td>
+                    <td>Ba Son</td>
+                    <td>bicycle</td>
+                    <td>76.766 VND</td>
+                    <td>18-04-2026</td>
+                </tr>
+                <tr class="row-gray">
+                    <td>04523</td>
+                    <td>Van Thanh</td>
+                    <td>bicycle</td>
+                    <td>66.677 VND</td>
+                    <td>10-04-2026</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section RightContent {
+    <div class="calendar-widget">
+        <div class="calendar-header">
+            <h4>October 2020</h4>
+            <div class="arrows">
+                <span>&lt;</span>
+                <span>&gt;</span>
+            </div>
+        </div>
+        <div class="calendar-days-name">
+            <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+        </div>
+        <div class="calendar-grid">
+            <div></div><div></div><div>1</div><div>2</div><div>3</div><div>4</div>
+            <div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div>
+            <div>12</div><div>13</div><div class="active">14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+            <div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+            <div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div>
+        </div>
+    </div>
+
+    <div class="stats-card">
+        <div class="stats-body">
+            <div class="stats-left">
+                <p class="stats-title">Trips This Year</p>
+                <div class="stats-trend">
+                    <span class="trend-up">↑ 9.2%</span>
+                    <span class="trend-desc">31 DAYS AGO</span>
+                </div>
+            </div>
+            <div class="stats-right">
+                <h2 class="stats-number">643</h2>
+                <p class="stats-desc">Trips This Year</p>
+            </div>
+        </div>
+        <div class="stats-footer">
+            <span>12% Increase from last year</span>
+            <span class="icon-bar">📊</span>
+        </div>
+    </div>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/history.css" asp-append-version="true" />
+}

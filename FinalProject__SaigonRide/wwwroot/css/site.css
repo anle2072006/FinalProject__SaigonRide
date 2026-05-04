@@ -22,7 +22,7 @@ html, body {
 }
 
 /* =========================================
-   2. SIDEBAR & MAIN CONTENT (Từ Source 3)
+   2. SIDEBAR & MAIN CONTENT
    ========================================= */
 .sidebar-dark {
     background-color: #1B1D2F;
@@ -31,23 +31,22 @@ html, body {
 }
 
 .main-content, #main-frame {
-    background-color: #141627;
+    background-color: #0d111d; /* Đã đồng bộ màu nền tối chung cho mọi trang */
     min-height: 100vh;
     padding: 30px;
     position: relative;
+    font-family: sans-serif;
 }
 
 .brand-name {
-    color: #d4ff00;
+    color: var(--neon-yellow);
     font-weight: bold;
     text-align: center;
-    padding: 30px 0;
-    margin: 0;
+    padding: 30px 0 45px 0;
+    margin: 0 0 30px 0;
     font-style: italic;
     font-size: 2.2rem;
-    padding-bottom: 45px;
     border-bottom: 2px solid #2c2e3e;
-    margin-bottom: 30px;
 }
 
 #sidebar .nav-link {
@@ -65,8 +64,8 @@ html, body {
 
     #sidebar .nav-link:hover,
     #sidebar .nav-link.active {
-        background-color: #d4ff00 !important;
-        color: #1a1a2e !important;
+        background-color: var(--neon-yellow) !important;
+        color: var(--primary-dark) !important;
         font-weight: bold;
     }
 
@@ -78,11 +77,58 @@ html, body {
     padding: 25px;
 }
 
+/* =========================================
+   3. SHARED COMPONENTS (Buttons, Inputs...)
+   ========================================= */
 .btn:focus, .form-control:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-/* --- PHẦN FIX CỤM AUTH --- */
+/* Gộp chung tất cả cấu hình của nút Neon */
+.btn-neon {
+    background-color: #cbfb45;
+    color: #1a1b2f;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+    .btn-neon:hover {
+        opacity: 0.9;
+        background-color: #bce645;
+    }
+
+.custom-input-group {
+    background-color: var(--input-bg);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+}
+
+    .custom-input-group input {
+        background: transparent;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        outline: none;
+        font-size: 16px;
+    }
+
+    .custom-input-group i {
+        color: #888;
+        font-size: 1.4rem;
+        margin-left: 10px;
+    }
+
+/* =========================================
+   4. AUTH MODULE (Header Corner)
+   ========================================= */
 .auth-top-corner {
     position: absolute;
     top: 25px;
@@ -106,7 +152,7 @@ html, body {
     .auth-top-corner .user-greeting,
     .auth-top-corner .auth-link-item,
     .auth-top-corner .logout-btn {
-        color: #d4ff00 !important;
+        color: var(--neon-yellow) !important;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 14px;
@@ -129,7 +175,7 @@ html, body {
 }
 
 /* =========================================
-   3. SHARED COMPONENTS (Dùng chung cho Đăng nhập & Đăng ký)
+   5. LOGIN & REGISTER PAGES
    ========================================= */
 .full-page-wrapper {
     transform: scale(1.2);
@@ -150,45 +196,8 @@ html, body {
     overflow: hidden;
     display: flex;
     box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-
 }
 
-.custom-input-group {
-    background-color: var(--input-bg);
-    border-radius: 12px;
-    margin-bottom: 15px;
-    padding: 5px 15px;
-    display: flex;
-    align-items: center;
-}
-
-    .custom-input-group input {
-        background: transparent;
-        border: none;
-        padding: 12px;
-        width: 100%;
-        outline: none;
-        font-size: 16px;
-    }
-
-    .custom-input-group i {
-        color: #888;
-        font-size: 1.4rem;
-        margin-left: 10px;
-    }
-
-.bike-icon i {
-    display: inline-block;
-    font-size: 100px !important;
-    margin-top: -50px;
-}
-
-.lightning-bolt i {
-    display: inline-block;
-    transform: translateY(-50px) rotate(90deg) scaleY(1.4);
-}
-
-/* Các class dùng chung cho phần Dark Welcome Area */
 .welcome-dark-panel {
     background-color: var(--primary-dark);
     color: var(--neon-yellow);
@@ -200,141 +209,10 @@ html, body {
     padding: 30px;
 }
 
-/* =========================================
-   4. REGISTER PAGE SPECIFIC
-   ========================================= */
-.regis-form-half {
-    flex: 1;
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
 .side-welcome h1 {
     font-size: 40px;
 }
 
-.regis-welcome-half {
-    flex: 1;
-    border-top-left-radius: 250px;
-    border-bottom-left-radius: 250px;
-}
-
-.regis-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--primary-dark);
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-.login-link-wrapper {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 30px;
-}
-
-.login-link {
-    color: var(--primary-dark);
-    font-weight: bold;
-    text-decoration: none;
-    border-bottom: 2px solid var(--neon-yellow);
-}
-
-.btn-register-action {
-    background-color: var(--primary-dark);
-    color: var(--neon-yellow);
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    width: 100%;
-}
-
-    .btn-register-action:hover {
-        color: var(--neon-yellow) !important;
-    }
-
-/* =========================================
-   5. LOGIN PAGE SPECIFIC
-   ========================================= */
-.side-login {
-    flex: 1;
-    background-color: #ffffff;
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.side-welcome {
-    flex: 1;
-    padding: 40px;
-    border-top-right-radius: 250px;
-    border-bottom-right-radius: 250px;
-}
-
-    .side-welcome h1 {
-        font-size: 40px;
-    }
-
-.login-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--primary-dark);
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.register-link-wrapper {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 30px;
-}
-
-.register-link {
-    color: var(--primary-dark);
-    font-weight: bold;
-    text-decoration: none;
-    border-bottom: 2px solid var(--neon-yellow);
-}
-
-.btn-login-action {
-    background-color: var(--primary-dark);
-    color: var(--neon-yellow);
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    width: 100%;
-}
-
-.custom-input-group {
-    background-color: var(--input-bg);
-    border-radius: 12px;
-    margin-bottom: 15px;
-    padding: 5px 15px;
-    display: flex;
-    align-items: center;
-}
-
-    .custom-input-group input {
-        background: transparent;
-        border: none;
-        padding: 12px;
-        width: 100%;
-        outline: none;
-        font-size: 16px;
-    }
-
-    .custom-input-group i {
-        color: #888;
-        font-size: 1.4rem;
-        margin-left: 10px;
-    }
-
 .bike-icon i {
     display: inline-block;
     font-size: 100px !important;
@@ -346,102 +224,30 @@ html, body {
     transform: translateY(-50px) rotate(90deg) scaleY(1.4);
 }
 
-/* Các class dùng chung cho phần Dark Welcome Area */
-.welcome-dark-panel {
-    background-color: var(--primary-dark);
-    color: var(--neon-yellow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-}
-
-
-
-/* =========================================
-   4. REGISTER PAGE SPECIFIC
-   ========================================= */
-.regis-form-half {
+/* Register Specific */
+.regis-form-half, .side-login {
     flex: 1;
     padding: 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background-color: #ffffff;
 }
-    .side-welcome h1 {
-        font-size: 40px;    
-    }
 
 .regis-welcome-half {
     flex: 1;
     border-top-left-radius: 250px;
     border-bottom-left-radius: 250px;
 }
-    .side-welcome h1 {
-        font-size: 40px;
-    }
-.regis-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--primary-dark);
-    text-align: center;
-    margin-bottom: 5px;
-}
 
-.login-link-wrapper {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 30px;
-}
-
-.login-link {
-    color: var(--primary-dark);
-    font-weight: bold;
-    text-decoration: none;
-    border-bottom: 2px solid var(--neon-yellow);
-}
-
-.btn-register-action {
-    background-color: var(--primary-dark);
-    color: var(--neon-yellow);
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    width: 100%;
-}
-
-    .btn-register-action:hover {
-        color: var(--neon-yellow) !important;
-    }
-
-/* =========================================
-   5. LOGIN PAGE SPECIFIC
-   ========================================= */
-.side-login {
-    flex: 1;
-    background-color: #ffffff;
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.side-welcome {
-    flex: 1;
-    padding: 40px;
+.side-welcome.login-welcome {
     border-top-right-radius: 250px;
     border-bottom-right-radius: 250px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
-    .side-welcome h1 {
-        font-size: 40px;
-    }
-
-.login-title {
+.regis-title, .login-title {
     font-size: 32px;
     font-weight: 700;
     color: var(--primary-dark);
@@ -449,20 +255,20 @@ html, body {
     margin-bottom: 10px;
 }
 
-.register-link-wrapper {
+.login-link-wrapper, .register-link-wrapper {
     text-align: center;
     font-size: 14px;
     margin-bottom: 30px;
 }
 
-.register-link {
+.login-link, .register-link {
     color: var(--primary-dark);
     font-weight: bold;
     text-decoration: none;
     border-bottom: 2px solid var(--neon-yellow);
 }
 
-.btn-login-action {
+.btn-register-action, .btn-login-action {
     background-color: var(--primary-dark);
     color: var(--neon-yellow);
     border: none;
@@ -473,8 +279,13 @@ html, body {
     width: 100%;
 }
 
+    .btn-register-action:hover, .btn-login-action:hover {
+        color: var(--neon-yellow) !important;
+        opacity: 0.9;
+    }
+
 /* =========================================
-   PAYMENT POPUP MODAL
+   6. PAYMENT POPUP MODAL
    ========================================= */
 .payment-container {
     background-color: #1a1b2f;
@@ -540,26 +351,14 @@ html, body {
     color: #333;
 }
 
+    .coupon-input:invalid {
+        color: #888888;
+        font-weight: normal;
+    }
+
 .coupon-msg {
     color: #00e676;
-    font-size: 0.8rem;
-    font-weight: bold;
 }
-
-.btn-neon {
-    background-color: #cbfb45;
-    color: #1a1b2f;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-    .btn-neon:hover {
-        opacity: 0.9;
-    }
 
 .payment-methods {
     display: flex;
@@ -592,7 +391,558 @@ html, body {
     font-weight: bold;
 }
 
-.coupon-input:invalid {
-    color: #888888; /* Màu xám mờ */
+/* =========================================
+   7. STATION MODULE
+   ========================================= */
+.header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    gap: 15px;
+}
+
+    .header input {
+        background-color: #1a1e30;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 20px;
+        color: white;
+        width: 400px;
+        outline: none;
+    }
+
+        .header input::placeholder {
+            color: #666a80;
+        }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background-color: #1a1e30;
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
+    .card img {
+        width: 140px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .card .info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: left;
+    }
+
+        .card .info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            font-weight: normal;
+            color: #ffffff;
+            font-family: serif;
+        }
+
+        .card .info p {
+            margin: 0;
+            color: #8b8e9f;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .card .info p::before {
+                content: '•';
+                color: #ff3b3b;
+                font-size: 1.5rem;
+                line-height: 0.5;
+            }
+
+/* =========================================
+   8. HISTORY TABLE
+   ========================================= */
+.table-container {
+    background-color: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    color: #333;
+}
+
+    .history-table th {
+        background-color: #f8f9fa;
+        padding: 16px 20px;
+        font-weight: bold;
+        font-size: 0.95rem;
+    }
+
+    .history-table td {
+        padding: 16px 20px;
+        font-size: 0.9rem;
+    }
+
+.row-gray {
+    background-color: #e9ebf0;
+}
+
+.row-white {
+    background-color: #ffffff;
+}
+
+/* =========================================
+   9. RIGHT PANEL (Calendar & Stats)
+   ========================================= */
+.right-panel-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: calc(100vh - 60px);
+}
+
+.calendar-widget {
+    margin-bottom: 40px;
+    color: white;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .calendar-header h4 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .calendar-header .arrows span {
+        cursor: pointer;
+        margin-left: 10px;
+        font-size: 0.9rem;
+        color: #8b8e9f;
+    }
+
+.calendar-days-name {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 15px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 15px;
+    text-align: center;
+    color: #d1d4dc;
+    font-size: 0.9rem;
+}
+
+    .calendar-grid div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+    }
+
+    .calendar-grid .active {
+        background-color: #51b56d;
+        color: white;
+        border-radius: 50%;
+        width: 32px;
+        margin: 0 auto;
+    }
+
+.stats-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    color: #333;
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.stats-body {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-title {
+    color: #8b8e9f;
+    font-size: 0.85rem;
+    margin: 0 0 10px 0;
+}
+
+.stats-trend {
+    display: inline-block;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    text-align: center;
+}
+
+.trend-up {
+    color: #51b56d;
+    font-weight: bold;
+    display: block;
+    font-size: 1rem;
+}
+
+.trend-desc {
+    color: #b0b0b0;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+.stats-right {
+    text-align: right;
+}
+
+.stats-number {
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 300;
+    color: #79839e;
+    line-height: 1;
+}
+
+.stats-desc {
+    margin: 5px 0 0 0;
+    font-size: 0.8rem;
+    color: #b0b0b0;
+}
+
+.stats-footer {
+    background-color: #34d399;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* =========================================
+   10. SETTINGS & PROFILE MODULE
+   ========================================= */
+.settings-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 300px;
+    gap: 25px;
+    padding: 30px;
+    background-color: #0d111d;
+    min-height: 100vh;
+    font-family: sans-serif;
+    color: #1a1e30;
+}
+
+.st-card {
+    background-color: #e9ebf0;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.st-card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+}
+
+.mt-4 {
+    margin-top: 20px;
+}
+
+.mt-5 {
+    margin-top: 40px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.h-100 {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.profile-name {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+}
+
+.profile-email {
+    margin: 0;
+    color: #666a80;
+    font-size: 0.85rem;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .info-list li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+    }
+
+        .info-list li strong {
+            color: #1a1e30;
+        }
+
+        .info-list li span {
+            color: #666a80;
+        }
+
+.toggle-switch {
+    width: 36px;
+    height: 20px;
+    background-color: #D1F366;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+.toggle-circle {
+    width: 14px;
+    height: 14px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+
+.st-section-title {
+    font-size: 1.1rem;
+    margin: 0 0 25px 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #1a1e30;
+}
+
+.invisible-label {
+    visibility: hidden;
+}
+
+.form-group input {
+    width: 100%;
+    background-color: #d8dbe4;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.85rem;
+    color: #333;
+    outline: none;
+    box-sizing: border-box;
+}
+
+    .form-group input::placeholder {
+        color: #9aa0b6;
+    }
+
+.phone-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.input-prefix {
+    width: 60px !important;
+    text-align: center;
+}
+
+.input-phone {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-transparent {
+    background: transparent;
+    border: none;
+    color: #666a80;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   11. WALLET MODULE
+   ========================================= */
+.wallet-widget {
+    background-color: #D1F366;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .wallet-header h2 {
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+.coin-badge {
+    background: rgba(255,255,255,0.4);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.wallet-inner-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.wallet-type {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.icon-cash {
+    background-color: #34d399;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.type-info strong {
+    display: block;
+    font-size: 0.95rem;
+}
+
+.type-info p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #a0a4b8;
+}
+
+.wallet-balance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+    .wallet-balance-row span {
+        font-size: 0.7rem;
+        color: #a0a4b8;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .wallet-balance-row h2.text-red {
+        margin: 0;
+        color: #ff3b3b;
+        font-size: 1.6rem;
+    }
+
+    .wallet-balance-row h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: #1a1e30;
+    }
+
+.balance-right {
+    text-align: right;
+}
+
+.wallet-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-item {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.menu-value {
+    color: #a0a4b8;
+    font-weight: normal;
+}
+
+.arrow {
+    color: #a0a4b8;
+    margin-left: 10px;
     font-weight: normal;
 }
