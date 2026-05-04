@@ -309,3 +309,620 @@ html, body {
     font-size: 1.1rem;
     width: 100%;
 }
+
+/*STATION*/
+
+.main-content {
+    background-color: #0d111d; 
+    padding: 30px;
+    min-height: 100vh;
+    font-family: sans-serif;
+}
+
+/* --- PHẦN SEARCH HEADER --- */
+.header {
+    display: flex;
+    justify-content: center; 
+    margin-bottom: 40px;
+    gap: 15px; 
+}
+
+    .header input {
+        background-color: #1a1e30; /* Màu nền ô input */
+        border: none;
+        border-radius: 8px;
+        padding: 12px 20px;
+        color: white;
+        width: 400px;
+        outline: none;
+    }
+
+        .header input::placeholder {
+            color: #666a80;
+        }
+
+    .header button {
+        background-color: #D1F366; /* Màu xanh neon */
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+/* --- PHẦN LƯỚI GRID (2 CỘT) --- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px; 
+}
+
+/* --- PHẦN THẺ CARD --- */
+.card {
+    background-color: #1a1e30; 
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    gap: 16px; 
+}
+
+    .card img {
+        width: 140px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0; 
+    }
+
+    /* Phần thông tin (Tên trạm và Quận) */
+    .card .info {
+        flex-grow: 1; /*  Chiếm hết khoảng trống để đẩy nút Choose sang phải */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: left;
+    }
+
+        .card .info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            font-weight: normal;
+            color: #ffffff;
+            font-family: serif; 
+        }
+
+        .card .info p {
+            margin: 0;
+            color: #8b8e9f; /* Chữ xám cho tên quận */
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            /* Tạo một chấm đỏ giả làm icon Location tạm thời */
+            .card .info p::before {
+                content: '•';
+                color: #ff3b3b;
+                font-size: 1.5rem;
+                line-height: 0.5;
+            }
+
+    /* Nút Choose */
+    .card button {
+        background-color: #D1F366; /* Xanh neon */
+        color: #000000;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px; 
+        font-weight: bold;
+        cursor: pointer;
+        flex-shrink: 0; /* Cấm nút bị ép nhỏ lại */
+        transition: background-color 0.2s;
+    }
+
+        .card button:hover {
+            background-color: #bce645; /* Đổi màu sậm xuống một chút khi di chuột qua */
+        }
+
+/*HISTORY*/
+/* --- NỀN TỔNG THỂ --- */
+.main-content {
+    background-color: #0d111d;
+    padding: 30px;
+    min-height: 100vh;
+    font-family: sans-serif;
+}
+
+/* --- BẢNG DỮ LIỆU (TABLE) --- */
+.table-container {
+    background-color: transparent;
+    border-radius: 8px;
+    overflow: hidden; /* Quan trọng: Để bảng bên trong bị cắt bo góc theo div ngoài */
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    color: #333; /* Chữ màu tối */
+}
+
+    .history-table th {
+        background-color: #f8f9fa; /* Nền trắng sáng cho Header */
+        padding: 16px 20px;
+        font-weight: bold;
+        font-size: 0.95rem;
+    }
+
+    .history-table td {
+        padding: 16px 20px;
+        font-size: 0.9rem;
+    }
+
+/* Tô màu xen kẽ các dòng như thiết kế */
+.row-gray {
+    background-color: #e9ebf0; /* Xám nhạt */
+}
+
+.row-white {
+    background-color: #ffffff; /* Trắng tinh */
+}
+
+/* --- THANH BÊN PHẢI (RIGHT PANEL) --- */
+
+/* BỘT NGỌT: Khung bao bọc để ép phần tử xuống đáy */
+.right-panel-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Đẩy Lịch lên trên và Thống kê xuống dưới */
+    height: 100%;
+    min-height: calc(100vh - 60px); /* QUAN TRỌNG: Ép khung cao bằng màn hình (trừ đi 60px padding) */
+}
+
+/* 1. Phần Lịch */
+.calendar-widget {
+    margin-bottom: 40px;
+    color: white;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .calendar-header h4 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .calendar-header .arrows span {
+        cursor: pointer;
+        margin-left: 10px;
+        font-size: 0.9rem;
+        color: #8b8e9f;
+    }
+
+.calendar-days-name {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 15px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 15px;
+    text-align: center;
+    color: #d1d4dc;
+    font-size: 0.9rem;
+}
+
+    .calendar-grid div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+    }
+
+    /* Ngày đang chọn (màu xanh lá) */
+    .calendar-grid .active {
+        background-color: #51b56d;
+        color: white;
+        border-radius: 50%;
+        width: 32px;
+        margin: 0 auto;
+    }
+
+/* 2. Phần Thống Kê (Stats Card) */
+.stats-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    color: #333;
+    margin-top: auto; /* Tự động đẩy thẻ này xuống đáy khoảng trống */
+    margin-bottom: 20px; /* Thêm một chút khoảng cách với mép dưới màn hình cho thoáng */
+}
+
+.stats-body {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-title {
+    color: #8b8e9f;
+    font-size: 0.85rem;
+    margin: 0 0 10px 0;
+}
+
+.stats-trend {
+    display: inline-block;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    text-align: center;
+}
+
+.trend-up {
+    color: #51b56d;
+    font-weight: bold;
+    display: block;
+    font-size: 1rem;
+}
+
+.trend-desc {
+    color: #b0b0b0;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+.stats-right {
+    text-align: right;
+}
+
+.stats-number {
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 300;
+    color: #79839e;
+    line-height: 1;
+}
+
+.stats-desc {
+    margin: 5px 0 0 0;
+    font-size: 0.8rem;
+    color: #b0b0b0;
+}
+
+.stats-footer {
+    background-color: #34d399; /* Xanh lá sáng */
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* --- BỐ CỤC CHÍNH (GRID 3 CỘT) --- */
+.settings-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 300px; /* Cột trái 280px - Giữa co giãn - Cột phải 300px */
+    gap: 25px;
+    padding: 30px;
+    background-color: #0d111d; /* Nền tối */
+    min-height: 100vh;
+    font-family: sans-serif;
+    color: #1a1e30; /* Chữ mặc định trong thẻ sáng */
+}
+
+/* --- THẺ CARD CHUNG --- */
+.st-card {
+    background-color: #e9ebf0; /* Màu xám sáng của thẻ */
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.st-card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+}
+
+.mt-4 {
+    margin-top: 20px;
+}
+
+.mt-5 {
+    margin-top: 40px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.h-100 {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* --- CỘT 1: PROFILE & INFO --- */
+.profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.profile-name {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+}
+
+.profile-email {
+    margin: 0;
+    color: #666a80;
+    font-size: 0.85rem;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .info-list li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+    }
+
+        .info-list li strong {
+            color: #1a1e30;
+        }
+
+        .info-list li span {
+            color: #666a80;
+        }
+
+/* Nút Toggle gạt mượt mà */
+.toggle-switch {
+    width: 36px;
+    height: 20px;
+    background-color: #D1F366;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+.toggle-circle {
+    width: 14px;
+    height: 14px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    /* Để bật toggle sang phải, đổi left thành right: 3px */
+}
+
+/* --- CỘT 2: FORM SETTINGS --- */
+.st-section-title {
+    font-size: 1.1rem;
+    margin: 0 0 25px 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #1a1e30;
+}
+
+.invisible-label {
+    visibility: hidden;
+}
+
+.form-group input {
+    width: 100%;
+    background-color: #d8dbe4;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.85rem;
+    color: #333;
+    outline: none;
+    box-sizing: border-box;
+}
+
+    .form-group input::placeholder {
+        color: #9aa0b6;
+    }
+
+.phone-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.input-prefix {
+    width: 60px !important;
+    text-align: center;
+}
+
+.input-phone {
+    flex: 1;
+}
+
+.btn-neon {
+    background-color: #D1F366;
+    color: #000;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-transparent {
+    background: transparent;
+    border: none;
+    color: #666a80;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.85rem;
+}
+
+/* --- CỘT 3: WALLET --- */
+.wallet-widget {
+    background-color: #D1F366;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+    .wallet-header h2 {
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+.coin-badge {
+    background: rgba(255,255,255,0.4);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.wallet-inner-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.wallet-type {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.icon-cash {
+    background-color: #34d399;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.type-info strong {
+    display: block;
+    font-size: 0.95rem;
+}
+
+.type-info p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #a0a4b8;
+}
+
+.wallet-balance-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+    .wallet-balance-row span {
+        font-size: 0.7rem;
+        color: #a0a4b8;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .wallet-balance-row h2.text-red {
+        margin: 0;
+        color: #ff3b3b;
+        font-size: 1.6rem;
+    }
+
+    .wallet-balance-row h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: #1a1e30;
+    }
+
+.balance-right {
+    text-align: right;
+}
+
+.wallet-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-item {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.menu-value {
+    color: #a0a4b8;
+    font-weight: normal;
+}
+
+.arrow {
+    color: #a0a4b8;
+    margin-left: 10px;
+    font-weight: normal;
+}
