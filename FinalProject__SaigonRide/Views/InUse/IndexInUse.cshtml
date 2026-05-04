@@ -1,16 +1,65 @@
 ﻿@{
     ViewData["Title"] = "In Use";
+    // Giá trị double cho EstimatedCost theo yêu cầu của bạn
+    decimal currentCost = 67777;
 }
 
-<div class="d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 100px);">
-    >
+<div class="inuse-page-wrapper">
+    <!-- CỘT CHÍNH: Hiển thị hành trình -->
+    <div class="inuse-main-section">
+        <h5 class="breadcrumb-text">In use</h5>
 
-    <div class="container-fluid px-0">
+        <!-- KHU VỰC RIDER: Ảnh người lái xe trên đường tông xanh lam -->
+        <div class="rider-display-box">
+            <div class="blue-mono-filter">
+                <img src="https://images.unsplash.com/photo-1620330101487-73595fd0007e?q=80&w=1000"
+                     alt="Rider on road" class="rider-img" />
+                <div class="road-lanes"></div>
+            </div>
+        </div>
 
-        <button class="btn btn-primary w-100 fw-bold shadow" style="padding: 60px 0; font-size: 3rem; text-transform: uppercase; background-color: #D1F366; color: #000; border: none;">
-            button
-        </button>
+        <!-- BẢNG THÔNG SỐ CHUYẾN ĐI -->
+        <div class="ride-stats-card">
+            <div class="stat-group">
+                <p><span class="label">Usage Time:</span> <span class="val">01 : 07 : 06</span></p>
+                <p><span class="label">Distance Traveled:</span> <span class="val">67.67 km</span></p>
+            </div>
+            <div class="stat-group">
+                <p><span class="label">Battery Remaining:</span> <span class="val neon">67%</span></p>
+                <p><span class="label">Estimated Cost:</span> <span class="val">@currentCost.ToString("#,##0") VND</span></p>
+            </div>
+        </div>
 
+        <!-- NÚT THANH TOÁN (Đã gộp từ code của bạn) -->
+        <div class="action-footer">
+            <button type="button" class="btn-main-action" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                Thanh toán
+            </button>
+        </div>
     </div>
 
+    <!-- CỘT PHỤ: Thông tin trạm và xe -->
+    <div class="inuse-side-panel">
+        <div class="side-widget">
+            <p class="widget-label">Selected Station:</p>
+            <div class="mini-info-box">
+                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc18a593?q=80&w=200" alt="Ben Thanh" />
+                <div>
+                    <strong>Ben Thanh</strong>
+                    <small>District 1</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-widget">
+            <p class="widget-label">Current Vehicle:</p>
+            <div class="mini-info-box">
+                <div class="icon-bg"><i class="bi bi-bicycle"></i></div>
+                <strong>Electric Scooter</strong>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- NHÚNG MODAL THANH TOÁN -->
+<partial name="~/Views/Payment/_PaymentModal.cshtml" model="new FinalProject__SaigonRide.Models.PaymentViewModel { EstimatedCost = currentCost }" />

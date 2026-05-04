@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,38 +12,58 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FinalProject__SaiGonRide.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
-
 </head>
-<body>   
+<body>
     <div class="container-fluid">
         <div class="row">
             <nav id="left-sidebar" class="col-md-2 d-none d-md-block sidebar-dark">
-                <div class="sidebar-sticky">
+                <div class="sidebar-top-content">
                     <h3 class="brand-name">SaiGonRide</h3>
                     <ul class="nav flex-column" id="sidebar">
-                        <ul class="nav flex-column" id="sidebar">
+                        <li class="nav-item">
+                            <a class="nav-link border-item" asp-controller="Home" asp-action="Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link border-item" asp-controller="Stations" asp-action="IndexStations">Station</a>
+                        </li>
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            /* Chỉ hiện 3 nút này khi ĐÃ đăng nhập */
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                                <a class="nav-link border-item" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Stations" asp-action="IndexStations">Station</a>
+                                <a class="nav-link border-item" asp-controller="History" asp-action="IndexHistory">History</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
+                                <a class="nav-link border-item" asp-controller="Setting" asp-action="IndexSetting">Setting</a>
                             </li>
-                            <li>
-                                <a class="nav-link" asp-controller="History" asp-action="IndexHistory">History</a>
-                            </li>
-                            <li>
-                                <a class="nav-link" asp-controller="Setting" asp-action="IndexSetting">Setting</a>
-                            </li>
-                        </ul>
+                        }
                     </ul>
                 </div>
+
+                <!-- FIX 1: Chỉ hiện nút Login/Register nếu CHƯA đăng nhập[cite: 2, 3] -->
+                @if (!SignInManager.IsSignedIn(User))
+                {
+                    <ul class="nav flex-column mb-4 px-3 sidebar-bottom-content">
+                        <li class="nav-item">
+                            <a class="nav-link auth-btn-outline" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link auth-btn-solid" asp-area="Identity" asp-page="/Account/Register">Create Account</a>
+                        </li>
+                    </ul>
+                }
             </nav>
 
-            <main role="main" class="col-md-7 px-md-4 main-content">
-                <partial name="_LoginPartial" />
+            <main role="main" class="col-md-7 px-md-4 main-content" style="position: relative;">
+                @if (SignInManager.IsSignedIn(User) && ViewData["Title"]?.ToString() == "Dashboard")
+                {
+                    <div class="dashboard-user-greeting">
+                        HELLO @(User.Identity?.Name?.Split('@')[0].ToUpper() ?? "RIDER")!
+                    </div>
+                }
                 @RenderBody()
             </main>
 
@@ -48,7 +72,6 @@
             </aside>
         </div>
     </div>
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

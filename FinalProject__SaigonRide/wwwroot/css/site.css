@@ -207,6 +207,22 @@ html, body {
     justify-content: center;
     text-align: center;
     padding: 30px;
+    flex: 1; /* Đảm bảo chia đều 50/50 với phần Form */
+}
+
+/* Bo góc bên TRÁI cho trang Register */
+.regis-welcome-half {
+    border-top-left-radius: 250px;
+    border-bottom-left-radius: 250px;
+}
+
+/* Bo góc bên PHẢI cho trang Login */
+.login-welcome-half {
+    border-top-right-radius: 250px !important;
+    border-bottom-right-radius: 250px !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    flex: 1; /* Đảm bảo chia đúng 50%[cite: 2] */
 }
 
 .side-welcome h1 {
@@ -946,3 +962,75 @@ html, body {
     margin-left: 10px;
     font-weight: normal;
 }
+
+/* --- CHỈ FIX 2 NÚT LOGIN & CREATE ACCOUNT --- */
+
+/* Xóa gạch chân và màu xanh mặc định cho cả 2 nút */
+.sidebar-dark a.nav-link.auth-btn-outline,
+.sidebar-dark a.nav-link.auth-btn-solid {
+    text-align: center !important;
+    font-weight: bold !important;
+    padding: 12px !important;
+    display: block !important;
+    text-decoration: none !important; /* Mất gạch chân */
+    margin: 5px 15px !important;
+    font-size: 14px !important;
+}
+
+/* NÚT LOGIN: Viền vàng neon, chữ vàng[cite: 2] */
+.sidebar-dark a.nav-link.auth-btn-outline {
+    border: 2px solid #d4ff00 !important;
+    color: #d4ff00 !important; /* Chữ vàng rực[cite: 2] */
+    border-radius: 30px !important;
+    background-color: transparent !important;
+}
+
+    .sidebar-dark a.nav-link.auth-btn-outline:hover {
+        background-color: rgba(212, 255, 0, 0.1) !important;
+        color: #d4ff00 !important;
+    }
+
+/* NÚT CREATE ACCOUNT: Nền vàng neon, chữ đen[cite: 2] */
+.sidebar-dark a.nav-link.auth-btn-solid {
+    background-color: #d4ff00 !important;
+    color: #1a1a2e !important; /* Chữ tối trên nền sáng[cite: 2] */
+    border-radius: 30px !important;
+}
+
+    .sidebar-dark a.nav-link.auth-btn-solid:hover {
+        background-color: #bce645 !important;
+        color: #1a1a2e !important;
+    }
+
+/* Ép hiển thị lời chào rực rỡ nhất */
+.dashboard-user-greeting {
+    position: absolute !important;
+    top: 30px !important;
+    right: 40px !important;
+    color: #d4ff00 !important; /* Màu vàng neon */
+    font-weight: 900 !important;
+    font-size: 16px !important;
+    text-transform: uppercase !important;
+    z-index: 9999 !important; /* Bắt buộc: Để nó luôn nằm trên cùng */
+    letter-spacing: 1px;
+    pointer-events: none; /* Để không vướng khi click chuột */
+}
+
+/* Nút Logout đỏ ở trang Setting */
+.btn-logout-red {
+    background-color: #ff5252 !important; /* Màu đỏ coral chuẩn hình mẫu */
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important; /* Bo góc 12px cho đồng bộ với các card */
+    padding: 12px !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+    .btn-logout-red:hover {
+        background-color: #ff3333 !important;
+        transform: translateY(-2px); /* Hiệu ứng nổi lên khi di chuột */
+        box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+    }
