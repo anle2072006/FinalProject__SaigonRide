@@ -311,122 +311,127 @@ html, body {
 }
 
 /*STATION*/
-
 .main-content {
-    background-color: #0d111d; 
+    background-color: #0d111d;
     padding: 30px;
     min-height: 100vh;
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- PHẦN SEARCH HEADER --- */
+/* SEARCH HEADER */
 .header {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     margin-bottom: 40px;
-    gap: 15px; 
+    gap: 15px;
 }
 
-    .header input {
-        background-color: #1a1e30; /* Màu nền ô input */
-        border: none;
-        border-radius: 8px;
-        padding: 12px 20px;
-        color: white;
-        width: 400px;
-        outline: none;
-    }
+.header input {
+    background-color: #1a1e30;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: white;
+    width: 400px;
+    outline: none;
+}
 
-        .header input::placeholder {
-            color: #666a80;
-        }
+.header button {
+    background-color: #D1F366;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-    .header button {
-        background-color: #D1F366; /* Màu xanh neon */
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 30px;
-        font-weight: bold;
-        cursor: pointer;
-    }
+.header button:hover {
+    background-color: #bce645;
+}
 
-/* --- PHẦN LƯỚI GRID (2 CỘT) --- */
+/* LƯỚI GRID 2 CỘT */
 .grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 20px; 
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* --- PHẦN THẺ CARD --- */
+/* THẺ CARD */
 .card {
-    background-color: #1a1e30; 
+    background-color: #1a1e30;
     border-radius: 16px;
     padding: 15px;
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     align-items: center;
-    gap: 16px; 
+    gap: 16px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+    position: relative;
 }
 
-    .card img {
-        width: 140px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 10px;
-        flex-shrink: 0; 
-    }
+.card:hover {
+    border-color: #D1F366;
+    transform: translateY(-3px);
+}
 
-    /* Phần thông tin (Tên trạm và Quận) */
-    .card .info {
-        flex-grow: 1; /*  Chiếm hết khoảng trống để đẩy nút Choose sang phải */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: left;
-    }
+.card img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
 
-        .card .info h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.1rem;
-            font-weight: normal;
-            color: #ffffff;
-            font-family: serif; 
-        }
+/* PHẦN THÔNG TIN */
+.card .info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-        .card .info p {
-            margin: 0;
-            color: #8b8e9f; /* Chữ xám cho tên quận */
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+.card .info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    color: #ffffff;
+}
 
-            /* Tạo một chấm đỏ giả làm icon Location tạm thời */
-            .card .info p::before {
-                content: '•';
-                color: #ff3b3b;
-                font-size: 1.5rem;
-                line-height: 0.5;
-            }
+.card .info p {
+    margin: 0;
+    color: #8b8e9f;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+}
 
-    /* Nút Choose */
-    .card button {
-        background-color: #D1F366; /* Xanh neon */
-        color: #000000;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 12px; 
-        font-weight: bold;
-        cursor: pointer;
-        flex-shrink: 0; /* Cấm nút bị ép nhỏ lại */
-        transition: background-color 0.2s;
-    }
+.card .info p::before {
+    content: '📍'; /* Dùng icon map cho chuyên nghiệp */
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
 
-        .card button:hover {
-            background-color: #bce645; /* Đổi màu sậm xuống một chút khi di chuột qua */
-        }
+/* NÚT CHOOSE (Đã chuyển từ button sang thẻ <a> để khớp Url.Action) */
+.btn-choose {
+    background-color: #D1F366;
+    color: #000 !important;
+    text-decoration: none !important;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.btn-choose:hover {
+    background-color: #bce645;
+    transform: scale(1.05);
+}
 
 /*HISTORY*/
 /* --- NỀN TỔNG THỂ --- */
@@ -614,22 +619,25 @@ html, body {
     font-size: 0.85rem;
     font-weight: bold;
 }
+/*SETTING*/ /* --- BỐ CỤC CHÍNH (GRID 3 CỘT) --- */
 
-/* --- BỐ CỤC CHÍNH (GRID 3 CỘT) --- */
 .settings-wrapper {
     display: grid;
     grid-template-columns: 280px 1fr 300px; /* Cột trái 280px - Giữa co giãn - Cột phải 300px */
+
     gap: 25px;
     padding: 30px;
     background-color: #0d111d; /* Nền tối */
+
     min-height: 100vh;
     font-family: sans-serif;
     color: #1a1e30; /* Chữ mặc định trong thẻ sáng */
 }
-
 /* --- THẺ CARD CHUNG --- */
+
 .st-card {
     background-color: #e9ebf0; /* Màu xám sáng của thẻ */
+
     border-radius: 16px;
     padding: 25px;
     margin-bottom: 20px;
@@ -657,8 +665,8 @@ html, body {
     height: 100%;
     box-sizing: border-box;
 }
-
 /* --- CỘT 1: PROFILE & INFO --- */
+
 .profile-img {
     width: 120px;
     height: 120px;
@@ -684,6 +692,8 @@ html, body {
     margin: 0;
 }
 
+
+
     .info-list li {
         display: flex;
         justify-content: space-between;
@@ -691,15 +701,19 @@ html, body {
         font-size: 0.85rem;
     }
 
+
+
         .info-list li strong {
             color: #1a1e30;
         }
 
+
+
         .info-list li span {
             color: #666a80;
         }
-
 /* Nút Toggle gạt mượt mà */
+
 .toggle-switch {
     width: 36px;
     height: 20px;
@@ -719,8 +733,8 @@ html, body {
     left: 3px;
     /* Để bật toggle sang phải, đổi left thành right: 3px */
 }
-
 /* --- CỘT 2: FORM SETTINGS --- */
+
 .st-section-title {
     font-size: 1.1rem;
     margin: 0 0 25px 0;
@@ -756,6 +770,8 @@ html, body {
     outline: none;
     box-sizing: border-box;
 }
+
+
 
     .form-group input::placeholder {
         color: #9aa0b6;
@@ -801,8 +817,8 @@ html, body {
     text-decoration: underline;
     font-size: 0.85rem;
 }
-
 /* --- CỘT 3: WALLET --- */
+
 .wallet-widget {
     background-color: #D1F366;
     border-radius: 16px;
@@ -816,6 +832,8 @@ html, body {
     align-items: center;
     margin-bottom: 20px;
 }
+
+
 
     .wallet-header h2 {
         margin: 0;
@@ -874,6 +892,8 @@ html, body {
     align-items: flex-end;
 }
 
+
+
     .wallet-balance-row span {
         font-size: 0.7rem;
         color: #a0a4b8;
@@ -882,11 +902,15 @@ html, body {
         margin-bottom: 5px;
     }
 
+
+
     .wallet-balance-row h2.text-red {
         margin: 0;
         color: #ff3b3b;
         font-size: 1.6rem;
     }
+
+
 
     .wallet-balance-row h4 {
         margin: 0;
@@ -926,3 +950,137 @@ html, body {
     margin-left: 10px;
     font-weight: normal;
 }
+/*VEHICLE*/
+
+/* Nền tảng chung cho trang */
+.vehicle-page {
+    padding: 40px;
+    color: white;
+    font-family: sans-serif;
+    min-height: 100vh;
+}
+
+/* --- THANH TÌM KIẾM --- */
+.search-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 50px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #1a1b2f; /* Màu nền tối của ô input */
+    border-radius: 8px;
+    padding: 0 15px;
+    width: 400px;
+}
+
+.search-icon {
+    color: #8b8e9f;
+    margin-right: 10px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+    padding: 12px 0;
+    outline: none;
+}
+
+    .search-box input::placeholder {
+        color: #8b8e9f;
+    }
+
+.btn-search {
+    background-color: #D1F366;
+    color: #000;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- KHUNG VIỀN XANH DƯƠNG (Như trong ảnh thiết kế) --- */
+.blue-outline-box {
+    border: 2px solid #00a8ff; /* Viền xanh dương sáng */
+    border-radius: 12px;
+    padding: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- THẺ THÔNG TIN XE --- */
+.vehicle-card {
+    background-color: #1a1b2f; /* Màu nền thẻ xe */
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+    /* Bỏ margin thẻ cuối cùng cho đẹp */
+    .vehicle-card:last-child {
+        margin-bottom: 0;
+    }
+
+.vehicle-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 30px;
+}
+
+.vehicle-info {
+    flex: 1; /* Đẩy nội dung chiếm hết khoảng trống giữa */
+}
+
+.info-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 80px; /* Khoảng cách giữa chữ Tên xe và chữ Duration */
+}
+
+    .info-row h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffffff;
+        min-width: 150px; /* Cố định độ rộng để các chữ thẳng hàng nhau */
+    }
+
+.duration, .remain {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.mt-2 {
+    margin-top: 10px;
+}
+
+/* --- NÚT BOOK --- */
+.vehicle-action {
+    margin: 0;
+}
+
+.btn-book {
+    background-color: #D1F366;
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .btn-book:hover {
+        background-color: #c0e050;
+    }

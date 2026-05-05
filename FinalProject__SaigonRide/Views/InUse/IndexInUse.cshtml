@@ -3,14 +3,44 @@
 }
 
 <div class="d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 100px);">
-    >
-
     <div class="container-fluid px-0">
 
         <button class="btn btn-primary w-100 fw-bold shadow" style="padding: 60px 0; font-size: 3rem; text-transform: uppercase; background-color: #D1F366; color: #000; border: none;">
-            button
+            START RIDE
         </button>
 
     </div>
-
 </div>
+
+@section RightContent {
+    <h5 class="right-panel-title" style="color: #D1F366; margin-bottom: 20px; font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 10px;">
+        Trip Details
+    </h5>
+
+    <div class="summary-section mb-4">
+        <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 8px;">📍 TRẠM ĐÃ CHỌN</p>
+        <div style="background: #1a1b2f; padding: 15px; border-radius: 12px; border: 1px solid #333; display: flex; align-items: center; gap: 15px;">
+            <img src="@ViewBag.StationImg" alt="Station" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;" />
+            <div>
+                <h6 style="margin: 0; color: #D1F366; font-weight: bold;">@ViewBag.StationName</h6>
+                <p style="margin: 0; font-size: 0.8rem; color: #ccc;">@ViewBag.StationLocation</p>
+                <small style="color: #666;">ID: @ViewBag.StationId</small>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin: 15px 0; color: #D1F366;">
+        <span>⬇</span>
+    </div>
+
+    <div class="summary-section">
+        <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 8px;">🛴 XE ĐANG DÙNG</p>
+        <div style="background: #1a1b2f; padding: 15px; border-radius: 12px; border: 1px solid #333; display: flex; align-items: center; gap: 15px;">
+            <img src="@ViewBag.VehicleImg" alt="Vehicle" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;" />
+            <div>
+                <h6 style="margin: 0; color: white; font-weight: bold;">@ViewBag.VehicleName</h6>
+                <small style="color: #666;">ID: @ViewBag.VehicleId</small>
+            </div>
+        </div>
+    </div>
+}
