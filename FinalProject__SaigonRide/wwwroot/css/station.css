@@ -1,0 +1,116 @@
+/* =========================================
+   STATION MODULE
+   ========================================= */
+.header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    gap: 15px;
+}
+
+    .header input {
+        background-color: #1a1e30;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 12px 20px;
+        color: white;
+        width: 400px;
+        outline: none;
+    }
+
+        .header input::placeholder {
+            color: #666a80;
+        }
+
+    .header button {
+        background-color: #D1F366;
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .header button:hover {
+            background-color: #bce645;
+        }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: #1a1e30;
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+    position: relative;
+}
+
+    .card:hover {
+        border-color: #D1F366;
+        transform: translateY(-3px);
+    }
+
+    .card img {
+        width: 120px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .card .info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .card .info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+
+        .card .info p {
+            margin: 0;
+            color: #8b8e9f;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+        }
+
+            .card .info p::before {
+                content: '📍';
+                margin-right: 5px;
+                font-size: 0.9rem;
+            }
+
+.btn-choose {
+    background-color: #D1F366;
+    color: #000 !important;
+    text-decoration: none !important;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+    .btn-choose:hover {
+        background-color: #bce645;
+        transform: scale(1.05);
+    }

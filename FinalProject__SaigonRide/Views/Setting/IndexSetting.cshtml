@@ -1,10 +1,11 @@
 ﻿@model List<Coupon>
 @{
+
     ViewData["Title"] = "Settings";
 }
 
 <div class="settings-wrapper">
-    
+
     <div class="settings-col">
         <div class="st-card text-center profile-card">
             <img src="https://i.pravatar.cc/150?img=47" alt="Profile Avatar" class="profile-img" />
@@ -33,10 +34,10 @@
         </div>
     </div>
 
+
     <div class="settings-col col-main">
         <div class="st-card h-100 form-card">
             <h3 class="st-section-title">User Settings</h3>
-            
             <div class="form-section">
                 <h4 class="st-card-title">Details</h4>
                 <div class="form-grid">
@@ -44,15 +45,18 @@
                         <label>Name</label>
                         <input type="text" placeholder="Pepito Rodrick ..." />
                     </div>
+
                     <div class="form-group">
                         <label>Last Name</label>
                         <input type="text" placeholder="Coronel Sifuentes ..." />
                     </div>
+
                     <div class="form-group">
                         <label>Email</label>
                         <!-- Đã đổi thành @@uni.pe để Razor không tưởng đây là biến C# -->
                         <input type="email" placeholder="pepito.c.sifuentes@@uni.pe" />
                     </div>
+
                     <div class="form-group">
                         <label>Tel - Number:</label>
                         <div class="phone-input-group">
@@ -71,19 +75,23 @@
                         <label>Change password</label>
                         <input type="password" placeholder="Put your password..." />
                     </div>
+
                     <div class="form-group">
                         <label class="invisible-label">Confirm password</label>
                         <input type="password" placeholder="Confirm password..." />
                     </div>
+
                     <div class="form-group">
                         <label>New password</label>
                         <input type="password" placeholder="Put your new password..." />
                     </div>
+
                     <div class="form-group">
                         <label class="invisible-label">Confirm new</label>
                         <input type="password" placeholder="Confirm new password..." />
                     </div>
                 </div>
+
                 <div class="form-actions">
                     <button class="btn-neon">Save changes</button>
                     <button class="btn-transparent">Forgot your password?</button>
@@ -98,7 +106,8 @@
                 <h2>My Wallet</h2>
                 <span class="coin-badge">⭐ 2500</span>
             </div>
-            
+
+
             <div class="wallet-inner-card">
                 <div class="wallet-type">
                     <div class="icon-cash">$</div>
@@ -107,11 +116,13 @@
                         <p>Default Payment Method</p>
                     </div>
                 </div>
+
                 <div class="wallet-balance-row">
                     <div class="balance-left">
                         <span>BALANCE</span>
                         <h2 class="text-red">$2500</h2>
                     </div>
+
                     <div class="balance-right">
                         <span>EXPIRES</span>
                         <h4>09/21</h4>
@@ -158,6 +169,8 @@
         </div>
     </div>
 </div>
+
+
 
 @section Styles {
     <link rel="stylesheet" href="~/css/settings.css" asp-append-version="true" />
