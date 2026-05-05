@@ -1,22 +1,23 @@
-﻿@{
-
+﻿@model FinalProject__SaigonRide.Models.User
+@{
     ViewData["Title"] = "Settings";
 }
+
 <div class="settings-wrapper">
 
     <div class="settings-col">
         <div class="st-card text-center profile-card">
             <img src="https://i.pravatar.cc/150?img=47" alt="Profile Avatar" class="profile-img" />
-            <h3 class="profile-name">&#64;User-Name</h3>
-            <p class="profile-email">user&#64;email.com</p>
+            <h3 class="profile-name">&#64;@(Model != null ? Model.Name : "User-Name")</h3>
+            <p class="profile-email">@(Model != null ? Model.Email : "user@email.com")</p>
         </div>
 
         <div class="st-card info-card">
             <h4 class="st-card-title">Information</h4>
             <ul class="info-list">
-                <li><strong>Name:</strong> <span>Name, Last Name</span></li>
-                <li><strong>Email:</strong> <span>user&#64;email.com</span></li>
-                <li><strong>Tel:</strong> <span>+51 966 696 123</span></li>
+                <li><strong>Name:</strong> <span>@(Model != null ? Model.Name : "Name, Last Name")</span></li>
+                <li><strong>Email:</strong> <span>@(Model != null ? Model.Email : "user@email.com")</span></li>
+                <li><strong>Tel:</strong> <span>@(Model != null && !string.IsNullOrEmpty(Model.PhoneNumber) ? Model.PhoneNumber : "+51 966 696 123")</span></li>
                 <li><strong>Plan:</strong> <span>Hardcoded</span></li>
             </ul>
 
@@ -33,7 +34,6 @@
         </div>
     </div>
 
-
     <div class="settings-col col-main">
         <div class="st-card h-100 form-card">
             <h3 class="st-section-title">User Settings</h3>
@@ -42,7 +42,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" placeholder="Pepito Rodrick ..." />
+                        <input type="text" value="@(Model != null ? Model.Name : "")" placeholder="Pepito Rodrick ..." />
                     </div>
 
                     <div class="form-group">
@@ -52,14 +52,14 @@
 
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" placeholder="pepito.c.sifuentes@uni.pe" />
+                        <input type="email" value="@(Model != null ? Model.Email : "")" placeholder="pepito.c.sifuentes@uni.pe" />
                     </div>
 
                     <div class="form-group">
                         <label>Tel - Number:</label>
                         <div class="phone-input-group">
                             <input type="text" class="input-prefix" value="+51" readonly />
-                            <input type="text" class="input-phone" placeholder="969 123 456" />
+                            <input type="text" class="input-phone" value="@(Model != null ? Model.PhoneNumber : "")" placeholder="969 123 456" />
                         </div>
                     </div>
                 </div>
@@ -105,7 +105,6 @@
                 <span class="coin-badge">⭐ 2500</span>
             </div>
 
-
             <div class="wallet-inner-card">
                 <div class="wallet-type">
                     <div class="icon-cash">$</div>
@@ -147,8 +146,6 @@
         </div>
     </div>
 </div>
-
-
 
 @section Styles {
     <link rel="stylesheet" href="~/css/settings.css" asp-append-version="true" />

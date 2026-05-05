@@ -1,17 +1,65 @@
 ﻿@{
-
-    ViewData["Title"] = "Home Page";
-
+    ViewData["Title"] = "Dashboard";
+    // ĐÂY LÀ CHÌA KHÓA: Báo cho Layout biết phải ẩn cột bên phải đi, kéo dài cột giữa ra
+    ViewData["HideRightSidebar"] = true;
 }
-<div class="container-fluid">
 
-    <div class="row">
+<div style="display: flex; justify-content: flex-end; padding: 30px 50px 0;">
+    <a asp-controller="Admin" asp-action="Index" class="admin-btn" style="text-decoration:none;">Admin</a>
+</div>
 
-        <div class="col-md-4">
+<div class="dashboard-view-content" style="padding: 20px 50px 50px;">
 
-            <div class="empty-column-box">
-            </div>
-
+    <div class="hero-left">
+        <div class="hero-badge">
+            <span style="color: #ff5722;">⚡</span> Smart Bike Booking Platform
         </div>
 
-    </div></div> nè trang index
+        <h1 class="hero-title">
+            Ride smarter,<br>
+            <span class="highlight">live greener</span>
+        </h1>
+
+        <p class="hero-desc">
+            Hệ thống đặt xe đạp điện thông minh giúp bạn di chuyển nhanh chóng, tiết kiệm và bảo vệ môi trường Sài Gòn.
+        </p>
+
+        <div class="hero-actions">
+            <a asp-controller="Stations" asp-action="IndexStations" class="btn-glow" style="text-decoration: none;">📍 Book Now</a>
+            <button class="btn-outline">► Explore Services</button>
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat-item">
+                <h2>120+</h2><p>Stations</p>
+            </div>
+            <div class="stat-item">
+                <h2>850+</h2><p>Vehicles</p>
+            </div>
+            <div class="stat-item">
+                <h2>25K+</h2><p>Happy Users</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-right">
+        <div class="bento-grid">
+            <div class="bento-card large">
+                <div class="bento-icon">🌱</div>
+                <h3>Eco Friendly</h3>
+                <p>Giảm thiểu khí thải CO2, hướng tới lối sống xanh tại thành phố.</p>
+            </div>
+            <div class="bento-card">
+                <div class="bento-icon">⚡</div>
+                <h3>Quick Unlock</h3>
+                <p>Quét mã QR và đi ngay.</p>
+            </div>
+            <div class="bento-card">
+                <div class="bento-icon">💎</div>
+                <h3>Low Cost</h3>
+                <p>Chỉ từ 1,500đ/phút.</p>
+            </div>
+        </div>
+    </div>
+
+</div>

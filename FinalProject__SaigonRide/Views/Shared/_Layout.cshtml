@@ -8,47 +8,76 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FinalProject__SaiGonRide.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
-
 </head>
-<body>   
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="left-sidebar" class="col-md-2 d-none d-md-block sidebar-dark">
-                <div class="sidebar-sticky">
-                    <h3 class="brand-name">SaiGonRide</h3>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row m-0">
+            <nav id="left-sidebar" class="col-md-2 d-none d-md-flex flex-column sidebar-dark" style="min-height: 100vh; background-color: #0b0d14; border-right: 1px solid rgba(255,255,255,0.05);">
+
+                <div>
+                    <h3 class="brand-name" style="color: #d1f366; font-style: italic; padding: 20px 15px;">SaiGonRide</h3>
                     <ul class="nav flex-column" id="sidebar">
-                        <ul class="nav flex-column" id="sidebar">
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Stations" asp-action="IndexStations">Station</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
-                            </li>
-                            <li>
-                                <a class="nav-link" asp-controller="History" asp-action="IndexHistory">History</a>
-                            </li>
-                            <li>
-                                <a class="nav-link" asp-controller="Setting" asp-action="IndexSetting">Setting</a>
-                            </li>
-                        </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Stations" asp-action="IndexStations">Station</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="History" asp-action="IndexHistory">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Setting" asp-action="IndexSetting">Setting</a>
+                        </li>
                     </ul>
                 </div>
+
+                <div class="sidebar-bottom-actions mt-auto">
+                    <a href="#" class="btn-sidebar-login">Login</a>
+                    <a href="#" class="btn-sidebar-register">Create Account</a>
+                </div>
+
             </nav>
 
-            <main role="main" class="col-md-7 px-md-4 main-content">
-                <partial name="_LoginPartial" />
-                @RenderBody()
+            @{
+                // Lấy cờ từ View. Nếu View không có cờ này, mặc định là false (có cột phải)
+                bool hideRightSidebar = ViewData["HideRightSidebar"] as bool? ?? false;
+
+                // Trái chiếm 2. Nếu ẩn Phải (0) -> Giữa chiếm 10. Nếu hiện Phải (3) -> Giữa chiếm 7.
+                string mainColClass = hideRightSidebar ? "col-md-10" : "col-md-7";
+            }
+
+            <main role="main" class="@mainColClass p-0 main-content d-flex flex-column" style="background: radial-gradient(circle at 30% 30%, #1d2136 0%, #0f111a 70%); min-height: 100vh;">
+
+                <div class="flex-grow-1">
+                    @RenderBody()
+                </div>
+
+                @if (ViewData["Title"]?.ToString() == "Dashboard")
+                {
+                    <footer class="mt-auto py-4 text-center" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div class="container">
+                            <span style="color: var(--text-gray); font-size: 0.9rem;">
+                                &copy; @DateTime.Now.Year SaiGonRide. All rights reserved. <a href="#" style="color: var(--neon-color); text-decoration: none; margin-left: 10px;">Privacy Policy</a>
+                            </span>
+                        </div>
+                    </footer>
+                }
+
             </main>
 
-            <aside id="right-container" class="col-md-3 sidebar-dark">
-                @RenderSection("RightContent", required: false)
-            </aside>
+            @if (!hideRightSidebar)
+            {
+                <aside id="right-container" class="col-md-3 sidebar-dark" style="background-color: #1a1e30; min-height: 100vh;">
+                    @RenderSection("RightContent", required: false)
+                </aside>
+            }
+
         </div>
     </div>
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

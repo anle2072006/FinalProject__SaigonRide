@@ -1,0 +1,488 @@
+@model IEnumerable<FinalProject__SaigonRide.Models.Vehicle>
+@{
+    ViewData["Title"] = "Admin – Vehicles";
+}
+
+@section Styles {
+    <style>
+        /* ── Page header ── */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+        .admin-header h2 {
+            color: #d4ff00;
+            font-weight: 700;
+            font-size: 1.7rem;
+            margin: 0;
+        }
+        .admin-header .subtitle {
+            color: #8a8a9e;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ── Toast / Alert ── */
+        .toast-neon {
+            background: #1B1D2F;
+            border: 1px solid #d4ff00;
+            border-radius: 10px;
+            color: #d4ff00;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast-neon .close-toast {
+            margin-left: auto;
+            cursor: pointer;
+            color: #8a8a9e;
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+
+        /* ── Search bar ── */
+        .search-bar {
+            background: #1B1D2F;
+            border: 1px solid #2c2e3e;
+            border-radius: 10px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 280px;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        .search-bar input::placeholder { color: #8a8a9e; }
+        .search-bar svg { flex-shrink: 0; }
+
+        /* ── Table card ── */
+        .table-card {
+            background: #1B1D2F;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #2c2e3e;
+        }
+        .table-card table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+        }
+        .table-card thead th {
+            background: #141627;
+            color: #8a8a9e;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 16px 20px;
+            font-weight: 600;
+            border-bottom: 1px solid #2c2e3e;
+        }
+        .table-card tbody tr {
+            border-bottom: 1px solid #2c2e3e;
+            transition: background 0.2s;
+        }
+        .table-card tbody tr:last-child { border-bottom: none; }
+        .table-card tbody tr:hover { background: #20223a; }
+        .table-card tbody td {
+            padding: 16px 20px;
+            font-size: 0.92rem;
+            vertical-align: middle;
+        }
+
+        /* ── ID badge ── */
+        .id-badge {
+            background: #2c2e3e;
+            color: #8a8a9e;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+
+        /* ── Price chip ── */
+        .price-chip {
+            background: rgba(212, 255, 0, 0.12);
+            color: #d4ff00;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ── Buttons ── */
+        .btn-neon {
+            background: #d4ff00;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-neon:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-icon {
+            background: #2c2e3e;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon.edit:hover  { background: rgba(212,255,0,0.18); }
+        .btn-icon.delete:hover { background: rgba(255,80,80,0.18); }
+        .btn-icon.edit svg   { stroke: #d4ff00; }
+        .btn-icon.delete svg { stroke: #ff5050; }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8a8a9e;
+        }
+        .empty-state svg { margin-bottom: 16px; opacity: 0.4; }
+        .empty-state p { margin: 0; font-size: 0.95rem; }
+
+        /* ── Modal overlay ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 11, 22, 0.82);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-box {
+            background: #1B1D2F;
+            border: 1px solid #2c2e3e;
+            border-radius: 18px;
+            padding: 32px 36px;
+            width: 100%;
+            max-width: 440px;
+            animation: modalIn 0.25s ease;
+        }
+        @@keyframes modalIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+        .modal-box h4 {
+            color: #d4ff00;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0 0 24px;
+        }
+        .modal-label {
+            color: #8a8a9e;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .modal-input {
+            background: #141627;
+            border: 1px solid #2c2e3e;
+            border-radius: 10px;
+            color: white;
+            padding: 11px 14px;
+            font-size: 0.92rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .modal-input:focus { border-color: #d4ff00; }
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 28px;
+        }
+        .btn-ghost {
+            background: #2c2e3e;
+            border: none;
+            color: #8a8a9e;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-ghost:hover { background: #353649; }
+
+        /* ── Confirm delete modal ── */
+        .confirm-text { color: #c0c0d0; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; }
+        .confirm-text span { color: #d4ff00; font-weight: 600; }
+        .btn-danger {
+            background: #ff5050;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-danger:hover { opacity: 0.85; }
+
+        /* ── Stats bar ── */
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-pill {
+            background: #1B1D2F;
+            border: 1px solid #2c2e3e;
+            border-radius: 12px;
+            padding: 12px 20px;
+            flex: 1;
+        }
+        .stat-pill .label { color: #8a8a9e; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.8px; }
+        .stat-pill .value { color: white; font-size: 1.5rem; font-weight: 700; margin-top: 2px; }
+        .stat-pill .value span { color: #d4ff00; }
+    </style>
+}
+
+@* ── Toast notification ── *@
+@if (TempData["Success"] != null)
+{
+    <div class="toast-neon" id="toastMsg">
+        <svg width="16" height="16" fill="none" stroke="#d4ff00" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        @TempData["Success"]
+        <button class="close-toast" onclick="document.getElementById('toastMsg').remove()">✕</button>
+    </div>
+}
+
+@* ── Header ── *@
+<div class="admin-header">
+    <div>
+        <h2>⚡ Vehicle Management</h2>
+        <div class="subtitle">Quản lý toàn bộ phương tiện trong hệ thống</div>
+    </div>
+    <button class="btn-neon" onclick="openAddModal()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add Vehicle
+    </button>
+</div>
+
+@* ── Stats ── *@
+<div class="stats-bar">
+    <div class="stat-pill">
+        <div class="label">Total Vehicles</div>
+        <div class="value"><span>@Model.Count()</span></div>
+    </div>
+    <div class="stat-pill">
+        <div class="label">Avg Price / Hour</div>
+        <div class="value">
+            <span>
+                @(Model.Any() ? "$" + Model.Average(v => v.PricePerHour).ToString("0.00") : "—")
+            </span>
+        </div>
+    </div>
+    <div class="stat-pill">
+        <div class="label">Highest Price</div>
+        <div class="value">
+            <span>
+                @(Model.Any() ? "$" + Model.Max(v => v.PricePerHour).ToString("0.00") : "—")
+            </span>
+        </div>
+    </div>
+</div>
+
+@* ── Search + Table ── *@
+<div class="search-bar mb-3" style="width:280px">
+    <svg width="16" height="16" fill="none" stroke="#8a8a9e" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search vehicles…" oninput="filterTable()">
+</div>
+
+<div class="table-card">
+    <table id="vehicleTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Vehicle Name</th>
+                <th>Price / Hour</th>
+                <th style="text-align:right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <svg width="48" height="48" fill="none" stroke="#8a8a9e" stroke-width="1.5" viewBox="0 0 24 24">
+                                <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                            </svg>
+                            <p>Chưa có vehicle nào. Nhấn <strong>Add Vehicle</strong> để bắt đầu.</p>
+                        </div>
+                    </td>
+                </tr>
+            }
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td><span class="id-badge">#@v.Id</span></td>
+                    <td>@v.Name</td>
+                    <td><span class="price-chip">$@v.PricePerHour.ToString("0.00") / hr</span></td>
+                    <td style="text-align:right">
+                        <button class="btn-icon edit" title="Edit"
+                                onclick="openEditModal(@v.Id, @Html.Raw(Json.Serialize(v.Name)), @v.PricePerHour)">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-icon delete ms-1" title="Delete"
+                                onclick="openDeleteModal(@v.Id, @Html.Raw(Json.Serialize(v.Name)))">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <polyline points="3 6 5 6 21 6"/><path stroke-linecap="round"
+                                      d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@* ─────────── MODAL: ADD ─────────── *@
+<div class="modal-overlay" id="addModal">
+    <div class="modal-box">
+        <h4>➕ Add New Vehicle</h4>
+        <form method="post" asp-action="CreateVehicle" asp-controller="Admin">
+            @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label class="modal-label">Vehicle Name</label>
+                <input class="modal-input" name="Name" placeholder="e.g. Honda Winner X" required autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label class="modal-label">Price Per Hour ($)</label>
+                <input class="modal-input" name="PricePerHour" type="number" step="0.01" min="0"
+                       placeholder="e.g. 5.50" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+                <button type="submit" class="btn-neon">Save Vehicle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* ─────────── MODAL: EDIT ─────────── *@
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+        <h4>✏️ Edit Vehicle</h4>
+        <form method="post" asp-action="EditVehicle" asp-controller="Admin">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="editId" name="Id">
+            <div class="mb-3">
+                <label class="modal-label">Vehicle Name</label>
+                <input class="modal-input" id="editName" name="Name" required autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label class="modal-label">Price Per Hour ($)</label>
+                <input class="modal-input" id="editPrice" name="PricePerHour" type="number" step="0.01" min="0" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+                <button type="submit" class="btn-neon">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* ─────────── MODAL: DELETE ─────────── *@
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <h4>🗑️ Delete Vehicle</h4>
+        <p class="confirm-text">
+            Bạn có chắc muốn xóa vehicle <span id="deleteVehicleName"></span>?
+            Hành động này <strong>không thể hoàn tác</strong>.
+        </p>
+        <form method="post" asp-action="DeleteVehicle" asp-controller="Admin">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="deleteId" name="id">
+            <div class="modal-footer">
+                <button type="button" class="btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+                <button type="submit" class="btn-danger">Yes, Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ── Modal helpers ──
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+        }
+        function openEditModal(id, name, price) {
+            document.getElementById('editId').value    = id;
+            document.getElementById('editName').value  = name;
+            document.getElementById('editPrice').value = price;
+            document.getElementById('editModal').classList.add('active');
+        }
+        function openDeleteModal(id, name) {
+            document.getElementById('deleteId').value            = id;
+            document.getElementById('deleteVehicleName').textContent = '"' + name + '"';
+            document.getElementById('deleteModal').classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        // Close on backdrop click
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+        });
+
+        // ── Search / filter ──
+        function filterTable() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('#vehicleTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        // ── Auto-dismiss toast ──
+        setTimeout(() => {
+            const t = document.getElementById('toastMsg');
+            if (t) t.remove();
+        }, 4000);
+    </script>
+}
