@@ -1,13 +1,6 @@
 ﻿@using FinalProject__SaigonRide.Models
 @model FinalProject__SaigonRide.Models.PaymentViewModel
 
-@{
-    // 1. XÓA Dictionary cũ. Lấy dữ liệu từ Model (Cần cập nhật PaymentViewModel trước)
-    // 2. Phòng thủ lỗi null cho Model
-    var cost = Model?.EstimatedCost ?? 0m;
-    var roundedCost = Math.Round(cost / 1000m, MidpointRounding.AwayFromZero) * 1000m;
-}
-
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
         <div class="modal-content" style="background-color: transparent; border: none;">
@@ -19,29 +12,29 @@
 
                 <h2 class="text-neon text-center mt-0">PAYMENT</h2>
 
-                <!-- Customer Info & Order Summary giữ nguyên -->
+                <!-- Thông tin khách hàng -->
                 <div class="section-card">
                     <h3 class="section-title text-neon">Customer Information</h3>
                     <div class="grid-2">
-                        <div class="grid-item"><span>First Name:</span> Van A</div>
-                        <div class="grid-item"><span>Last Name:</span> Nguyen</div>
-                        <div class="grid-item"><span>Email:</span> User@Gmail.Com</div>
-                        <div class="grid-item"><span>Phone:</span> 0987654321</div>
+                        <div class="grid-item"><span>First Name:</span> @Model.FirstName</div>
+                        <div class="grid-item"><span>Last Name:</span> @Model.LastName</div>
+                        <div class="grid-item"><span>Email:</span> @Model.Email</div>
+                        <div class="grid-item"><span>Phone:</span> @Model.Phone</div>
                     </div>
                 </div>
 
+                <!-- Tóm tắt đơn hàng -->
                 <div class="section-card">
                     <h3 class="section-title text-neon">Order Summary</h3>
                     <div class="grid-2">
-                        <div class="grid-item"><span>Pickup:</span> Ben Thanh</div>
-                        <div class="grid-item"><span>Drop-off:</span> Ba Son</div>
-                        <div class="grid-item"><span>Vehicles:</span> electric scooter</div>
-                        <!-- Cập nhật ID để JS nhận diện đúng số tiền gốc -->
-                        <span id="originalCostText" data-cost="@roundedCost">@roundedCost.ToString("#,##0") VND</span>
+                        <div class="grid-item"><span>Pickup:</span> @Model.PickupStation</div>
+                        <div class="grid-item"><span>Drop-off:</span> @Model.DropoffStation</div>
+                        <div class="grid-item"><span>Vehicle:</span> @Model.RentedVehicle</div>
+                        <span id="originalCostText" data-cost="0" class="text-white">0 VND</span>
                     </div>
                 </div>
 
-                <!-- 3. PHẦN COUPON: Lấy từ Database -->
+                <!-- Mã giảm giá -->
                 <div class="section-card">
                     <h3 class="section-title text-neon">Apply Coupon</h3>
                     <div class="coupon-flex">
@@ -57,108 +50,129 @@
                         </select>
                         <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
                     </div>
-
-                    <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
-                        Please choose a discount coupon!
-                    </div>
-                    <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
+                    <div id="couponMsg" class="coupon-msg" style="display: none; color: #d4ff00; margin-top: 10px; font-weight: bold;"></div>
                 </div>
 
-                <!-- Payment Methods giữ nguyên -->
+                <!-- CHỌN PHƯƠNG THỨC THANH TOÁN -->
                 <div class="section-card" style="width: 100%;">
                     <h3 class="section-title text-neon">Payment Method</h3>
-                    <div class="payment-methods">
-                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" width="50" alt="PayPal" /></div>
-                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" width="45" alt="Visa" /></div>
-                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="35" alt="MoMo" /></div>
-                        <div class="pm-logo"><img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418186387.png" width="55" alt="VNPay" /></div>
+                    <div class="payment-methods" id="methodSelector">
+                        <div class="pm-logo" data-method="PayPal" title="PayPal"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" width="50" alt="PayPal" /></div>
+                        <div class="pm-logo" data-method="Visa" title="Visa Card"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" width="45" alt="Visa" /></div>
+                        <div class="pm-logo" data-method="MoMo" title="Ví MoMo"><img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="35" alt="MoMo" /></div>
+                        <div class="pm-logo" data-method="VNPay" title="VNPay QR"><img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418186387.png" width="55" alt="VNPay" /></div>
                     </div>
+                    <div id="methodErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; margin-top: 5px;">Vui lòng chọn một phương thức thanh toán!</div>
                 </div>
 
-                <div class="footer-flex">
-                    <div class="total-text">
-                        Total: <span id="totalDisplay" class="text-neon">@roundedCost.ToString("#,##0") VND</span>
+                <!-- Form gửi dữ liệu -->
+                <form asp-controller="InUse" asp-action="ProcessPayment" method="post" id="paymentForm">
+                    <input type="hidden" name="finalTime" id="hiddenFinalTime" />
+                    <input type="hidden" name="finalDistance" id="hiddenFinalDistance" />
+                    <input type="hidden" name="finalCost" id="hiddenFinalCost" />
+                    <input type="hidden" name="paymentMethod" id="hiddenPaymentMethod" value="" />
+
+                    <div class="footer-flex">
+                        <div class="total-text">
+                            Total: <span id="totalDisplay" class="text-neon">0 VND</span>
+                        </div>
+                        <button type="submit" id="btnConfirmPayment" class="btn-neon" style="padding: 12px 25px;">
+                            Confirm Payment
+                        </button>
                     </div>
-                    <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ĐÃ GỘP LẠI THÀNH 1 ĐOẠN SCRIPT DUY NHẤT & CHUẨN XÁC -->
+<style>
+    /* Style để làm nổi bật logo khi được chọn */
+    .pm-logo {
+        cursor: pointer;
+        padding: 10px;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .pm-logo:hover { background: rgba(212, 255, 0, 0.05); }
+    .pm-logo.active {
+        border-color: #d4ff00;
+        background: rgba(212, 255, 0, 0.1);
+        box-shadow: 0 0 10px rgba(212, 255, 0, 0.3);
+    }
+</style>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var select = document.getElementById("couponSelect");
-        var btnApply = document.getElementById("btnApplyCoupon");
-        var msg = document.getElementById("couponMsg");
-        var errorMsg = document.getElementById("couponErrorMsg");
-        
-        var totalDisplay = document.getElementById("totalDisplay");
-        var costElement = document.getElementById("originalCostText");
-        
-        // Bảo vệ JS không bị sập nếu thiếu HTML
-        if (!select || !btnApply || !costElement || !totalDisplay) return;
+        const select = document.getElementById("couponSelect");
+        const btnApply = document.getElementById("btnApplyCoupon");
+        const msg = document.getElementById("couponMsg");
+        const totalDisplay = document.getElementById("totalDisplay");
+        const costElement = document.getElementById("originalCostText");
+        const hiddenCostInput = document.getElementById("hiddenFinalCost");
+        const hiddenMethodInput = document.getElementById("hiddenPaymentMethod");
 
-        var baseCost = parseInt(costElement.getAttribute("data-cost"));
-
-        function lamTronTien(soTien) {
-            return Math.round(soTien / 1000) * 1000;
+        // 1. LOGIC LÀM TRÒN ĐẾN HÀNG NGHÌN (VND)
+        function lamTronTien(amount) {
+            return Math.round(amount / 1000) * 1000;[cite: 4]
         }
 
-        function resetCouponState() {
-            select.value = "0";
-            btnApply.innerText = "Apply";
-            btnApply.style.backgroundColor = "#cbfb45";
-            btnApply.style.color = "#1a1b2f";
-            msg.style.display = "none";
-            errorMsg.style.display = "none";
-            totalDisplay.innerText = lamTronTien(baseCost).toLocaleString("vi-VN") + " VND";
+        function getLiveCost() {
+            return parseFloat(costElement.getAttribute("data-cost")) || 0;
         }
 
+        function formatVND(amount) {
+            return lamTronTien(amount).toLocaleString("vi-VN") + " VND";
+        }
+
+        // 2. LOGIC CHỌN NGÂN HÀNG
+        document.querySelectorAll(".pm-logo").forEach(logo => {
+            logo.addEventListener("click", function() {
+                document.querySelectorAll(".pm-logo").forEach(l => l.classList.remove("active"));
+                this.classList.add("active");
+                hiddenMethodInput.value = this.getAttribute("data-method");
+                document.getElementById("methodErrorMsg").style.display = "none";
+            });
+        });
+
+        // 3. LOGIC APPLY COUPON
         btnApply.addEventListener("click", function () {
-            if (btnApply.innerText.trim() === "Applied") {
-                resetCouponState();
-                return;
-            }
+            const liveCost = getLiveCost();
+            const discount = parseFloat(select.value) || 0;
 
-            var discountValue = parseInt(select.value);
-            
-            if (!isNaN(discountValue) && discountValue > 0) {
-                var couponText = select.options[select.selectedIndex].text;
-                
+            if (liveCost > 0 && discount > 0) {
                 btnApply.innerText = "Applied";
                 btnApply.style.backgroundColor = "#ff4d4d";
-                btnApply.style.color = "#ffffff";
                 
-                msg.innerText = "Using " + couponText;
-                msg.style.display = "block";
-                errorMsg.style.display = "none";
+                let finalTotal = liveCost - discount;
+                if (finalTotal < 0) finalTotal = 0;
 
-                var finalTotal = lamTronTien(baseCost - discountValue);
-                totalDisplay.innerText = finalTotal.toLocaleString("vi-VN") + " VND";
-            } else {
-                errorMsg.style.display = "block";
-                msg.style.display = "none";
+                msg.innerText = "Coupon applied successfully!";
+                msg.style.display = "block";
+                
+                const roundedFinal = lamTronTien(finalTotal);
+                totalDisplay.innerText = roundedFinal.toLocaleString("vi-VN") + " VND";
+                hiddenCostInput.value = roundedFinal;
             }
         });
 
-        // Đã sửa sự kiện Change: Chỉ reset UI, không can thiệp vào select.value
-        select.addEventListener("change", function () {
-            btnApply.innerText = "Apply";
-            btnApply.style.backgroundColor = "#cbfb45";
-            btnApply.style.color = "#1a1b2f";
-            msg.style.display = "none";
-            errorMsg.style.display = "none";
-            totalDisplay.innerText = lamTronTien(baseCost).toLocaleString("vi-VN") + " VND";
+        // Khi người dùng bấm nút xác nhận cuối cùng
+        document.getElementById("paymentForm").addEventListener("submit", function(e) {
+            if (!hiddenMethodInput.value) {
+                e.preventDefault();
+                document.getElementById("methodErrorMsg").style.display = "block";
+            } else {
+                localStorage.removeItem('saigonRide_startTime'); // Xóa timer khi xong
+            }
         });
 
-        var paymentModal = document.getElementById("paymentModal");
-        if (paymentModal) {
-            paymentModal.addEventListener("hidden.bs.modal", function () {
-                resetCouponState();
-            });
-        }
+        // Cập nhật giá trị hiển thị ban đầu khi mở Modal
+        const observer = new MutationObserver(() => {
+            const live = getLiveCost();
+            totalDisplay.innerText = formatVND(live);
+            hiddenCostInput.value = lamTronTien(live);
+        });
+        observer.observe(costElement, { attributes: true });
     });
 </script>
-

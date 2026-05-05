@@ -1,35 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FinalProject__SaigonRide.Data;
-using FinalProject__SaigonRide.Models;
-
+using FinalProject__SaigonRide.Models; 
 namespace FinalProject__SaigonRide.Controllers
 {
     public class InUseController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public InUseController(ApplicationDbContext context)
+        [HttpPost]
+        public IActionResult StartTrip(string stationId, string vehicleId)
         {
-            _context = context;
+            return RedirectToAction("IndexInUse");
         }
 
-        public async Task<IActionResult> IndexInUse()
+        public IActionResult IndexInUse()
         {
-            // 1. Lấy danh sách Coupon còn hạn từ SQL Server
-            var listCoupons = await _context.Coupons
-                .Where(c => c.IsActive && c.Quantity > 0)
-                .ToListAsync();
+            // Tạo một model rỗng để cung cấp "chất liệu" cho trang View và cái Modal
+            var paymentModel = new PaymentViewModel();
 
-            // 2. Tạo Model và nạp dữ liệu vào
-            var viewModel = new PaymentViewModel
-            {
-                EstimatedCost = 67777, // Số tiền bạn đang để ở View
-                AvailableCoupons = listCoupons // Chuyền danh sách từ DB sang
-            };
-
-            // 3. QUAN TRỌNG: Phải truyền viewModel vào trong View()
-            return View(viewModel);
+            // Truyền model đó sang View
+            return View(paymentModel);
         }
     }
 }

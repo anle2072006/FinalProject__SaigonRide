@@ -2,45 +2,145 @@
 
 @{
     ViewData["Title"] = "In Use";
-    // Giá trị double cho EstimatedCost theo yêu cầu của bạn
-    decimal currentCost = 67777;
+    // Mình có thể bỏ biến currentCost ở đây đi vì tiền giờ sẽ được tính bằng JS
 }
 
-<div class="inuse-page-wrapper">
-    <!-- CỘT CHÍNH: Hiển thị hành trình -->
-    <div class="inuse-main-section">
-        <h5 class="breadcrumb-text">In use</h5>
+@section Styles {
+    <link rel="stylesheet" href="~/css/inuse.css" asp-append-version="true" />
+    
+    <!-- CSS CHO MODAL SUCCESS NHÚNG TRỰC TIẾP -->
+    <style>
+        /* Phủ mờ background khi hiện modal */
+        #paymentSuccessModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none; /* Ẩn mặc định */
+            justify-content: center;
+            align-items: center;
+            z-index: 10000; /* Nằm trên cùng */
+        }
 
-        <!-- KHU VỰC RIDER: Ảnh người lái xe trên đường tông xanh lam -->
-        <div class="rider-display-box">
-            <div class="blue-mono-filter">
-                <img src="https://images.unsplash.com/photo-1620330101487-73595fd0007e?q=80&w=1000"
-                     alt="Rider on road" class="rider-img" />
-                <div class="road-lanes"></div>
-            </div>
+        /* Hộp thoại chính */
+        .success-modal-content {
+            background-color: #1b1c26; /* Màu nền tối xanh đậm */
+            border-radius: 16px;
+            padding: 30px 40px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: sans-serif;
+        }
+
+            /* Tiêu đề Notification */
+            .success-modal-content .modal-title {
+                color: #ccff33; /* Xanh neon */
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 35px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            /* Phần chữ và icon nằm ngang */
+            .success-modal-content .modal-body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                margin-bottom: 40px;
+                padding: 0;
+            }
+
+            .success-modal-content .check-icon {
+                width: 35px;
+                height: 35px;
+            }
+
+            .success-modal-content .success-text {
+                color: #ccff33;
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+        /* Nút Close */
+        .btn-close-modal {
+            background-color: #ccff33;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+            .btn-close-modal:hover {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+    </style>
+}
+
+<!-- ==========================================
+     PHẦN NÀY SẼ NẰM Ở CỘT GIỮA (col-md-7)
+     ========================================== -->
+<div class="inuse-main-section">
+
+    <!-- KHU VỰC BẢN ĐỒ -->
+    <div class="rider-display-box">
+        <!-- Chỗ này bạn bỏ thẻ img hoặc iframe bản đồ Google Maps vào nhé -->
+        <img src="~/images/map-placeholder.png" alt="Map" class="rider-img" style="background-color: white;" />
+    </div>
+
+    <!-- BẢNG THÔNG SỐ CHUYẾN ĐI -->
+    <div class="ride-stats-card">
+        <div class="stat-group">
+            <p><span class="label">Usage Time:</span> <span class="val" id="usageTimeDisplay">00 : 00 : 00</span></p>
+            <p><span class="label">Distance Traveled:</span> <span class="val" id="distanceDisplay">0.00 km</span></p>
         </div>
-
-        <!-- BẢNG THÔNG SỐ CHUYẾN ĐI -->
-        <div class="ride-stats-card">
-            <div class="stat-group">
-                <p><span class="label">Usage Time:</span> <span class="val">01 : 07 : 06</span></p>
-                <p><span class="label">Distance Traveled:</span> <span class="val">67.67 km</span></p>
-            </div>
-            <div class="stat-group">
-                <p><span class="label">Battery Remaining:</span> <span class="val neon">67%</span></p>
-                <p><span class="label">Estimated Cost:</span> <span class="val">@currentCost.ToString("#,##0") VND</span></p>
-            </div>
-        </div>
-
-        <!-- NÚT THANH TOÁN (Đã gộp từ code của bạn) -->
-        <div class="action-footer">
-            <button type="button" class="btn-main-action" data-bs-toggle="modal" data-bs-target="#paymentModal">
-                Thanh toán
-            </button>
+        <div class="stat-group">
+            <p><span class="label">Battery Remaining:</span> <span class="val neon">67%</span></p>
+            <p><span class="label">Estimated Cost:</span> <span class="val" id="estimatedCostDisplay">0 VND</span></p>
         </div>
     </div>
 
-    <!-- CỘT PHỤ: Thông tin trạm và xe -->
+    <!-- NÚT THANH TOÁN -->
+    <div class="action-footer">
+        <button type="button" id="btnFinishTrip" class="btn-main-action" data-bs-toggle="modal" data-bs-target="#paymentModal">
+            Finished Trip
+        </button>
+    </div>
+</div>
+
+<!-- NHÚNG MODAL THANH TOÁN CỦA BOOTSTRAP -->
+<partial name="/Views/Payment/_PaymentModal.cshtml" model="Model" />
+
+<!-- MODAL THÔNG BÁO THÀNH CÔNG (CUSTOM) -->
+<div id="paymentSuccessModal">
+    <div class="success-modal-content">
+        <h3 class="modal-title">NOTIFICATION</h3>
+        
+        <div class="modal-body">
+            <svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#ccff33" stroke-width="2" />
+                <path d="M8 12L11 15L16 9" stroke="#ccff33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="success-text">payment successfully !</span>
+        </div>
+
+        <button id="closeSuccessModal" class="btn-close-modal">close</button>
+    </div>
+</div>
+
+<!-- ==========================================
+     PHẦN NÀY SẼ BAY SANG CỘT PHẢI (col-md-3)
+     ========================================== -->
+@section RightContent {
     <div class="inuse-side-panel">
         <div class="side-widget">
             <p class="widget-label">Selected Station:</p>
@@ -53,7 +153,7 @@
             </div>
         </div>
 
-        <div class="side-widget">
+        <div class="side-widget mt-4">
             <p class="widget-label">Current Vehicle:</p>
             <div class="mini-info-box">
                 <div class="icon-bg"><i class="bi bi-bicycle"></i></div>
@@ -61,8 +161,125 @@
             </div>
         </div>
     </div>
-</div>
+}
 
-<!-- NHÚNG MODAL THANH TOÁN -->
-<partial name="/Views/Payment/_PaymentModal.cshtml" model="Model" />
+<!-- ==========================================
+     PHẦN NÀY DÙNG ĐỂ CHẠY LOGIC ĐỒNG HỒ & TÍNH TIỀN
+     ========================================== -->
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let startTime = localStorage.getItem('saigonRide_startTime');
+            if (!startTime) {
+                startTime = Date.now();
+                localStorage.setItem('saigonRide_startTime', startTime);
+            }
 
+            const timeDisplay = document.getElementById('usageTimeDisplay');
+            const distanceDisplay = document.getElementById('distanceDisplay');
+            const costDisplay = document.getElementById('estimatedCostDisplay');
+
+            const costPerSecond = 25;
+            let timerInterval;
+
+            function updateDashboard() {
+                const now = Date.now();
+                const diffInSeconds = Math.floor((now - startTime) / 1000);
+
+                const hours = String(Math.floor(diffInSeconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((diffInSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(diffInSeconds % 60).padStart(2, '0');
+                const formattedTime = `${hours} : ${minutes} : ${seconds}`;
+                
+                const distanceKm = (diffInSeconds * 0.001).toFixed(2);
+                const currentCost = diffInSeconds * costPerSecond;
+
+                timeDisplay.innerText = formattedTime;
+                distanceDisplay.innerText = `${distanceKm} km`;
+                costDisplay.innerText = `${currentCost.toLocaleString('vi-VN')} VND`;
+
+                try {
+                    const hiddenTime = document.getElementById('hiddenFinalTime');
+                    const hiddenDistance = document.getElementById('hiddenFinalDistance');
+                    const hiddenCost = document.getElementById('hiddenFinalCost');
+                    
+                    if(hiddenTime) hiddenTime.value = formattedTime;
+                    if(hiddenDistance) hiddenDistance.value = distanceKm;
+                    if(hiddenCost) hiddenCost.value = currentCost;
+                } catch (e) {}
+            }
+
+            updateDashboard();
+            timerInterval = setInterval(updateDashboard, 1000);
+
+            // KHI BẤM NÚT "FINISHED TRIP" (Mở modal thanh toán)
+            const btnFinishTrip = document.getElementById('btnFinishTrip');
+            if(btnFinishTrip) {
+                btnFinishTrip.addEventListener('click', function() {
+                    clearInterval(timerInterval); // Dừng đồng hồ
+
+                    const now = Date.now();
+                    const diffInSeconds = Math.floor((now - startTime) / 1000);
+                    const finalCost = diffInSeconds * costPerSecond;
+                    const roundedFinalCost = Math.round(finalCost / 1000) * 1000;
+
+                    const modalOriginalCost = document.getElementById('originalCostText');
+                    const modalTotalDisplay = document.getElementById('totalDisplay');
+
+                    if(modalOriginalCost) {
+                        modalOriginalCost.setAttribute('data-cost', finalCost);
+                        modalOriginalCost.innerText = roundedFinalCost.toLocaleString('vi-VN') + ' VND';
+                    }
+
+                    if(modalTotalDisplay) {
+                        modalTotalDisplay.innerText = roundedFinalCost.toLocaleString('vi-VN') + ' VND';
+                    }
+                });
+            }
+
+            // =========================================================
+            // LOGIC BẬT MODAL SUCCESS KHI BẤM "CONFIRM PAYMENT"
+            // =========================================================
+            // LƯU Ý: Nút này nằm trong _PaymentModal.cshtml, đảm bảo id của nút là "btnConfirmPayment"
+            const btnConfirmPayment = document.getElementById('btnConfirmPayment');
+            if(btnConfirmPayment) {
+                btnConfirmPayment.addEventListener('click', function(e) {
+                    e.preventDefault(); // Ngăn form tự reload trang
+
+                    // 1. Tắt Modal Payment của Bootstrap (nếu có)
+                    const paymentModalEl = document.getElementById('paymentModal');
+                    if (paymentModalEl) {
+                        const modalInstance = bootstrap.Modal.getInstance(paymentModalEl);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+
+                    // 2. Xóa đồng hồ
+                    clearLocalTimer();
+
+                    // 3. Hiện popup Success neon của ông lên
+                    document.getElementById('paymentSuccessModal').style.display = 'flex';
+                });
+            }
+
+            // =========================================================
+            // LOGIC KHI BẤM NÚT "CLOSE" TRONG MODAL SUCCESS
+            // =========================================================
+            const btnCloseSuccess = document.getElementById('closeSuccessModal');
+            if(btnCloseSuccess) {
+                btnCloseSuccess.addEventListener('click', function() {
+                    // Tắt modal success
+                    document.getElementById('paymentSuccessModal').style.display = 'none';
+                    
+                    // Chuyển hướng về trang chủ hoặc lịch sử (Ông tự đổi link '/Home/Index' thành link ông muốn)
+                    window.location.href = '/Home/Index';
+                });
+            }
+        });
+
+        function clearLocalTimer() {
+            localStorage.removeItem('saigonRide_startTime');
+        }
+    </script>
+}
