@@ -1,4 +1,6 @@
-﻿@{
+﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
+
+@{
     ViewData["Title"] = "In Use";
     // Giá trị double cho EstimatedCost theo yêu cầu của bạn
     decimal currentCost = 67777;
@@ -62,4 +64,5 @@
 </div>
 
 <!-- NHÚNG MODAL THANH TOÁN -->
-<partial name="~/Views/Payment/_PaymentModal.cshtml" model="new FinalProject__SaigonRide.Models.PaymentViewModel { EstimatedCost = currentCost }" />
+<partial name="/Views/Payment/_PaymentModal.cshtml" model="Model" />
+

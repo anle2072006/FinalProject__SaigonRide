@@ -12,5 +12,6 @@
         public decimal EstimatedCost { get; set; } = 67677;
         public decimal Discount { get; set; } = 15000;
         public decimal Total => EstimatedCost - Discount;
+        public List<Coupon>? AvailableCoupons { get; set; }
     }
 }

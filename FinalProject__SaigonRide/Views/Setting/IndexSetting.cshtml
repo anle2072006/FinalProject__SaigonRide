@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<Coupon>
+@{
     ViewData["Title"] = "Settings";
 }
 
@@ -124,10 +125,32 @@
                 <span>Payment Methods</span>
                 <span class="arrow">&gt;</span>
             </div>
-            <div class="menu-item">
+
+            <!-- Sửa: Bỏ data-bs-toggle để không hiện Modal, thêm id để bắt sự kiện JS -->
+            <div class="menu-item" id="toggleCouponList" style="cursor: pointer;">
                 <span>Coupon</span>
-                <span class="menu-value">3 <span class="arrow">&gt;</span></span>
+                <span class="menu-value">
+                    @(Model?.Count ?? 0) <span class="arrow" id="couponArrow">&gt;</span>
+                </span>
             </div>
+
+            <!-- Thêm vùng hiện danh sách Coupon ẩn -->
+            <div id="couponListDisplay" style="display: none; padding: 10px; background: #1a1b2f; border-radius: 8px; margin-top: 5px;">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var cp in Model)
+                    {
+                        <div style="border-bottom: 1px solid #333; padding: 5px 0; color: #cbfb45;">
+                            <strong>@cp.Code</strong>: -@cp.DiscountValue.ToString("#,##0") VND
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p style="color: #666; font-size: 0.9rem;">No coupons available.</p>
+                }
+            </div>
+
             <div class="menu-item">
                 <span>Integral Mall</span>
                 <span class="menu-value">4500 <span class="arrow">&gt;</span></span>
@@ -139,3 +162,20 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/settings.css" asp-append-version="true" />
 }
+@section Scripts {
+    <script>
+        // Hiệu ứng bấm vào Coupon thì hiện danh sách ngay bên dưới
+        $('#toggleCouponList').click(function() {
+            $('#couponListDisplay').slideToggle();
+            // Xoay cái mũi tên cho đẹp
+            $('#couponArrow').toggleClass('rotate-90');
+        });
+    </script>
+}
+
+@* Truyền danh sách Coupon vào AvailableCoupons của ViewModel để Modal hiển thị được *@
+<partial name="/Views/Payment/_PaymentModal.cshtml" 
+         model='new FinalProject__SaigonRide.Models.PaymentViewModel { 
+                    AvailableCoupons = Model, 
+                    EstimatedCost = 2500 
+                }' />

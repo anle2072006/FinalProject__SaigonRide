@@ -1,14 +1,11 @@
-﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
-@{
-    var danhSachPhieu = new Dictionary<int, string>
-    {
-        { 10000, "Coupon A (-10.000 VND)" },
-        { 5000, "Coupon B (-5.000 VND)" },
-        { 20000, "Coupon for new customer (-20.000 VND)" }
-    };
+﻿@using FinalProject__SaigonRide.Models
+@model FinalProject__SaigonRide.Models.PaymentViewModel
 
-    // Đã thêm 'm' để tương thích tuyệt đối với kiểu dữ liệu tiền tệ (decimal)
-    var roundedCost = Math.Round(Model.EstimatedCost / 1000m, MidpointRounding.AwayFromZero) * 1000m;
+@{
+    // 1. XÓA Dictionary cũ. Lấy dữ liệu từ Model (Cần cập nhật PaymentViewModel trước)
+    // 2. Phòng thủ lỗi null cho Model
+    var cost = Model?.EstimatedCost ?? 0m;
+    var roundedCost = Math.Round(cost / 1000m, MidpointRounding.AwayFromZero) * 1000m;
 }
 
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
@@ -16,13 +13,13 @@
         <div class="modal-content" style="background-color: transparent; border: none;">
             
             <div class="payment-container">
-                <!-- Nút X để đóng -->
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <h2 class="text-neon text-center mt-0">PAYMENT</h2>
 
+                <!-- Customer Info & Order Summary giữ nguyên -->
                 <div class="section-card">
                     <h3 class="section-title text-neon">Customer Information</h3>
                     <div class="grid-2">
@@ -39,19 +36,23 @@
                         <div class="grid-item"><span>Pickup:</span> Ben Thanh</div>
                         <div class="grid-item"><span>Drop-off:</span> Ba Son</div>
                         <div class="grid-item"><span>Vehicles:</span> electric scooter</div>
+                        <!-- Cập nhật ID để JS nhận diện đúng số tiền gốc -->
                         <span id="originalCostText" data-cost="@roundedCost">@roundedCost.ToString("#,##0") VND</span>
                     </div>
                 </div>
 
-                <!-- Apply Coupon -->
+                <!-- 3. PHẦN COUPON: Lấy từ Database -->
                 <div class="section-card">
                     <h3 class="section-title text-neon">Apply Coupon</h3>
                     <div class="coupon-flex">
                         <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
                             <option value="0" disabled selected hidden>Select coupon</option>
-                            @foreach (var phieu in danhSachPhieu)
+                            @if (Model?.AvailableCoupons != null)
                             {
-                                <option value="@phieu.Key">@phieu.Value</option>
+                                foreach (var cp in Model.AvailableCoupons)
+                                {
+                                    <option value="@cp.DiscountValue">@cp.Code (-@cp.DiscountValue.ToString("#,##0") VND)</option>
+                                }
                             }
                         </select>
                         <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
@@ -60,10 +61,10 @@
                     <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
                         Please choose a discount coupon!
                     </div>
-
                     <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
                 </div>
 
+                <!-- Payment Methods giữ nguyên -->
                 <div class="section-card" style="width: 100%;">
                     <h3 class="section-title text-neon">Payment Method</h3>
                     <div class="payment-methods">
@@ -81,7 +82,6 @@
                     <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -161,3 +161,4 @@
         }
     });
 </script>
+
