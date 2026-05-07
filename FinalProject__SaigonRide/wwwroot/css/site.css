@@ -31,7 +31,7 @@ html, body {
 }
 
 .main-content, #main-frame {
-    background-color: #0d111d; /* Đã đồng bộ màu nền tối chung cho mọi trang */
+    background-color: #0d111d;
     min-height: 100vh;
     padding: 30px;
     position: relative;
@@ -84,7 +84,6 @@ html, body {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-/* Gộp chung tất cả cấu hình của nút Neon */
 .btn-neon {
     background-color: #cbfb45;
     color: #1a1b2f;
@@ -166,6 +165,19 @@ html, body {
         white-space: nowrap !important;
     }
 
+.dashboard-user-greeting {
+    position: absolute !important;
+    top: 30px !important;
+    right: 40px !important;
+    color: #d4ff00 !important;
+    font-weight: 900 !important;
+    font-size: 16px !important;
+    text-transform: uppercase !important;
+    z-index: 9999 !important;
+    letter-spacing: 1px;
+    pointer-events: none;
+}
+
 @media (max-width: 992px) {
     .auth-top-corner {
         top: 20px;
@@ -175,356 +187,7 @@ html, body {
 }
 
 /* =========================================
-   5. LOGIN & REGISTER PAGES
-   ========================================= */
-.full-page-wrapper {
-    transform: scale(1.2);
-    min-height: 100vh;
-    background-color: var(--bg-gray);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.main-card {
-    background-color: #ffffff;
-    width: 1100px;
-    max-width: 100%;
-    min-height: 600px;
-    border-radius: 40px;
-    overflow: hidden;
-    display: flex;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-}
-
-.welcome-dark-panel {
-    background-color: var(--primary-dark);
-    color: var(--neon-yellow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-    flex: 1; /* Đảm bảo chia đều 50/50 với phần Form */
-}
-
-/* Bo góc bên TRÁI cho trang Register */
-.regis-welcome-half {
-    border-top-left-radius: 250px;
-    border-bottom-left-radius: 250px;
-}
-
-/* Bo góc bên PHẢI cho trang Login */
-.login-welcome-half {
-    border-top-right-radius: 250px !important;
-    border-bottom-right-radius: 250px !important;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-    flex: 1; /* Đảm bảo chia đúng 50%[cite: 2] */
-}
-
-.side-welcome h1 {
-    font-size: 40px;
-}
-
-.bike-icon i {
-    display: inline-block;
-    font-size: 100px !important;
-    margin-top: -50px;
-}
-
-.lightning-bolt i {
-    display: inline-block;
-    transform: translateY(-50px) rotate(90deg) scaleY(1.4);
-}
-
-/* Register Specific */
-.regis-form-half, .side-login {
-    flex: 1;
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: #ffffff;
-}
-
-.regis-welcome-half {
-    flex: 1;
-    border-top-left-radius: 250px;
-    border-bottom-left-radius: 250px;
-}
-
-.side-welcome.login-welcome {
-    border-top-right-radius: 250px;
-    border-bottom-right-radius: 250px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.regis-title, .login-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--primary-dark);
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.login-link-wrapper, .register-link-wrapper {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 30px;
-}
-
-.login-link, .register-link {
-    color: var(--primary-dark);
-    font-weight: bold;
-    text-decoration: none;
-    border-bottom: 2px solid var(--neon-yellow);
-}
-
-.btn-register-action, .btn-login-action {
-    background-color: var(--primary-dark);
-    color: var(--neon-yellow);
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    width: 100%;
-}
-
-    .btn-register-action:hover, .btn-login-action:hover {
-        color: var(--neon-yellow) !important;
-        opacity: 0.9;
-    }
-
-/* =========================================
-   6. PAYMENT POPUP MODAL
-   ========================================= */
-.payment-container {
-    background-color: #1a1b2f;
-    color: #ffffff;
-    width: 100%;
-    padding: 20px 40px 40px 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.text-neon {
-    color: #cbfb45;
-}
-
-.payment-container h2 {
-    font-weight: bold;
-    letter-spacing: 1px;
-    margin-bottom: 25px;
-}
-
-.section-card {
-    background-color: #161625;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.section-title {
-    font-size: 0.95rem;
-    font-weight: bold;
-    margin-bottom: 15px;
-    margin-top: 0;
-}
-
-.grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 15px;
-    column-gap: 20px;
-    font-size: 0.85rem;
-}
-
-.grid-item span {
-    font-weight: bold;
-    color: #e0e0e0;
-}
-
-.coupon-flex {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
-.coupon-input {
-    flex: 1;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: none;
-    background-color: #e0e0e0;
-    outline: none;
-    font-weight: bold;
-    color: #333;
-}
-
-    .coupon-input:invalid {
-        color: #888888;
-        font-weight: normal;
-    }
-
-.coupon-msg {
-    color: #00e676;
-}
-
-.payment-methods {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.pm-logo {
-    background-color: #ffffff;
-    width: 70px;
-    height: 45px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.7rem;
-    color: #000;
-    font-weight: bold;
-}
-
-.footer-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 30px;
-}
-
-.total-text {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-/* =========================================
-   7. STATION MODULE
-   ========================================= */
-.header {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 40px;
-    gap: 15px;
-}
-
-    .header input {
-        background-color: #1a1e30;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 20px;
-        color: white;
-        width: 400px;
-        outline: none;
-    }
-
-        .header input::placeholder {
-            color: #666a80;
-        }
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
-
-.card {
-    background-color: #1a1e30;
-    border-radius: 16px;
-    padding: 15px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-}
-
-    .card img {
-        width: 140px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 10px;
-        flex-shrink: 0;
-    }
-
-    .card .info {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: left;
-    }
-
-        .card .info h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.1rem;
-            font-weight: normal;
-            color: #ffffff;
-            font-family: serif;
-        }
-
-        .card .info p {
-            margin: 0;
-            color: #8b8e9f;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-            .card .info p::before {
-                content: '•';
-                color: #ff3b3b;
-                font-size: 1.5rem;
-                line-height: 0.5;
-            }
-
-/* =========================================
-   8. HISTORY TABLE
-   ========================================= */
-.table-container {
-    background-color: transparent;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.history-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    color: #333;
-}
-
-    .history-table th {
-        background-color: #f8f9fa;
-        padding: 16px 20px;
-        font-weight: bold;
-        font-size: 0.95rem;
-    }
-
-    .history-table td {
-        padding: 16px 20px;
-        font-size: 0.9rem;
-    }
-
-.row-gray {
-    background-color: #e9ebf0;
-}
-
-.row-white {
-    background-color: #ffffff;
-}
-
-/* =========================================
-   9. RIGHT PANEL (Calendar & Stats)
+   5. RIGHT PANEL (Calendar & Stats)
    ========================================= */
 .right-panel-wrapper {
     display: flex;
@@ -664,373 +327,142 @@ html, body {
 }
 
 /* =========================================
-   10. SETTINGS & PROFILE MODULE
+   6. PAYMENT POPUP MODAL
    ========================================= */
-.settings-wrapper {
-    display: grid;
-    grid-template-columns: 280px 1fr 300px;
-    gap: 25px;
-    padding: 30px;
-    background-color: #0d111d;
-    min-height: 100vh;
-    font-family: sans-serif;
-    color: #1a1e30;
-}
-
-.st-card {
-    background-color: #e9ebf0;
-    border-radius: 16px;
-    padding: 25px;
-    margin-bottom: 20px;
-}
-
-.st-card-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 0 0 15px 0;
-}
-
-.mt-4 {
-    margin-top: 20px;
-}
-
-.mt-5 {
-    margin-top: 40px;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.h-100 {
-    height: 100%;
-    box-sizing: border-box;
-}
-
-.profile-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-}
-
-.profile-name {
-    margin: 0 0 5px 0;
-    font-size: 1.2rem;
-}
-
-.profile-email {
-    margin: 0;
-    color: #666a80;
-    font-size: 0.85rem;
-}
-
-.info-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-    .info-list li {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        font-size: 0.85rem;
-    }
-
-        .info-list li strong {
-            color: #1a1e30;
-        }
-
-        .info-list li span {
-            color: #666a80;
-        }
-
-.toggle-switch {
-    width: 36px;
-    height: 20px;
-    background-color: #D1F366;
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
-}
-
-.toggle-circle {
-    width: 14px;
-    height: 14px;
-    background-color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-}
-
-.st-section-title {
-    font-size: 1.1rem;
-    margin: 0 0 25px 0;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #1a1e30;
-}
-
-.invisible-label {
-    visibility: hidden;
-}
-
-.form-group input {
+.payment-container {
+    background-color: #1a1b2f;
+    color: #ffffff;
     width: 100%;
-    background-color: #d8dbe4;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 15px;
-    font-size: 0.85rem;
-    color: #333;
-    outline: none;
-    box-sizing: border-box;
-}
-
-    .form-group input::placeholder {
-        color: #9aa0b6;
-    }
-
-.phone-input-group {
-    display: flex;
-    gap: 10px;
-}
-
-.input-prefix {
-    width: 60px !important;
-    text-align: center;
-}
-
-.input-phone {
-    flex: 1;
-}
-
-.form-actions {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.btn-transparent {
-    background: transparent;
-    border: none;
-    color: #666a80;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 0.85rem;
-}
-
-/* =========================================
-   11. WALLET MODULE
-   ========================================= */
-.wallet-widget {
-    background-color: #D1F366;
+    padding: 20px 40px 40px 40px;
     border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.wallet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+.text-neon {
+    color: #cbfb45;
 }
 
-    .wallet-header h2 {
-        margin: 0;
-        font-size: 1.3rem;
-    }
-
-.coin-badge {
-    background: rgba(255,255,255,0.4);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
+.payment-container h2 {
     font-weight: bold;
-}
-
-.wallet-inner-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.wallet-type {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    letter-spacing: 1px;
     margin-bottom: 25px;
 }
 
-.icon-cash {
-    background-color: #34d399;
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+.section-card {
+    background-color: #161625;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 15px;
+    column-gap: 20px;
+    font-size: 0.85rem;
+}
+
+.grid-item span {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.coupon-flex {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.coupon-input {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background-color: #e0e0e0;
+    outline: none;
+    font-weight: bold;
+    color: #333;
+}
+
+    .coupon-input:invalid {
+        color: #888888;
+        font-weight: normal;
+    }
+
+.coupon-msg {
+    color: #00e676;
+}
+
+.payment-methods {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.pm-logo {
+    background-color: #ffffff;
+    width: 70px;
+    height: 45px;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 0.7rem;
+    color: #000;
     font-weight: bold;
-    font-size: 1.2rem;
 }
 
-.type-info strong {
-    display: block;
-    font-size: 0.95rem;
-}
-
-.type-info p {
-    margin: 0;
-    font-size: 0.75rem;
-    color: #a0a4b8;
-}
-
-.wallet-balance-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-    .wallet-balance-row span {
-        font-size: 0.7rem;
-        color: #a0a4b8;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .wallet-balance-row h2.text-red {
-        margin: 0;
-        color: #ff3b3b;
-        font-size: 1.6rem;
-    }
-
-    .wallet-balance-row h4 {
-        margin: 0;
-        font-size: 1rem;
-        color: #1a1e30;
-    }
-
-.balance-right {
-    text-align: right;
-}
-
-.wallet-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.menu-item {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 16px 20px;
+.footer-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.85rem;
+    margin-top: 30px;
+}
+
+.total-text {
+    font-size: 1.2rem;
     font-weight: bold;
-    cursor: pointer;
 }
 
-.menu-value {
-    color: #a0a4b8;
-    font-weight: normal;
+/* --- CẤU HÌNH ĐẨY NÚT XUỐNG ĐÁY SIDEBAR --- */
+.sidebar-dark {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important; /* Đẩy top lên trên, bottom xuống dưới */
+    height: 100vh;
 }
 
-.arrow {
-    color: #a0a4b8;
-    margin-left: 10px;
-    font-weight: normal;
-}
-
-/* --- CHỈ FIX 2 NÚT LOGIN & CREATE ACCOUNT --- */
-
-/* Xóa gạch chân và màu xanh mặc định cho cả 2 nút */
-.sidebar-dark a.nav-link.auth-btn-outline,
-.sidebar-dark a.nav-link.auth-btn-solid {
+/* --- THU HẸP KHOẢNG CÁCH 2 NÚT --- */
+.sidebar-bottom-content .nav-link.auth-btn-outline,
+.sidebar-bottom-content .nav-link.auth-btn-solid {
+    display: block !important;
     text-align: center !important;
     font-weight: bold !important;
-    padding: 12px !important;
-    display: block !important;
-    text-decoration: none !important; /* Mất gạch chân */
-    margin: 5px 15px !important;
+    padding: 10px 20px !important; /* Giảm padding một chút */
+    margin: 4px 0 !important; /* Giảm margin để 2 nút gần nhau hơn */
     font-size: 14px !important;
+    text-decoration: none !important;
+    border-radius: 30px !important;
+    transition: 0.3s all ease !important;
 }
 
-/* NÚT LOGIN: Viền vàng neon, chữ vàng[cite: 2] */
-.sidebar-dark a.nav-link.auth-btn-outline {
+/* Giữ nguyên màu sắc Neon */
+.sidebar-bottom-content .nav-link.auth-btn-outline {
     border: 2px solid #d4ff00 !important;
-    color: #d4ff00 !important; /* Chữ vàng rực[cite: 2] */
-    border-radius: 30px !important;
-    background-color: transparent !important;
+    color: #d4ff00 !important;
 }
 
-    .sidebar-dark a.nav-link.auth-btn-outline:hover {
-        background-color: rgba(212, 255, 0, 0.1) !important;
-        color: #d4ff00 !important;
-    }
-
-/* NÚT CREATE ACCOUNT: Nền vàng neon, chữ đen[cite: 2] */
-.sidebar-dark a.nav-link.auth-btn-solid {
+.sidebar-bottom-content .nav-link.auth-btn-solid {
     background-color: #d4ff00 !important;
-    color: #1a1a2e !important; /* Chữ tối trên nền sáng[cite: 2] */
-    border-radius: 30px !important;
+    color: #1a1a2e !important;
+    border: 2px solid #d4ff00 !important;
 }
-
-    .sidebar-dark a.nav-link.auth-btn-solid:hover {
-        background-color: #bce645 !important;
-        color: #1a1a2e !important;
-    }
-
-/* Ép hiển thị lời chào rực rỡ nhất */
-.dashboard-user-greeting {
-    position: absolute !important;
-    top: 30px !important;
-    right: 40px !important;
-    color: #d4ff00 !important; /* Màu vàng neon */
-    font-weight: 900 !important;
-    font-size: 16px !important;
-    text-transform: uppercase !important;
-    z-index: 9999 !important; /* Bắt buộc: Để nó luôn nằm trên cùng */
-    letter-spacing: 1px;
-    pointer-events: none; /* Để không vướng khi click chuột */
-}
-
-/* Nút Logout đỏ ở trang Setting */
-.btn-logout-red {
-    background-color: #ff5252 !important; /* Màu đỏ coral chuẩn hình mẫu */
-    color: white !important;
-    border: none !important;
-    border-radius: 12px !important; /* Bo góc 12px cho đồng bộ với các card */
-    padding: 12px !important;
-    font-weight: bold !important;
-    font-size: 1rem !important;
-    transition: 0.3s ease;
-    cursor: pointer;
-}
-
-    .btn-logout-red:hover {
-        background-color: #ff3333 !important;
-        transform: translateY(-2px); /* Hiệu ứng nổi lên khi di chuột */
-        box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
-    }

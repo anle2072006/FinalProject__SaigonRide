@@ -1,0 +1,134 @@
+/*VEHICLE*/
+
+/* Nền tảng chung cho trang */
+.vehicle-page {
+    padding: 40px;
+    color: white;
+    font-family: sans-serif;
+    min-height: 100vh;
+}
+
+/* --- THANH TÌM KIẾM --- */
+.search-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 50px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #1a1b2f; /* Màu nền tối của ô input */
+    border-radius: 8px;
+    padding: 0 15px;
+    width: 400px;
+}
+
+.search-icon {
+    color: #8b8e9f;
+    margin-right: 10px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+    padding: 12px 0;
+    outline: none;
+}
+
+    .search-box input::placeholder {
+        color: #8b8e9f;
+    }
+
+.btn-search {
+    background-color: #D1F366;
+    color: #000;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- KHUNG VIỀN XANH DƯƠNG (Như trong ảnh thiết kế) --- */
+.blue-outline-box {
+    border: 2px solid #00a8ff; /* Viền xanh dương sáng */
+    border-radius: 12px;
+    padding: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- THẺ THÔNG TIN XE --- */
+.vehicle-card {
+    background-color: #1a1b2f; /* Màu nền thẻ xe */
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+    /* Bỏ margin thẻ cuối cùng cho đẹp */
+    .vehicle-card:last-child {
+        margin-bottom: 0;
+    }
+
+.vehicle-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 30px;
+}
+
+.vehicle-info {
+    flex: 1; /* Đẩy nội dung chiếm hết khoảng trống giữa */
+}
+
+.info-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 80px; /* Khoảng cách giữa chữ Tên xe và chữ Duration */
+}
+
+    .info-row h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffffff;
+        min-width: 150px; /* Cố định độ rộng để các chữ thẳng hàng nhau */
+    }
+
+.duration, .remain {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.mt-2 {
+    margin-top: 10px;
+}
+
+/* --- NÚT BOOK --- */
+.vehicle-action {
+    margin: 0;
+}
+
+.btn-book {
+    background-color: #D1F366;
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .btn-book:hover {
+        background-color: #c0e050;
+    }

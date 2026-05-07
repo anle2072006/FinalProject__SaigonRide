@@ -1,0 +1,35 @@
+﻿/* =========================================
+   HISTORY TABLE
+   ========================================= */
+.table-container {
+    background-color: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    color: #333;
+}
+
+    .history-table th {
+        background-color: #f8f9fa;
+        padding: 16px 20px;
+        font-weight: bold;
+        font-size: 0.95rem;
+    }
+
+    .history-table td {
+        padding: 16px 20px;
+        font-size: 0.9rem;
+    }
+
+.row-gray {
+    background-color: #e9ebf0;
+}
+
+.row-white {
+    background-color: #ffffff;
+}
