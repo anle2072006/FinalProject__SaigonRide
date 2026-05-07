@@ -4,8 +4,13 @@ namespace FinalProject__SaigonRide.Controllers
 {
     public class VehiclesController : Controller
     {
-        public IActionResult IndexVehicles()
+        // Thêm tham số stationName
+        public IActionResult IndexVehicles(string stationId, string stationName)
         {
+            ViewBag.StationId = stationId;
+            // Cất thêm cái tên trạm vào ViewBag
+            ViewBag.StationName = stationName;
+
             return View();
         }
     }

@@ -3,76 +3,76 @@
 }
 
 <div class="main-content">
-
-    <!-- Header -->
     <div class="header">
         <input type="text" placeholder="Search..." />
-        <button>Search</button>
+        <button type="button">Search</button>
     </div>
 
-    <!-- Grid Station -->
     <div class="grid">
-
+        @* Trạm 1 *@
         <div class="card">
-            <img src="https://picsum.photos/80" />
+            <img src="/images/benthanh.jpg" alt="Ben Thanh" />
             <div class="info">
-                <h3>Ben Thanh</h3> 
+                <h3>Ben Thanh</h3>
                 <p>District 1</p>
             </div>
-            <button>Choose</button>
+            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-01", stationName = "Ben Thanh" })" class="btn-choose">Choose</a>
         </div>
 
+        @* Trạm 2 *@
         <div class="card">
-            <img src="https://picsum.photos/81" />
+            <img src="/images/bason.jpg" alt="Ba Son" />
             <div class="info">
                 <h3>Ba Son</h3>
                 <p>District 1</p>
             </div>
-            <button>Choose</button>
+            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-02", stationName = "Ba Son" })" class="btn-choose">Choose</a>
         </div>
 
+        @* Trạm 3 *@
         <div class="card">
-            <img src="https://picsum.photos/82" />
+            <img src="/images/saigon.jpg" alt="Sai Gon" />
             <div class="info">
                 <h3>Sai Gon</h3>
                 <p>District 3</p>
             </div>
-            <button>Choose</button>
+            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-03", stationName = "Sai Gon" })" class="btn-choose">Choose</a>
         </div>
 
+        @* Trạm 4 *@
         <div class="card">
-            <img src="https://picsum.photos/83" />
+            <img src="/images/vanthanh.jpeg" alt="Van Thanh" />
             <div class="info">
                 <h3>Van Thanh</h3>
                 <p>Binh Thanh</p>
             </div>
-            <button>Choose</button>
+            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-04", stationName = "Van Thanh" })" class="btn-choose">Choose</a>
         </div>
 
+        @* Trạm 5 *@
         <div class="card">
-            <img src="https://picsum.photos/84" />
+            <img src="/images/thaodien.jpg" alt="Thao Dien" />
             <div class="info">
                 <h3>Thao Dien</h3>
                 <p>Thu Duc</p>
             </div>
-            <button>Choose</button>
+            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-05", stationName = "Thao Dien" })" class="btn-choose">Choose</a>
         </div>
 
+        @* Trạm 6 *@
         <div class="card">
-            <img src="https://picsum.photos/85" />
+            <img src="/images/anphu.jpg" alt="An Phu" />
             <div class="info">
                 <h3>An Phu</h3>
                 <p>Thu Duc</p>
             </div>
-            <button>Choose</button>
+            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-06", stationName = "An Phu" })" class="btn-choose">Choose</a>
         </div>
-
     </div>
-
 </div>
 
 @section RightContent {
-    <h5 class="right-panel-title">Station Sidebar</h5>
+    <h5 class="right-panel-title" style="color: #D1F366; font-weight: bold;">Station Sidebar</h5>
     <p>Thông tin phụ của Station nằm ở bên phải này.</p>
 }
 
@@ -81,5 +81,5 @@
 }
 
 @section Scripts {
-    <script src="~/js/station.js"></script>
+    <script src="~/js/station.js" asp-append-version="true"></script>
 }

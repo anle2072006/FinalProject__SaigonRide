@@ -1,14 +1,123 @@
 ﻿@{
-    ViewData["Title"] = "Vehicle Management";
+    ViewData["Title"] = "Select Vehicle";
 }
 
-<h1 style="color: #d4ff00;">NOTE 2</h1>
-<p>Đây là nội dung chính của trang Vehicle.</p>
+<div class="main-content vehicle-page">
 
-@section RightContent {
-    <h5 class="right-panel-title">Vehicle Sidebar</h5>
-    <p>Thông tin phụ của Note 2 nằm ở bên phải này.</p>
-}
+    <div class="search-container">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search..." />
+        </div>
+        <button class="btn-search">Search</button>
+    </div>
+
+    <div class="blue-outline-box">
+
+        <div class="vehicle-card">
+            <img src="/images/escooter.jpg" alt="Electric Scooter" class="vehicle-img" />
+
+            <div class="vehicle-info">
+                <div class="info-row">
+                    <h4>Electric Scooter</h4>
+                    <span class="duration">Duration : 100%</span>
+                </div>
+                <div class="info-row mt-2">
+                    <span class="remain">Remain: 8</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn-book"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmModal"
+                    data-vehicleid="SCOOTER-01"
+                    data-vehiclename="Electric Scooter">
+                Book
+            </button>
+        </div>
+
+        <div class="vehicle-card">
+            <img src="/images/bicycle.jpg" alt="Bicycle" class="vehicle-img" />
+
+            <div class="vehicle-info">
+                <div class="info-row">
+                    <h4>Bicycle</h4>
+                </div>
+                <div class="info-row mt-2">
+                    <span class="remain">Remain: 12</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn-book"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmModal"
+                    data-vehicleid="BICYCLE-02"
+                    data-vehiclename="Bicycle">
+                Book
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1a1a2e; color: #fff; border: 1px solid #D1F366;">
+            <div class="modal-header" style="border-bottom: 1px solid #333;">
+                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Xác nhận chuyến đi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">Bạn đã chọn thông tin sau:</p>
+
+                <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444;">
+                    <p class="mb-2">📍 <strong>Trạm:</strong> <span style="color: #D1F366;">@ViewBag.StationName</span></p>
+                    <p class="mb-0">🛴 <strong>Xe:</strong> <span id="displayVehicleName" style="color: #D1F366;"></span> <span class="text-secondary">(ID: <span id="displayVehicleId"></span>)</span></p>
+                </div>
+
+                <p class="text-warning" style="font-size: 0.9rem;">
+                    <em>Ghi chú: Bấm "Go to In Use" để chuyển trang và theo dõi chuyến đi của bạn.</em>
+                </p>
+
+                <form asp-controller="InUse" asp-action="StartTrip" method="post">
+                    <input type="hidden" name="stationId" value="@ViewBag.StationId" />
+                    <input type="hidden" name="vehicleId" id="inputModalVehicleId" />
+
+                    <button type="submit" class="btn w-100 mt-2" style="background-color: #D1F366; color: black; font-weight: bold; border-radius: 8px; padding: 10px;">
+                        Go to In Use ➔
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @section Styles {
     <link rel="stylesheet" href="~/css/vehicle.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script>
+        // Script nhỏ để bắt sự kiện khi Popup mở lên và truyền dữ liệu xe vào Popup
+        document.addEventListener('DOMContentLoaded', function () {
+            var confirmModal = document.getElementById('confirmModal');
+
+            if (confirmModal) {
+                confirmModal.addEventListener('show.bs.modal', function (event) {
+                    // Lấy nút "Book" vừa được bấm
+                    var button = event.relatedTarget;
+
+                    // Rút dữ liệu từ các thẻ data- của nút Book
+                    var vehicleId = button.getAttribute('data-vehicleid');
+                    var vehicleName = button.getAttribute('data-vehiclename');
+
+                    // Gắn vào các thẻ <span> để hiển thị cho người dùng xem
+                    document.getElementById('displayVehicleName').textContent = vehicleName;
+                    document.getElementById('displayVehicleId').textContent = vehicleId;
+
+                    // Gắn vào thẻ <input hidden> để gửi form sang InUseController
+                    document.getElementById('inputModalVehicleId').value = vehicleId;
+                });
+            }
+        });
+    </script>
 }

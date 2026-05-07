@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@using FinalProject__SaigonRide.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -67,9 +68,13 @@
                 @RenderBody()
             </main>
 
-            <aside id="right-container" class="col-md-3 sidebar-dark">
-                @RenderSection("RightContent", required: false)
-            </aside>
+
+            {
+                <aside id="right-container" class="col-md-3 sidebar-dark" style="background-color: #1a1e30; min-height: 100vh;">
+                    @RenderSection("RightContent", required: false)
+                </aside>
+            }
+
         </div>
     </div>
 
