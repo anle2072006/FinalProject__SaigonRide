@@ -173,3 +173,15 @@ html, body {
         color: var(--neon-yellow) !important;
         opacity: 0.9;
     }
+
+/* Chia đôi hàng cho First Name và Last Name */
+.input-row {
+    display: flex;
+    gap: 15px; /* Khoảng cách giữa 2 ô */
+    width: 100%;
+}
+
+    .input-row .custom-input-group {
+        flex: 1; /* Mỗi ô chiếm 50% */
+        min-width: 0;
+    }

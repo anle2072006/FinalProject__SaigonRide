@@ -76,7 +76,13 @@ namespace FinalProject__SaigonRide.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             /// 
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
 
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
             [Required]
             [Display(Name = "Username")]
             public string Username { get; set; } 
@@ -120,6 +126,8 @@ namespace FinalProject__SaigonRide.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)

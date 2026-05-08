@@ -1,4 +1,4 @@
-﻿@model FinalProject__SaigonRide.Models.User
+﻿@model FinalProject__SaigonRide.Models.ApplicationUser
 @{
     ViewData["Title"] = "Settings";
 }
@@ -8,16 +8,16 @@
     <div class="settings-col">
         <div class="st-card text-center profile-card">
             <img src="https://i.pravatar.cc/150?img=47" alt="Profile Avatar" class="profile-img" />
-            <h3 class="profile-name">@Model.Name</h3>
+            <h3 class="profile-name">@Model.FirstName @Model.LastName</h3>
             <p class="profile-email">@Model.Email</p>
         </div>
 
         <div class="st-card info-card">
             <h4 class="st-card-title">Information</h4>
             <ul class="info-list">
-                <li><strong>Name:</strong> <span>@Model.Name</span></li>
+                <li><strong>Name:</strong> <span>@Model.FirstName @Model.LastName</span></li>
                 <li><strong>Email:</strong> <span>@Model.Email</span></li>
-                <li><strong>Tel:</strong> <span>+51 966 696 123</span></li>
+                <li><strong>Tel:</strong> <span>+84 966 696 123</span></li>
             </ul>
         </div>
 
@@ -40,8 +40,12 @@
                 <h4 class="st-card-title">Details</h4>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" value="@Model.Name" placeholder="Your Name..." />
+                        <label>First Name</label>
+                        <input type="text" value="@Model.FirstName" placeholder="Your First Name..." />
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" value="@Model.LastName" placeholder="Your Last Name..." />
                     </div>
                     <div class="form-group">
                         <label>Email</label>
