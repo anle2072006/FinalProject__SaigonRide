@@ -27,52 +27,52 @@
                         <div class="grid-item"><span>Pickup:</span> @Model.PickupStation</div>
                         <div class="grid-item"><span>Drop-off:</span> @Model.DropoffStation</div>
                         <div class="grid-item"><span>Vehicles:</span> @Model.RentedVehicle</div>
-                        <div class="grid-item"><span class="text-neon" style="font-weight: bold; font-size: 1.1rem;" id="originalCostText" data-cost="0">Estimated Cost: 0 VND</span>
-                        </div>
+                        <div class="grid-item"><span>Estimated Cost:</span> <span id="originalCostText" data-cost="0">0 VND</span></div>
                     </div>
                 </div>
+          
 
-                <div class="section-card">
-                    <h3 class="section-title text-neon">Apply Coupon</h3>
-                    <div class="coupon-flex">
-                        <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
-                            <option value="0" disabled selected hidden>Select coupon</option>
-                            @if (Model.AvailableCoupons != null)
+            <div class="section-card">
+                <h3 class="section-title text-neon">Apply Coupon</h3>
+                <div class="coupon-flex">
+                    <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
+                        <option value="0" disabled selected hidden>Select coupon</option>
+                        @if (Model.AvailableCoupons != null)
+                        {
+                            foreach (var coupon in Model.AvailableCoupons)
                             {
-                                foreach (var coupon in Model.AvailableCoupons)
-                                {
-                                    <option value="@coupon.DiscountValue">@coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)</option>
-                                }
+                                <option value="@coupon.DiscountValue">@coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)</option>
                             }
-                        </select>
-                        <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
-                    </div>
-
-                    <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
-                        Please choose a discount coupon!
-                    </div>
-                    <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
+                        }
+                    </select>
+                    <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
                 </div>
 
-                <div class="section-card" style="width: 100%;">
-                    <h3 class="section-title text-neon">Payment Method</h3>
-                    <div class="payment-methods">
-                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" width="50" alt="PayPal" /></div>
-                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" width="45" alt="Visa" /></div>
-                        <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="35" alt="MoMo" /></div>
-                        <div class="pm-logo"><img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418186387.png" width="55" alt="VNPay" /></div>
-                    </div>
+                <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
+                    Please choose a discount coupon!
                 </div>
+                <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
+            </div>
 
-                <div class="footer-flex">
-                    <div class="total-text">
-                        Total: <span id="totalDisplay" class="text-neon">0 VND</span>
-                    </div>
-                    <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
+            <div class="section-card" style="width: 100%;">
+                <h3 class="section-title text-neon">Payment Method</h3>
+                <div class="payment-methods">
+                    <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" width="50" alt="PayPal" /></div>
+                    <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" width="45" alt="Visa" /></div>
+                    <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="35" alt="MoMo" /></div>
+                    <div class="pm-logo"><img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418186387.png" width="55" alt="VNPay" /></div>
                 </div>
+            </div>
+
+            <div class="footer-flex">
+                <div class="total-text">
+                    Total: <span id="totalDisplay" class="text-neon">0 VND</span>
+                </div>
+                <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -86,8 +86,7 @@
         var costElement = document.getElementById("originalCostText");
         
         costElement.setAttribute("data-cost", realTimeCost);
-        // Hiển thị tiền gốc chưa làm tròn ở phần Estimated Cost
-        costElement.innerText = "Estimated Cost: " + realTimeCost.toLocaleString("vi-VN") + " VND";
+        costElement.innerText = realTimeCost.toLocaleString("vi-VN") + " VND";
         
         calculateFinalTotal();
     }
@@ -166,4 +165,3 @@
     });
 </script>
 
-<partial name="~/Views/Payment/_PaymentModal.cshtml" model="Model" />

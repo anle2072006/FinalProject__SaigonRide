@@ -35,7 +35,7 @@ namespace FinalProject__SaigonRide.Controllers
 
             if (string.IsNullOrEmpty(sId) || string.IsNullOrEmpty(vId))
             {
-                return RedirectToAction("IndexStations", "Stations");
+                return RedirectToAction("IndexStations", "Home");
             }
 
             var station = await _context.Stations.FirstOrDefaultAsync(s => s.Id == sId);
