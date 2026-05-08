@@ -31,10 +31,12 @@ namespace FinalProject__SaigonRide.Controllers
         // --- 2. Quản lý Xe (Vehicles) ---
         public async Task<IActionResult> Vehicles()
         {
-            var vehicles = await _context.Vehicles.ToListAsync();            // Trỏ về file View bạn đã có
+            // Lấy danh sách trạm xe để truyền vào ViewBag cho modal "Add Vehicles"
+            ViewBag.Stations = await _context.Stations.ToListAsync();
+
+            var vehicles = await _context.Vehicles.ToListAsync();
             return View(vehicles);
         }
-
         // --- 3. Quản lý Trạm (Stations) ---
         public async Task<IActionResult> Stations()
         {
@@ -49,6 +51,121 @@ namespace FinalProject__SaigonRide.Controllers
             return View(coupons); // Sẽ tìm file Views/Admin/Coupons.cshtml
         }
 
+
+
+        // --- 5. Xử lý Thêm Trạm (Create Station) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateStation(string Name, string Location)
+        {
+            if (ModelState.IsValid)
+            {
+                var station = new Station
+                {
+                    Id = Guid.NewGuid().ToString(), // Tạo ID ngẫu nhiên vì Model của bạn dùng kiểu string
+                    Name = Name,
+                    Location = Location
+                };
+
+                _context.Stations.Add(station);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã thêm trạm mới thành công!";
+                return RedirectToAction(nameof(Stations));
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+        // --- 6. Xử lý Sửa Trạm (Edit Station) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStation(string Id, string Name, string Location)
+        {
+            var station = await _context.Stations.FindAsync(Id);
+            if (station != null)
+            {
+                station.Name = Name;
+                station.Location = Location;
+
+                _context.Update(station);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Cập nhật thông tin trạm thành công!";
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+        // --- 7. Xử lý Xóa Trạm (Delete Station) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStation(string id)
+        {
+            var station = await _context.Stations.FindAsync(id);
+            if (station != null)
+            {
+                _context.Stations.Remove(station);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã xóa trạm thành công!";
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+
+        // --- 8. Xử lý Thêm Coupon (Create Coupon) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCoupon(string CodeName, int DiscountValue, bool IsActive)
+        {
+            if (ModelState.IsValid)
+            {
+                var coupon = new Coupon
+                {
+                    // Nếu Id của Coupon là int tự tăng thì không cần dòng này. 
+                    // Nếu là string như Station/Vehicle thì dùng Guid:
+                    // Id = Guid.NewGuid().ToString(), 
+                    CodeName = CodeName,
+                    DiscountValue = DiscountValue,
+                    IsActive = IsActive
+                };
+
+                _context.Coupons.Add(coupon);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã tạo mã giảm giá mới!";
+            }
+            return RedirectToAction(nameof(Coupons));
+        }
+
+        // --- 9. Xử lý Sửa Coupon (Edit Coupon) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCoupon(string Id, string CodeName, int DiscountValue, bool IsActive)
+        {
+            var coupon = await _context.Coupons.FindAsync(Id);
+            if (coupon != null)
+            {
+                coupon.CodeName = CodeName;
+                coupon.DiscountValue = DiscountValue;
+                coupon.IsActive = IsActive;
+
+                _context.Update(coupon);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã cập nhật mã giảm giá!";
+            }
+            return RedirectToAction(nameof(Coupons));
+        }
+
+        // --- 10. Xử lý Xóa Coupon (Delete Coupon) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCoupon(string id)
+        {
+            var coupon = await _context.Coupons.FindAsync(id);
+            if (coupon != null)
+            {
+                _context.Coupons.Remove(coupon);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã xóa mã giảm giá!";
+            }
+            return RedirectToAction(nameof(Coupons));
+        }
         // --- Các hàm xử lý dữ liệu (Ví dụ cho Vehicle) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
