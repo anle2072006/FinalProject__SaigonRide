@@ -2,6 +2,10 @@
 @using FinalProject__SaigonRide.Models
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@{
+    bool hasRightCol = IsSectionDefined("RightContent");
+    var mainColClass = hasRightCol ? "col-md-7" : "col-md-10";
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,23 +62,27 @@
                 }
             </nav>
 
-            <main role="main" class="col-md-7 px-md-4 main-content" style="position: relative;">
+            <main role="main" class="@mainColClass px-md-4 main-content" style="position: relative;">
                 @if (SignInManager.IsSignedIn(User) && ViewData["Title"]?.ToString() == "Dashboard")
                 {
+                    // Lấy dữ liệu user từ database dựa trên User hiện tại
+                    var currentUser = await UserManager.GetUserAsync(User);
+                    // Lấy FirstName, nếu null thì lấy phần trước của Email, nếu vẫn null thì hiện "RIDER"
+                    var displayName = currentUser?.FirstName ?? User.Identity?.Name?.Split('@')[0] ?? "RIDER";
+
                     <div class="dashboard-user-greeting">
-                        HELLO @(User.Identity?.Name?.Split('@')[0].ToUpper() ?? "RIDER")!
+                        HELLO @displayName.ToUpper()!
                     </div>
                 }
                 @RenderBody()
             </main>
 
-
+            @if (hasRightCol)
             {
                 <aside id="right-container" class="col-md-3 sidebar-dark" style="background-color: #1a1e30; min-height: 100vh;">
-                    @RenderSection("RightContent", required: false)
+                    @await RenderSectionAsync("RightContent", required: false)
                 </aside>
             }
-
         </div>
     </div>
 

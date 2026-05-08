@@ -11,5 +11,6 @@ namespace FinalProject__SaigonRide.Models
         public string Name { get; set; } = "";
         public double PricePerHour { get; set; }
         public string ImagePath { get; set; } = "";
+        public string StationId { get; set; } = "";
     }
 }

@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FinalProject__SaigonRide.Data;
 using FinalProject__SaigonRide.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FinalProject__SaigonRide.Controllers
 {
-    // [Authorize(Roles = "Admin")] // Bỏ comment nếu muốn bảo vệ bằng role
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,201 +17,74 @@ namespace FinalProject__SaigonRide.Controllers
             _context = context;
         }
 
-        // ===================== DASHBOARD =====================
+        // --- 1. Dashboard (Trang chủ Admin) ---
         public async Task<IActionResult> Index()
         {
-            ViewBag.VehicleCount  = await _context.Vehicles.CountAsync();
-            ViewBag.StationCount  = await _context.Stations.CountAsync();
-            ViewBag.BookingCount  = await _context.Bookings.CountAsync();
+            ViewBag.TotalVehicles = await _context.Vehicles.CountAsync();
+            ViewBag.TotalStations = await _context.Stations.CountAsync();
+            // Có thể đếm thêm coupon nếu cần:
+            // ViewBag.TotalCoupons = await _context.Coupons.CountAsync();
+
             return View();
         }
 
-        // ===================== VEHICLES =====================
-
-        // GET: Admin/Vehicles
+        // --- 2. Quản lý Xe (Vehicles) ---
         public async Task<IActionResult> Vehicles()
         {
-            var vehicles = await _context.Vehicles.ToListAsync();
+            var vehicles = await _context.Vehicles.ToListAsync();            // Trỏ về file View bạn đã có
             return View(vehicles);
         }
 
-        // POST: Admin/CreateVehicle
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateVehicle(string Name, double PricePerHour)
-        {
-            if (!string.IsNullOrWhiteSpace(Name))
-            {
-                _context.Vehicles.Add(new Vehicle { Name = Name, PricePerHour = PricePerHour });
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Vehicle \"{Name}\" đã được thêm thành công!";
-            }
-            return RedirectToAction(nameof(Vehicles));
-        }
-
-        // GET: Admin/GetVehicle/5  (AJAX – trả JSON cho modal Edit)
-        [HttpGet]
-        public async Task<IActionResult> GetVehicle(int id)
-        {
-            var v = await _context.Vehicles.FindAsync(id);
-            if (v == null) return NotFound();
-            return Json(new { v.Id, v.Name, v.PricePerHour });
-        }
-
-        // POST: Admin/EditVehicle
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditVehicle(int Id, string Name, double PricePerHour)
-        {
-            var v = await _context.Vehicles.FindAsync(Id);
-            if (v != null)
-            {
-                v.Name          = Name;
-                v.PricePerHour  = PricePerHour;
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Vehicle \"{Name}\" đã được cập nhật!";
-            }
-            return RedirectToAction(nameof(Vehicles));
-        }
-
-        // POST: Admin/DeleteVehicle/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteVehicle(int id)
-        {
-            var v = await _context.Vehicles.FindAsync(id);
-            if (v != null)
-            {
-                _context.Vehicles.Remove(v);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Vehicle \"{v.Name}\" đã được xóa!";
-            }
-            return RedirectToAction(nameof(Vehicles));
-        }
-
-        // ===================== STATIONS =====================
-
-        // GET: Admin/Stations
+        // --- 3. Quản lý Trạm (Stations) ---
         public async Task<IActionResult> Stations()
         {
             var stations = await _context.Stations.ToListAsync();
-            return View(stations);
+            return View(stations); // Sẽ tìm file Views/Admin/Stations.cshtml
         }
 
-        // POST: Admin/CreateStation
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateStation(string Name, string Location)
-        {
-            if (!string.IsNullOrWhiteSpace(Name))
-            {
-                _context.Stations.Add(new Station { Name = Name, Location = Location });
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Station \"{Name}\" đã được thêm thành công!";
-            }
-            return RedirectToAction(nameof(Stations));
-        }
-        // ===================== COUPONS =====================
-
-        // GET: Admin/Coupons
+        // --- 4. Quản lý Mã giảm giá (Coupons) ---
         public async Task<IActionResult> Coupons()
         {
             var coupons = await _context.Coupons.ToListAsync();
-            return View(coupons);
+            return View(coupons); // Sẽ tìm file Views/Admin/Coupons.cshtml
         }
 
-        // POST: Admin/CreateCoupon
+        // --- Các hàm xử lý dữ liệu (Ví dụ cho Vehicle) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCoupon(string CodeName, int DiscountValue, bool IsActive = false)
+        public async Task<IActionResult> CreateVehicle(string Name, double PricePerHour, string StationId, int Quantity)
         {
-            if (!string.IsNullOrWhiteSpace(CodeName))
+            if (ModelState.IsValid)
             {
-                _context.Coupons.Add(new Coupon { CodeName = CodeName, DiscountValue = DiscountValue, IsActive = IsActive });
+                if (Quantity <= 0) Quantity = 1;
+                for (int i = 0; i < Quantity; i++)
+                {
+                    var vehicle = new Vehicle
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = Name,
+                        PricePerHour = PricePerHour,
+                        StationId = StationId
+                    };
+                    _context.Vehicles.Add(vehicle);
+                }
                 await _context.SaveChangesAsync();
-                TempData["Success"] = $"Coupon \"{CodeName}\" đã được thêm!";
+                return RedirectToAction(nameof(Vehicles));
             }
-            return RedirectToAction(nameof(Coupons));
+            return RedirectToAction(nameof(Vehicles));
         }
 
-        // GET: Admin/GetCoupon/5  (AJAX – trả JSON cho modal Edit)
-        [HttpGet]
-        public async Task<IActionResult> GetCoupon(int id)
-        {
-            var c = await _context.Coupons.FindAsync(id);
-            if (c == null) return NotFound();
-            return Json(new { c.Id, c.CodeName, c.DiscountValue, c.IsActive });
-        }
-
-        // POST: Admin/EditCoupon
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCoupon(int Id, string CodeName, int DiscountValue, bool IsActive = false)
+        public async Task<IActionResult> DeleteVehicle(string id)
         {
-            var c = await _context.Coupons.FindAsync(Id);
-            if (c != null)
+            var vehicle = await _context.Vehicles.FindAsync(id);
+            if (vehicle != null)
             {
-                c.CodeName = CodeName;
-                c.DiscountValue = DiscountValue;
-                c.IsActive = IsActive;
+                _context.Vehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = $"Coupon \"{CodeName}\" đã được cập nhật!";
             }
-            return RedirectToAction(nameof(Coupons));
-        }
-
-        // POST: Admin/DeleteCoupon/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteCoupon(int id)
-        {
-            var c = await _context.Coupons.FindAsync(id);
-            if (c != null)
-            {
-                _context.Coupons.Remove(c);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Coupon \"{c.CodeName}\" đã được xóa!";
-            }
-            return RedirectToAction(nameof(Coupons));
-        }
-        // GET: Admin/GetStation/5  (AJAX – trả JSON cho modal Edit)
-        [HttpGet]
-        public async Task<IActionResult> GetStation(int id)
-        {
-            var s = await _context.Stations.FindAsync(id);
-            if (s == null) return NotFound();
-            return Json(new { s.Id, s.Name, s.Location });
-        }
-
-        // POST: Admin/EditStation
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStation(int Id, string Name, string Location)
-        {
-            var s = await _context.Stations.FindAsync(Id);
-            if (s != null)
-            {
-                s.Name     = Name;
-                s.Location = Location;
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Station \"{Name}\" đã được cập nhật!";
-            }
-            return RedirectToAction(nameof(Stations));
-        }
-
-        // POST: Admin/DeleteStation/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteStation(int id)
-        {
-            var s = await _context.Stations.FindAsync(id);
-            if (s != null)
-            {
-                _context.Stations.Remove(s);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = $"Station \"{s.Name}\" đã được xóa!";
-            }
-            return RedirectToAction(nameof(Stations));
+            return RedirectToAction(nameof(Vehicles));
         }
     }
 }

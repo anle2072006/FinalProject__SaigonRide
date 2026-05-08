@@ -217,6 +217,10 @@ namespace FinalProject__SaigonRide.Migrations
                     b.Property<double>("PricePerHour")
                         .HasColumnType("float");
 
+                    b.Property<string>("StationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Vehicles");

@@ -1,22 +1,10 @@
 ﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
-@{
-    var danhSachPhieu = new Dictionary<int, string>
-    {
-        { 10000, "Coupon A (-10.000 VND)" },
-        { 5000, "Coupon B (-5.000 VND)" },
-        { 20000, "Coupon for new customer (-20.000 VND)" }
-    };
-
-    // Đã thêm 'm' để tương thích tuyệt đối với kiểu dữ liệu tiền tệ (decimal)
-    var roundedCost = Math.Round(Model.EstimatedCost / 1000m, MidpointRounding.AwayFromZero) * 1000m;
-}
 
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
         <div class="modal-content" style="background-color: transparent; border: none;">
             
             <div class="payment-container">
-                <!-- Nút X để đóng -->
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -26,32 +14,35 @@
                 <div class="section-card">
                     <h3 class="section-title text-neon">Customer Information</h3>
                     <div class="grid-2">
-                        <div class="grid-item"><span>First Name:</span> Van A</div>
-                        <div class="grid-item"><span>Last Name:</span> Nguyen</div>
-                        <div class="grid-item"><span>Email:</span> User@Gmail.Com</div>
-                        <div class="grid-item"><span>Phone:</span> 0987654321</div>
+                        <div class="grid-item"><span>First Name:</span> @Model.FirstName</div>
+                        <div class="grid-item"><span>Last Name:</span> @Model.LastName</div>
+                        <div class="grid-item"><span>Email:</span> @Model.Email</div>
+                        <div class="grid-item"><span>Phone:</span> @Model.Phone</div>
                     </div>
                 </div>
 
                 <div class="section-card">
                     <h3 class="section-title text-neon">Order Summary</h3>
                     <div class="grid-2">
-                        <div class="grid-item"><span>Pickup:</span> Ben Thanh</div>
-                        <div class="grid-item"><span>Drop-off:</span> Ba Son</div>
-                        <div class="grid-item"><span>Vehicles:</span> electric scooter</div>
-                        <span id="originalCostText" data-cost="@roundedCost">@roundedCost.ToString("#,##0") VND</span>
+                        <div class="grid-item"><span>Pickup:</span> @Model.PickupStation</div>
+                        <div class="grid-item"><span>Drop-off:</span> @Model.DropoffStation</div>
+                        <div class="grid-item"><span>Vehicles:</span> @Model.RentedVehicle</div>
+                        <div class="grid-item"><span class="text-neon" style="font-weight: bold; font-size: 1.1rem;" id="originalCostText" data-cost="0">Estimated Cost: 0 VND</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Apply Coupon -->
                 <div class="section-card">
                     <h3 class="section-title text-neon">Apply Coupon</h3>
                     <div class="coupon-flex">
                         <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
                             <option value="0" disabled selected hidden>Select coupon</option>
-                            @foreach (var phieu in danhSachPhieu)
+                            @if (Model.AvailableCoupons != null)
                             {
-                                <option value="@phieu.Key">@phieu.Value</option>
+                                foreach (var coupon in Model.AvailableCoupons)
+                                {
+                                    <option value="@coupon.DiscountValue">@coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)</option>
+                                }
                             }
                         </select>
                         <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
@@ -60,7 +51,6 @@
                     <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
                         Please choose a discount coupon!
                     </div>
-
                     <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
                 </div>
 
@@ -76,35 +66,59 @@
 
                 <div class="footer-flex">
                     <div class="total-text">
-                        Total: <span id="totalDisplay" class="text-neon">@roundedCost.ToString("#,##0") VND</span>
+                        Total: <span id="totalDisplay" class="text-neon">0 VND</span>
                     </div>
                     <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- ĐÃ GỘP LẠI THÀNH 1 ĐOẠN SCRIPT DUY NHẤT & CHUẨN XÁC -->
 <script>
+    // HÀM LÀM TRÒN: < 500đ xuống, >= 500đ lên
+    function lamTronTien(soTien) {
+        return Math.round(soTien / 1000) * 1000;
+    }
+
+    // Hàm nhận tiền từ trang In Use
+    function updateModalWithLiveCost(realTimeCost) {
+        var costElement = document.getElementById("originalCostText");
+        
+        costElement.setAttribute("data-cost", realTimeCost);
+        // Hiển thị tiền gốc chưa làm tròn ở phần Estimated Cost
+        costElement.innerText = "Estimated Cost: " + realTimeCost.toLocaleString("vi-VN") + " VND";
+        
+        calculateFinalTotal();
+    }
+
+    // Tính tổng tiền sau khi trừ Coupon và làm tròn
+    function calculateFinalTotal() {
+        var baseCost = parseInt(document.getElementById("originalCostText").getAttribute("data-cost")) || 0;
+        var select = document.getElementById("couponSelect");
+        var btnApply = document.getElementById("btnApplyCoupon");
+        var discountValue = 0;
+
+        if (btnApply.innerText.trim() === "Applied") {
+            discountValue = parseInt(select.value) || 0;
+        }
+
+        var finalTotal = baseCost - discountValue;
+        if (finalTotal < 0) finalTotal = 0;
+
+        // ÁP DỤNG LÀM TRÒN CHO TỔNG TIỀN CUỐI CÙNG
+        var roundedTotal = lamTronTien(finalTotal);
+
+        document.getElementById("totalDisplay").innerText = roundedTotal.toLocaleString("vi-VN") + " VND";
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var select = document.getElementById("couponSelect");
         var btnApply = document.getElementById("btnApplyCoupon");
         var msg = document.getElementById("couponMsg");
         var errorMsg = document.getElementById("couponErrorMsg");
-        
-        var totalDisplay = document.getElementById("totalDisplay");
-        var costElement = document.getElementById("originalCostText");
-        
-        // Bảo vệ JS không bị sập nếu thiếu HTML
-        if (!select || !btnApply || !costElement || !totalDisplay) return;
 
-        var baseCost = parseInt(costElement.getAttribute("data-cost"));
-
-        function lamTronTien(soTien) {
-            return Math.round(soTien / 1000) * 1000;
-        }
+        if (!select || !btnApply) return;
 
         function resetCouponState() {
             select.value = "0";
@@ -113,7 +127,7 @@
             btnApply.style.color = "#1a1b2f";
             msg.style.display = "none";
             errorMsg.style.display = "none";
-            totalDisplay.innerText = lamTronTien(baseCost).toLocaleString("vi-VN") + " VND";
+            calculateFinalTotal();
         }
 
         btnApply.addEventListener("click", function () {
@@ -123,7 +137,6 @@
             }
 
             var discountValue = parseInt(select.value);
-            
             if (!isNaN(discountValue) && discountValue > 0) {
                 var couponText = select.options[select.selectedIndex].text;
                 
@@ -135,29 +148,22 @@
                 msg.style.display = "block";
                 errorMsg.style.display = "none";
 
-                var finalTotal = lamTronTien(baseCost - discountValue);
-                totalDisplay.innerText = finalTotal.toLocaleString("vi-VN") + " VND";
+                calculateFinalTotal();
             } else {
                 errorMsg.style.display = "block";
                 msg.style.display = "none";
             }
         });
 
-        // Đã sửa sự kiện Change: Chỉ reset UI, không can thiệp vào select.value
         select.addEventListener("change", function () {
-            btnApply.innerText = "Apply";
-            btnApply.style.backgroundColor = "#cbfb45";
-            btnApply.style.color = "#1a1b2f";
-            msg.style.display = "none";
-            errorMsg.style.display = "none";
-            totalDisplay.innerText = lamTronTien(baseCost).toLocaleString("vi-VN") + " VND";
+            resetCouponState();
         });
 
         var paymentModal = document.getElementById("paymentModal");
         if (paymentModal) {
-            paymentModal.addEventListener("hidden.bs.modal", function () {
-                resetCouponState();
-            });
+            paymentModal.addEventListener("hidden.bs.modal", resetCouponState);
         }
     });
 </script>
+
+<partial name="~/Views/Payment/_PaymentModal.cshtml" model="Model" />

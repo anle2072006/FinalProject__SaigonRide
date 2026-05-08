@@ -14,7 +14,10 @@ namespace FinalProject__SaigonRide.Controllers
         {
             _userManager = userManager;
         }
-
+        public IActionResult Index()
+        {
+            return RedirectToAction("IndexSetting");
+        }
         public async Task<IActionResult> IndexSetting()
         {
             // Lấy thông tin người dùng hiện tại trực tiếp từ Identity

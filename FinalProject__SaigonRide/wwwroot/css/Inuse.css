@@ -1,0 +1,149 @@
+﻿/* Tổng thể trang In Use */
+.inuse-page-wrapper {
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+    background-color: #1a1e30; /* Màu nền tối giống ảnh */
+    min-height: 100vh;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Cột chính ở giữa */
+.inuse-main-section {
+    flex: 3; /* Chiếm phần lớn diện tích */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.breadcrumb-text {
+    color: #8a8a9e;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+/* Khung Map màu trắng bo góc */
+.rider-display-box {
+    background-color: #ffffff;
+    border-radius: 30px;
+    height: 400px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Tạm thời ẩn ảnh cũ bên trong nếu có */
+.rider-img, .blue-mono-filter {
+    display: none;
+}
+
+/* Bảng thông số chuyến đi */
+.ride-stats-card {
+    background-color: #242945; /* Màu hộp hơi sáng hơn nền */
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.stat-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+    .stat-group p {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .stat-group .label {
+        color: #d4ff00; /* Màu xanh neon cho tiêu đề */
+        margin-right: 10px;
+    }
+
+    .stat-group .val {
+        color: #ffffff;
+    }
+
+/* Nút End Ride / Thanh toán */
+.action-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-main-action {
+    background-color: #d4ff00;
+    color: #1a1e30;
+    border: none;
+    padding: 15px 60px;
+    border-radius: 15px;
+    font-weight: 800;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+
+    .btn-main-action:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(212, 255, 0, 0.4);
+    }
+
+/* Cột phụ bên phải */
+.inuse-side-panel {
+    flex: 1; /* Chiếm diện tích nhỏ hơn */
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-top: 50px;
+}
+
+.widget-label {
+    color: #d4ff00;
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.mini-info-box {
+    background-color: #242945;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+    .mini-info-box img {
+        width: 90px;
+        height: 60px;
+        border-radius: 12px;
+        object-fit: cover;
+    }
+
+    .mini-info-box strong {
+        display: block;
+        font-size: 16px;
+        color: white;
+    }
+
+    .mini-info-box small {
+        color: #8a8a9e;
+    }
+
+/* Icon xe */
+.icon-bg {
+    background-color: #1a1e30;
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}

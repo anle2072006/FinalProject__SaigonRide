@@ -1,52 +1,50 @@
-﻿@{
+﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
+
+@{
     ViewData["Title"] = "In Use";
-    // Giá trị double cho EstimatedCost theo yêu cầu của bạn
-    decimal currentCost = 67777;
+    // Đảm bảo không bị sập nếu bạn chưa kịp thêm biến PricePerMinute vào Model
+    double pricePerMin = 1500;
+    try { pricePerMin = (double)Model.GetType().GetProperty("PricePerMinute").GetValue(Model); } catch { }
 }
 
-<div class="inuse-page-wrapper">
-    <!-- CỘT CHÍNH: Hiển thị hành trình -->
-    <div class="inuse-main-section">
-        <h5 class="breadcrumb-text">In use</h5>
+<div class="inuse-main-section py-3">
+    <h5 class="breadcrumb-text mb-3">In use</h5>
 
-        <!-- KHU VỰC RIDER: Ảnh người lái xe trên đường tông xanh lam -->
-        <div class="rider-display-box">
-            <div class="blue-mono-filter">
-                <img src="https://images.unsplash.com/photo-1620330101487-73595fd0007e?q=80&w=1000"
-                     alt="Rider on road" class="rider-img" />
-                <div class="road-lanes"></div>
-            </div>
+    <div class="rider-display-box">
+    </div>
+
+    <div class="ride-stats-card mt-4">
+        <div class="stat-group">
+            <p><span class="label">Usage Time:</span> <span class="val" id="usageTimeVal">00 : 00 : 00</span></p>
+            <p><span class="label">Distance Traveled:</span> <span class="val" id="distanceVal">0 m</span></p>
         </div>
-
-        <!-- BẢNG THÔNG SỐ CHUYẾN ĐI -->
-        <div class="ride-stats-card">
-            <div class="stat-group">
-                <p><span class="label">Usage Time:</span> <span class="val">01 : 07 : 06</span></p>
-                <p><span class="label">Distance Traveled:</span> <span class="val">67.67 km</span></p>
-            </div>
-            <div class="stat-group">
-                <p><span class="label">Battery Remaining:</span> <span class="val neon">67%</span></p>
-                <p><span class="label">Estimated Cost:</span> <span class="val">@currentCost.ToString("#,##0") VND</span></p>
-            </div>
-        </div>
-
-        <!-- NÚT THANH TOÁN (Đã gộp từ code của bạn) -->
-        <div class="action-footer">
-            <button type="button" class="btn-main-action" data-bs-toggle="modal" data-bs-target="#paymentModal">
-                Thanh toán
-            </button>
+        <div class="stat-group">
+            <p><span class="label">Battery Remaining:</span> <span class="val neon" id="batteryVal">100%</span></p>
+            <p><span class="label">Estimated Cost:</span> <span class="val" id="costVal">0 VND</span></p>
         </div>
     </div>
 
-    <!-- CỘT PHỤ: Thông tin trạm và xe -->
-    <div class="inuse-side-panel">
-        <div class="side-widget">
+    <div class="action-footer mt-4">
+        <button type="button"
+                class="btn-main-action"
+                id="btnPayment"
+                onclick="stopRideStats()"
+                data-bs-toggle="modal"
+                data-bs-target="#paymentModal">
+            End Ride
+        </button>
+    </div>
+</div>
+
+@section RightContent {
+    <div class="inuse-side-panel px-3" style="padding-top: 50px;">
+        <div class="side-widget mb-5">
             <p class="widget-label">Selected Station:</p>
             <div class="mini-info-box">
-                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc18a593?q=80&w=200" alt="Ben Thanh" />
+                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc18a593?w=200" alt="@Model.PickupStation" />
                 <div>
-                    <strong>Ben Thanh</strong>
-                    <small>District 1</small>
+                    <strong>@Model.PickupStation</strong>
+                    <small>Ho Chi Minh City</small>
                 </div>
             </div>
         </div>
@@ -54,12 +52,61 @@
         <div class="side-widget">
             <p class="widget-label">Current Vehicle:</p>
             <div class="mini-info-box">
-                <div class="icon-bg"><i class="bi bi-bicycle"></i></div>
-                <strong>Electric Scooter</strong>
+                <div class="icon-bg"><i class="bi bi-bicycle" style="color: white;"></i></div>
+                <strong>@Model.RentedVehicle</strong>
             </div>
         </div>
     </div>
-</div>
+}
 
-<!-- NHÚNG MODAL THANH TOÁN -->
-<partial name="~/Views/Payment/_PaymentModal.cshtml" model="new FinalProject__SaigonRide.Models.PaymentViewModel { EstimatedCost = currentCost }" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/inuse.css" asp-append-version="true" />
+}
+
+<partial name="~/Views/Payment/_PaymentModal.cshtml" model="Model" />
+
+@section Scripts {
+    <script>
+        const pricePerSec = @pricePerMin / 60;
+        let secondsPassed = 0;
+        let distanceMeters = 0;
+        let batteryPercent = 100;
+        let costVND = 0;
+        let rideInterval;
+
+        function formatTime(totalSeconds) {
+            let h = Math.floor(totalSeconds / 3600);
+            let m = Math.floor((totalSeconds % 3600) / 60);
+            let s = totalSeconds % 60;
+            return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateRideStats() {
+            secondsPassed++;
+            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
+
+            costVND += pricePerSec;
+            document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
+
+            if (secondsPassed % 5 === 0) {
+                distanceMeters += 50;
+                let distDisplay = distanceMeters >= 1000 ? (distanceMeters / 1000).toFixed(2) + ' km' : distanceMeters + ' m';
+                document.getElementById('distanceVal').innerText = distDisplay;
+            }
+
+            if (secondsPassed % 60 === 0) {
+                if (batteryPercent > 0) batteryPercent -= 1;
+                document.getElementById('batteryVal').innerText = batteryPercent + '%';
+            }
+        }
+
+        function stopRideStats() {
+            clearInterval(rideInterval);
+            if (typeof updateModalWithLiveCost === "function") {
+                updateModalWithLiveCost(costVND);
+            }
+        }
+
+        rideInterval = setInterval(updateRideStats, 1000);
+    </script>
+}

@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<FinalProject__SaigonRide.Models.Station>
+
+@{
     ViewData["Title"] = "Station Management";
 }
 
@@ -9,65 +11,27 @@
     </div>
 
     <div class="grid">
-        @* Trạm 1 *@
-        <div class="card">
-            <img src="/images/benthanh.jpg" alt="Ben Thanh" />
-            <div class="info">
-                <h3>Ben Thanh</h3>
-                <p>District 1</p>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var station in Model)
+            {
+                <div class="card">
+                    
+                    <div class="info">
+                        <h3>@station.Name</h3>
+                        <p>@station.Location</p>
+                    </div>
+                    
+                    <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = station.Id, stationName = station.Name })" class="btn-choose">Choose</a>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="color: white; width: 100%; text-align: center; margin-top: 20px;">
+                <p>There are currently no stations. Please add stations from the Admin panel.</p>
             </div>
-            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-01", stationName = "Ben Thanh" })" class="btn-choose">Choose</a>
-        </div>
-
-        @* Trạm 2 *@
-        <div class="card">
-            <img src="/images/bason.jpg" alt="Ba Son" />
-            <div class="info">
-                <h3>Ba Son</h3>
-                <p>District 1</p>
-            </div>
-            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-02", stationName = "Ba Son" })" class="btn-choose">Choose</a>
-        </div>
-
-        @* Trạm 3 *@
-        <div class="card">
-            <img src="/images/saigon.jpg" alt="Sai Gon" />
-            <div class="info">
-                <h3>Sai Gon</h3>
-                <p>District 3</p>
-            </div>
-            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-03", stationName = "Sai Gon" })" class="btn-choose">Choose</a>
-        </div>
-
-        @* Trạm 4 *@
-        <div class="card">
-            <img src="/images/vanthanh.jpeg" alt="Van Thanh" />
-            <div class="info">
-                <h3>Van Thanh</h3>
-                <p>Binh Thanh</p>
-            </div>
-            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-04", stationName = "Van Thanh" })" class="btn-choose">Choose</a>
-        </div>
-
-        @* Trạm 5 *@
-        <div class="card">
-            <img src="/images/thaodien.jpg" alt="Thao Dien" />
-            <div class="info">
-                <h3>Thao Dien</h3>
-                <p>Thu Duc</p>
-            </div>
-            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-05", stationName = "Thao Dien" })" class="btn-choose">Choose</a>
-        </div>
-
-        @* Trạm 6 *@
-        <div class="card">
-            <img src="/images/anphu.jpg" alt="An Phu" />
-            <div class="info">
-                <h3>An Phu</h3>
-                <p>Thu Duc</p>
-            </div>
-            <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = "ST-06", stationName = "An Phu" })" class="btn-choose">Choose</a>
-        </div>
+        }
     </div>
 </div>
 
