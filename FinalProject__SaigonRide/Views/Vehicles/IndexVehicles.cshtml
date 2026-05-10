@@ -14,26 +14,30 @@
         <button class="btn-search">Search</button>
     </div>
 
-    <div class="blue-outline-box">
+    <div class="blue-outline-box" style="border: none; background: transparent;">
         @if (Model != null && Model.Any())
         {
             @foreach (var vehicle in Model)
             {
-                <div class="vehicle-card">
+                <div class="vehicle-card" style="display: flex; align-items: center; padding: 15px 25px; background-color: #1a1b2f; border-radius: 12px; margin-bottom: 15px;">
+                    
                     <img src="@(string.IsNullOrEmpty(vehicle.ImagePath) ? "/images/escooter.jpg" : vehicle.ImagePath)"
-                         alt="@vehicle.Name" class="vehicle-img" />
+                         alt="@vehicle.Name" class="vehicle-img" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; margin-right: 25px; flex-shrink: 0;" />
 
-                    <div class="vehicle-info">
-                        <div class="info-row">
-                            <h4>@vehicle.Name</h4>
-                            <span class="duration">@vehicle.PricePerHour.ToString("N0") VND/h</span>
+                    <div class="vehicle-info" style="display: flex; justify-content: space-between; align-items: center; flex: 1;">
+                        
+                        <div style="flex: 1; text-align: left;">
+                            <h4 style="margin: 0; font-size: 1.15rem; font-weight: bold; color: #ffffff;">@vehicle.Name</h4>
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #51b56d; display: block; margin-top: 5px;">Available</span>
                         </div>
-                        <div class="info-row mt-2">
-                            <span class="remain">Available</span>
+                        
+                        <div style="flex: 1; text-align: center;">
+                            <span style="font-size: 1rem; font-weight: bold; color: #ffffff;">@vehicle.PricePerHour.ToString("N0") VND/h</span>
                         </div>
                     </div>
 
                     <button type="button" class="btn-book"
+                            style="margin-left: 20px; flex-shrink: 0;"
                             data-bs-toggle="modal"
                             data-bs-target="#confirmModal"
                             data-vehicleid="@vehicle.Id"
@@ -45,8 +49,10 @@
         }
         else
         {
-            <div style="color: white; width: 100%; text-align: center; padding: 40px 20px;">
-                <p>Hiện tại trạm này đang hết xe.<br>Vui lòng chọn một trạm khác nhé!</p>
+            <div style="width: 100%; text-align: center; padding: 40px 20px; background-color: #1a1b2f; border-radius: 12px;">
+                <p style="color: #D1F366; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 8px rgba(209, 243, 102, 0.3); margin: 0;">
+                    Hiện tại trạm này đang hết xe.<br>Vui lòng chọn một trạm khác nhé!
+                </p>
             </div>
         }
     </div>

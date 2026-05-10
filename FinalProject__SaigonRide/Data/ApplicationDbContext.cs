@@ -17,6 +17,7 @@ namespace FinalProject__SaigonRide.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
 
+        public DbSet<TransactionHistory> TransactionHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -2,11 +2,29 @@
 
 @{
     ViewData["Title"] = "In Use";
-    // Đảm bảo không bị sập nếu bạn chưa kịp thêm biến PricePerMinute vào Model
     double pricePerMin = 1500;
     try { pricePerMin = (double)Model.GetType().GetProperty("PricePerMinute").GetValue(Model); } catch { }
+
+    // Check if the user has selected a drop-off station from the Controller
+    bool hasDropOff = ViewBag.HasDropOffStation ?? false; 
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        alert('@TempData["SuccessMessage"]');
+    </script>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        alert('@TempData["ErrorMessage"]');
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Inuse.css" asp-append-version="true" />
+}
 <div class="inuse-main-section py-3">
 
     <div class="rider-display-box">
@@ -14,22 +32,30 @@
 
     <div class="ride-stats-card mt-4">
         <div class="stat-group">
-            <p><span class="label">Usage Time:</span> <span class="val" id="usageTimeVal">00 : 00 : 00</span></p>
-            <p><span class="label">Distance Traveled:</span> <span class="val" id="distanceVal">0 m</span></p>
+            <p><span class="label">Usage Time:</span> <span class="val" id="usageTimeVal">00 : 00 : 00</span></p> 
+            <p><span class="label">Distance Traveled:</span> <span class="val" id="distanceVal">0 m</span></p> 
         </div>
         <div class="stat-group">
-            <p><span class="label">Battery Remaining:</span> <span class="val neon" id="batteryVal">100%</span></p>
-            <p><span class="label">Estimated Cost:</span> <span class="val" id="costVal">0 VND</span></p>
+            <p><span class="label">Battery Remaining:</span> <span class="val neon" id="batteryVal">100%</span></p> 
+            <p><span class="label">Estimated Cost:</span> <span class="val" id="costVal">0 VND</span></p> 
         </div>
     </div>
 
-    <div class="action-footer mt-4">
+    <div class="action-footer mt-4" style="display: flex; gap: 40px; justify-content: center;">
+        
+        <button type="button"
+                class="btn-main-action"
+                style="background-color: #D1F366; color: #000; min-width: 180px; padding: 12px 20px; font-weight: bold; border-radius: 8px; border: none;"
+                data-bs-toggle="modal"
+                data-bs-target="#selectDropoffModal">
+            Select Drop-off
+        </button>
+
         <button type="button"
                 class="btn-main-action"
                 id="btnPayment"
-                onclick="stopRideStats()"
-                data-bs-toggle="modal"
-                data-bs-target="#paymentModal">
+                style="background-color: #D1F366; color: #000; min-width: 180px; padding: 12px 20px; font-weight: bold; border-radius: 8px; border: none;"
+                onclick="checkAndEndRide()">
             End Ride
         </button>
     </div>
@@ -38,10 +64,10 @@
 @section RightContent {
     <div class="inuse-side-panel px-3" style="padding-top: 50px;">
         <div class="side-widget mb-5">
-            <p class="widget-label">Selected Station:</p>
+            <p class="widget-label">Pickup Station:</p>
             <div class="mini-info-box">
                 <div>
-                    <strong>@Model.PickupStation</strong>
+                    <strong>@Model.PickupStation</strong> 
                     <small>Ho Chi Minh City</small>
                 </div>
             </div>
@@ -49,66 +75,114 @@
 
         <div class="side-widget">
             <p class="widget-label">Current Vehicle:</p>
-            <div class="mini-info-box">
-                <div class="icon-bg" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #222;">
+    
+            <div class="mini-info-box" style="display: flex; align-items: center; gap: 15px;">
+        
+                <div class="icon-bg" style="width: 60px; height: 60px; flex-shrink: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #fff; border-radius: 8px;">
+            
                     <img src="@(string.IsNullOrEmpty(Model.VehicleImagePath) ? "/images/escooter.jpg" : Model.VehicleImagePath)"
                          alt="Vehicle"
                          style="width: 100%; height: 100%; object-fit: cover;" />
+                 
                 </div>
-                <strong>@Model.RentedVehicle</strong>
+        
+                <strong style="color: #fff; font-size: 1.1rem; margin: 0;">@Model.RentedVehicle</strong>
             </div>
         </div>
+        
     </div>
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/inuse.css" asp-append-version="true" />
-}
+<div class="modal fade" id="selectDropoffModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1a1d21; color: white; border: 1px solid #333;">
+            <form asp-controller="InUse" asp-action="UpdateDropOff" method="post">
+                <div class="modal-header" style="border-bottom: 1px solid #333;">
+                    <h5 class="modal-title" style="color: #cbfb45;">Select Drop-off Station</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label class="mb-2">Available Stations:</label>
+                        <select name="nextStationId" class="form-select" style="background-color: #0f1215; color: white; border-color: #333;" required>
+                            <option value="">-- Please select a station --</option>
+                            @if (ViewBag.StationList != null)
+                            {
+                                foreach (var st in ViewBag.StationList)
+                                {
+                                    <option value="@st.Id">@st.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    @if (hasDropOff)
+                    {
+                        <div class="alert alert-success p-2 mt-2" style="font-size: 14px;">
+                            Destination selected. You can update it if needed.
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #333;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn" style="background-color: #cbfb45; color: #000; font-weight: bold;">Save Destination</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <partial name="~/Views/Payment/_PaymentModal.cshtml" model="Model" />
 
 @section Scripts {
     <script>
-        const pricePerSec = @pricePerMin / 60;
-        let secondsPassed = 0;
+        const pricePerSec = @pricePerMin / 60; 
+        let secondsPassed = 0; 
         let distanceMeters = 0;
-        let batteryPercent = 100;
+        let batteryPercent = 100; 
         let costVND = 0;
         let rideInterval;
 
+        const isDropOffSelected = @hasDropOff.ToString().ToLower();
+
         function formatTime(totalSeconds) {
-            let h = Math.floor(totalSeconds / 3600);
-            let m = Math.floor((totalSeconds % 3600) / 60);
-            let s = totalSeconds % 60;
+            let h = Math.floor(totalSeconds / 3600); 
+            let m = Math.floor((totalSeconds % 3600) / 60); 
+            let s = totalSeconds % 60; 
             return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
         }
 
         function updateRideStats() {
             secondsPassed++;
-            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
-
-            costVND += pricePerSec;
+            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed); 
+            costVND += pricePerSec; 
             document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
 
             if (secondsPassed % 5 === 0) {
-                distanceMeters += 50;
-                let distDisplay = distanceMeters >= 1000 ? (distanceMeters / 1000).toFixed(2) + ' km' : distanceMeters + ' m';
-                document.getElementById('distanceVal').innerText = distDisplay;
+                distanceMeters += 50; 
+                let distDisplay = distanceMeters >= 1000 ? (distanceMeters / 1000).toFixed(2) + ' km' : distanceMeters + ' m'; 
+                document.getElementById('distanceVal').innerText = distDisplay; 
             }
 
             if (secondsPassed % 60 === 0) {
-                if (batteryPercent > 0) batteryPercent -= 1;
+                if (batteryPercent > 0) batteryPercent -= 1; 
                 document.getElementById('batteryVal').innerText = batteryPercent + '%';
             }
         }
 
-        function stopRideStats() {
-            clearInterval(rideInterval);
-            if (typeof updateModalWithLiveCost === "function") {
-                updateModalWithLiveCost(costVND);
-            }
-        }
+        function checkAndEndRide() {
+                    if (!isDropOffSelected) {
+                        var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
+                        dropoffModal.show();
+                    } else {
+                        clearInterval(rideInterval);
+                        if (typeof updateModalWithLiveCost === "function") {
+                            updateModalWithLiveCost(costVND);
+                        }
+                        var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                        paymentModal.show();
+                    }
+                }
 
-        rideInterval = setInterval(updateRideStats, 1000);
+        rideInterval = setInterval(updateRideStats, 1000); 
     </script>
 }

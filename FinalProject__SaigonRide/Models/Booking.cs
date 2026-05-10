@@ -9,7 +9,8 @@
         public string VehicleId { get; set; } = "";
 
         public string StationId { get; set; } = "";
-
+        public string? NextStationId { get; set; } 
+        public string Status { get; set; } = "Pending";
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 

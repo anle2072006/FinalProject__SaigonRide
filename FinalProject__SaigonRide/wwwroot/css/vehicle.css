@@ -52,21 +52,27 @@
     font-weight: bold;
     cursor: pointer;
 }
-
-/* --- KHUNG VIỀN XANH DƯƠNG (Như trong ảnh thiết kế) --- */
 .blue-outline-box {
-    border: 2px solid #00a8ff; /* Viền xanh dương sáng */
-    border-radius: 12px;
-    padding: 15px;
+    border: none; 
+    background-color: transparent; 
+    padding: 30px;
     max-width: 800px;
     margin: 0 auto;
+    text-align: center;
+}
+.blue-outline-box p,
+.blue-outline-box div {
+    color: #D1F366; 
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px rgba(209, 243, 102, 0.3); 
 }
 
 /* --- THẺ THÔNG TIN XE --- */
 .vehicle-card {
-    background-color: #1a1b2f; /* Màu nền thẻ xe */
+    background-color: #1a1b2f;
     border-radius: 12px;
-    padding: 15px 20px;
+    padding: 15px 25px;
     display: flex;
     align-items: center;
     margin-bottom: 15px;

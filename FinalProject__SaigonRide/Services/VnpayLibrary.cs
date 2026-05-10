@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-namespace FinalProject__SaigonRide.Helpers
+namespace FinalProject__SaigonRide.Services
 {
     public class VnpayLibrary
     {
