@@ -21,8 +21,31 @@
             @foreach (var vehicle in Model)
             {
                 <div class="vehicle-card">
-                    <img src="@(string.IsNullOrEmpty(vehicle.ImagePath) ? "/images/escooter.jpg" : vehicle.ImagePath)"
-                         alt="@vehicle.Name" class="vehicle-img" />
+                    @{
+                        // 1. Lấy ảnh từ Database trước (nếu có)
+                        string hinhAnhXe = vehicle.ImagePath;
+
+                        // 2. Nếu Database không có ảnh, bắt đầu tự động nhận diện theo tên xe
+                        if (string.IsNullOrEmpty(hinhAnhXe))
+                        {
+                            string tenLoaiXe = vehicle.Name != null ? vehicle.Name.ToLower() : "";
+
+                            if (tenLoaiXe.Contains("scooter"))
+                            {
+                                hinhAnhXe = "/images/escooter.jpg"; // Lấy ảnh xe trượt
+                            }
+                            else if (tenLoaiXe.Contains("bike"))
+                            {
+                                hinhAnhXe = "/images/bicycle.jpg"; // Lấy ảnh xe đạp
+                            }
+                            else
+                            {
+                                hinhAnhXe = "/images/escooter.jpg"; // Mặc định phòng hờ
+                            }
+                        }
+                    }
+
+                    <img src="@hinhAnhXe" alt="@vehicle.Name" class="vehicle-img" style="object-fit: cover;" />
 
                     <div class="vehicle-info">
                         <div class="info-row">

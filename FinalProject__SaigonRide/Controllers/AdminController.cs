@@ -75,40 +75,6 @@ namespace FinalProject__SaigonRide.Controllers
             return RedirectToAction(nameof(Stations));
         }
 
-        // --- 6. Xử lý Sửa Trạm (Edit Station) ---
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStation(string Id, string Name, string Location)
-        {
-            var station = await _context.Stations.FindAsync(Id);
-            if (station != null)
-            {
-                station.Name = Name;
-                station.Location = Location;
-
-                _context.Update(station);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Cập nhật thông tin trạm thành công!";
-            }
-            return RedirectToAction(nameof(Stations));
-        }
-
-        // --- 7. Xử lý Xóa Trạm (Delete Station) ---
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteStation(string id)
-        {
-            var station = await _context.Stations.FindAsync(id);
-            if (station != null)
-            {
-                _context.Stations.Remove(station);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã xóa trạm thành công!";
-            }
-            return RedirectToAction(nameof(Stations));
-        }
-
-
         // --- 8. Xử lý Thêm Coupon (Create Coupon) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -187,6 +153,60 @@ namespace FinalProject__SaigonRide.Controllers
                 }
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Vehicles));
+            }
+            return RedirectToAction(nameof(Vehicles));
+        }
+        // --- Xử lý Sửa Trạm (Edit Station) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStation(string Id, string Name, string Location)
+        {
+            var station = await _context.Stations.FindAsync(Id);
+            if (station != null)
+            {
+                station.Name = Name;
+                station.Location = Location;
+
+                _context.Stations.Update(station);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Cập nhật thông tin trạm thành công!";
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+        // --- Xử lý Xóa Trạm (Delete Station) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStation(string id) // Chữ id viết thường
+        {
+            var station = await _context.Stations.FindAsync(id);
+            if (station != null)
+            {
+                // Lưu ý: Nếu trạm này ĐANG CÓ XE (Vehicles) thì không xóa được (lỗi khóa ngoại). 
+                // Muốn xóa trạm, ông phải xóa hết xe trong trạm đó trước!
+                _context.Stations.Remove(station);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã xóa trạm thành công!";
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+        // --- Xử lý Sửa Xe (Edit Vehicle) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditVehicle(string Id, string Name, double PricePerHour, string StationId)
+        {
+            var vehicle = await _context.Vehicles.FindAsync(Id);
+            if (vehicle != null)
+            {
+                vehicle.Name = Name;
+                vehicle.PricePerHour = PricePerHour;
+                vehicle.StationId = StationId;
+
+                _context.Vehicles.Update(vehicle);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã cập nhật thông tin xe thành công!";
             }
             return RedirectToAction(nameof(Vehicles));
         }

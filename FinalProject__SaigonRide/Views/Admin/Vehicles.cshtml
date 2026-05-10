@@ -54,8 +54,15 @@
                     <td>@v.Name</td>
                     <td><span class="price-chip">@v.PricePerHour.ToString("N0") VND</span></td>
                     <td style="text-align:right">
-                        <button class="btn-neon" style="background:#ff5050; padding: 5px 10px;" 
-                                onclick="openDeleteModal('@v.Id', '@v.Name')">Delete</button>
+                        <button class="btn-neon" style="background: #2c2e3e; color: #d4ff00; padding: 5px 10px; margin-right: 5px;"
+                                onclick='openEditModal("@v.Id", @Html.Raw(Json.Serialize(v.Name)), @v.PricePerHour, "@v.StationId")'>
+                            Edit
+                        </button>
+
+                        <button class="btn-neon" style="background:#ff5050; padding: 5px 10px;"
+                                onclick="openDeleteModal('@v.Id', '@v.Name')">
+                            Delete
+                        </button>
                     </td>
                 </tr>
             }
@@ -120,9 +127,62 @@
     </div>
 </div>
 
+@* ─────────── MODAL: EDIT VEHICLE ─────────── *@
+<div class="modal-overlay" id="editVehicleModal">
+    <div class="modal-box">
+        <h4 style="color:#d4ff00; margin-bottom:20px">✏️ Edit Vehicle</h4>
+        <form method="post" asp-action="EditVehicle" asp-controller="Admin">
+            <input type="hidden" id="editVehicleId" name="Id">
+
+            <div class="mb-3">
+                <label class="modal-label">Vehicle Name</label>
+                <input class="modal-input" id="editVehicleName" name="Name" required autocomplete="off">
+            </div>
+
+            <div class="mb-3">
+                <label class="modal-label">Price (VND/MIN)</label>
+                <input type="number" step="any" class="modal-input" id="editVehiclePrice" name="PricePerHour" required autocomplete="off">
+            </div>
+
+            <div class="mb-3">
+                <label class="modal-label">Station (Trạm)</label>
+                <select class="modal-input" id="editVehicleStation" name="StationId" required>
+                    <option value="">-- Chọn Trạm --</option>
+                    @if (ViewBag.Stations != null)
+                    {
+                        // Đã thêm ép kiểu giống hệt Modal Add
+                        foreach (var station in (IEnumerable<FinalProject__SaigonRide.Models.Station>)ViewBag.Stations)
+                        {
+                            <option value="@station.Id">@station.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px">
+                <button type="button" class="btn-neon" style="background:#2c2e3e; color:#8a8a9e" onclick="closeModal('editVehicleModal')">Cancel</button>
+                <button type="submit" class="btn-neon">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         function openAddModal() { document.getElementById('addModal').classList.add('active'); }
+        // Mở Modal Edit (Phần mới thêm)
+        function openEditModal(id, name, price, stationId) {
+            document.getElementById('editVehicleId').value = id;
+            document.getElementById('editVehicleName').value = name;
+            document.getElementById('editVehiclePrice').value = price;
+
+            const stationSelect = document.getElementById('editVehicleStation');
+            if (stationSelect) {
+                stationSelect.value = stationId;
+            }
+
+            document.getElementById('editVehicleModal').classList.add('active');
+        }
         function openDeleteModal(id, name) { 
             document.getElementById('delId').value = id;
             document.getElementById('delName').innerText = name;
