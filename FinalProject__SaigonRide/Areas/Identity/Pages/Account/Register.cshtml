@@ -50,6 +50,22 @@
                             <input asp-for="Input.LastName" placeholder="Last Name" />
                         </div>
                     </div>
+                    <div style="display: flex; gap: 20px; margin-bottom: 15px; color: #8a8a9e; font-weight: bold;">
+                        <label style="cursor: pointer;">
+                            <input type="radio" asp-for="Input.IsForeigner" value="false" checked onchange="toggleDocType()" id="radioLocal">
+                            Local (Vietnamese)
+                        </label>
+                        <label style="cursor: pointer;">
+                            <input type="radio" asp-for="Input.IsForeigner" value="true" onchange="toggleDocType()" id="radioForeign">
+                            🌍 Foreigner
+                        </label>
+                    </div>
+
+                    <div class="custom-input-group">
+                        <input asp-for="Input.DocumentNumber" id="docInput" placeholder="Số điện thoại / CCCD" required />
+                        <i class="bi bi-telephone" id="docIcon"></i>
+                    </div>
+
                     <div class="custom-input-group">
                         <input asp-for="Input.Email" placeholder="Email" />
                         <i class="bi bi-envelope"></i>
@@ -78,4 +94,21 @@
         </div>
     </div>
 </body>
+<script>
+    function toggleDocType() {
+        var isForeign = document.getElementById('radioForeign').checked;
+        var input = document.getElementById('docInput');
+        var icon = document.getElementById('docIcon');
+
+        if (isForeign) {
+            // Đổi thành giao diện nhập Passport
+            input.placeholder = "Passport Number";
+            icon.className = "bi bi-globe"; // Đổi icon
+        } else {
+            // Đổi thành giao diện nhập SĐT
+            input.placeholder = "Phone Number";
+            icon.className = "bi bi-telephone"; // Đổi icon
+        }
+    }
+</script>
 </html>

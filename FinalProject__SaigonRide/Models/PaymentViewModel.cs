@@ -14,7 +14,8 @@ namespace FinalProject__SaigonRide.Models
         public string RentedVehicle { get; set; }
         public string VehicleImagePath { get; set; }
         public decimal EstimatedCost { get; set; }
-
+        public bool IsForeigner { get; set; }
+        public string DocumentNumber { get; set; }
         public double PricePerMinute { get; set; }
         public List<Coupon> AvailableCoupons { get; set; } = new List<Coupon>();
     }

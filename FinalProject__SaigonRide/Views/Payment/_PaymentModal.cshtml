@@ -1,5 +1,6 @@
 ﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
 
+
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 800px;">
         <div class="modal-content" style="background-color: transparent; border: none;">
@@ -17,7 +18,7 @@
                         <div class="grid-item"><span>First Name:</span> @Model.FirstName</div>
                         <div class="grid-item"><span>Last Name:</span> @Model.LastName</div>
                         <div class="grid-item"><span>Email:</span> @Model.Email</div>
-                        <div class="grid-item"><span>Phone:</span> @Model.Phone</div>
+                        <div class="grid-item"><span>@(Model.IsForeigner ? "Passport: " : "Phone: ")</span>@Model.DocumentNumber</div>
                     </div>
                 </div>
 

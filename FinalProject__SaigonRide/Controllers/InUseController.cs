@@ -69,7 +69,9 @@ namespace FinalProject__SaigonRide.Controllers
                 VehicleImagePath = vehicle?.ImagePath,
                 AvailableCoupons = activeCoupons,
                 EstimatedCost = 0,
-                PricePerMinute = vehicle?.PricePerHour ?? 0
+                PricePerMinute = vehicle?.PricePerHour ?? 0,
+                IsForeigner = user?.IsForeigner ?? false,
+                DocumentNumber = user?.DocumentNumber ?? "Not updated",
             };
 
             if (station != null)
