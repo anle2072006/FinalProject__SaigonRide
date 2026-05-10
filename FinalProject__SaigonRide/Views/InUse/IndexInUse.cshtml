@@ -8,7 +8,6 @@
 }
 
 <div class="inuse-main-section py-3">
-    <h5 class="breadcrumb-text mb-3">In use</h5>
 
     <div class="rider-display-box">
     </div>
@@ -41,7 +40,6 @@
         <div class="side-widget mb-5">
             <p class="widget-label">Selected Station:</p>
             <div class="mini-info-box">
-                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc18a593?w=200" alt="@Model.PickupStation" />
                 <div>
                     <strong>@Model.PickupStation</strong>
                     <small>Ho Chi Minh City</small>
@@ -52,7 +50,11 @@
         <div class="side-widget">
             <p class="widget-label">Current Vehicle:</p>
             <div class="mini-info-box">
-                <div class="icon-bg"><i class="bi bi-bicycle" style="color: white;"></i></div>
+                <div class="icon-bg" style="overflow: hidden; display: flex; justify-content: center; align-items: center; background: #222;">
+                    <img src="@(string.IsNullOrEmpty(Model.VehicleImagePath) ? "/images/escooter.jpg" : Model.VehicleImagePath)"
+                         alt="Vehicle"
+                         style="width: 100%; height: 100%; object-fit: cover;" />
+                </div>
                 <strong>@Model.RentedVehicle</strong>
             </div>
         </div>

@@ -12,7 +12,7 @@ namespace FinalProject__SaigonRide.Models
         public string PickupStation { get; set; }
         public string DropoffStation { get; set; } = "Ba Son";
         public string RentedVehicle { get; set; }
-
+        public string VehicleImagePath { get; set; }
         public decimal EstimatedCost { get; set; }
 
         public double PricePerMinute { get; set; }

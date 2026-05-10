@@ -3,6 +3,7 @@ using FinalProject__SaigonRide.Data;
 using FinalProject__SaigonRide.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http; 
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,29 +23,40 @@ namespace FinalProject__SaigonRide.Controllers
         [HttpPost]
         public IActionResult StartTrip(string stationId, string vehicleId)
         {
-            TempData["StationId"] = stationId;
-            TempData["VehicleId"] = vehicleId;
+            // 1. Dùng Session thay vì TempData để dữ liệu sống sót qua nhiều lần F5
+            HttpContext.Session.SetString("TripStationId", stationId);
+            HttpContext.Session.SetString("TripVehicleId", vehicleId);
+
             return RedirectToAction("IndexInUse");
         }
 
         public async Task<IActionResult> IndexInUse()
         {
-            string? sId = TempData["StationId"]?.ToString();
-            string? vId = TempData["VehicleId"]?.ToString();
-            TempData.Keep();
+            // 2. Rút dữ liệu chuyến đi từ Session
+            string? sId = HttpContext.Session.GetString("TripStationId");
+            string? vId = HttpContext.Session.GetString("TripVehicleId");
 
             if (string.IsNullOrEmpty(sId) || string.IsNullOrEmpty(vId))
             {
-                return RedirectToAction("IndexStations", "Home");
+                return RedirectToAction("Stations", "Home");
+            }
+            // 3. LỚP BẢO VỆ: Nếu chưa có dữ liệu (người dùng chưa đặt xe)
+            if (string.IsNullOrEmpty(sId) || string.IsNullOrEmpty(vId))
+            {
+                // Gửi một thông báo lỗi sang TempData để hiện Popup
+                TempData["NoTripError"] = "Bạn chưa đặt phương tiện nào! Vui lòng chọn xe để bắt đầu chuyến đi.";
+
+                // Đuổi về trang chọn Trạm xe
+                return RedirectToAction("Stations", "Home");
             }
 
+            // 4. Khối code lấy dữ liệu DB của bạn giữ nguyên
             var station = await _context.Stations.FirstOrDefaultAsync(s => s.Id == sId);
             var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == vId);
 
             var user = await _userManager.GetUserAsync(User);
             var activeCoupons = await _context.Coupons.Where(c => c.IsActive).ToListAsync();
 
-            // CHỈ KHAI BÁO 1 LẦN DUY NHẤT: Đã gộp PricePerMinute vào chung "hộp" này
             var paymentModel = new PaymentViewModel
             {
                 FirstName = user?.FirstName ?? "Rider",
@@ -54,9 +66,10 @@ namespace FinalProject__SaigonRide.Controllers
                 PickupStation = station?.Name ?? "Unknown Station",
                 DropoffStation = "Đang di chuyển...",
                 RentedVehicle = vehicle?.Name ?? "Unknown Vehicle",
+                VehicleImagePath = vehicle?.ImagePath,
                 AvailableCoupons = activeCoupons,
                 EstimatedCost = 0,
-                PricePerMinute = vehicle?.PricePerHour ?? 0 // Giá 500đ hoặc 1500đ lấy ở đây
+                PricePerMinute = vehicle?.PricePerHour ?? 0
             };
 
             if (station != null)
@@ -70,7 +83,6 @@ namespace FinalProject__SaigonRide.Controllers
                 ViewBag.VehicleImg = vehicle.ImagePath;
             }
 
-            // CHỈ RETURN 1 LẦN Ở CUỐI HÀM
             return View(paymentModel);
         }
     }

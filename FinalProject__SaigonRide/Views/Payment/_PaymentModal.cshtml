@@ -1,10 +1,10 @@
 ﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
 
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 650px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 800px;">
         <div class="modal-content" style="background-color: transparent; border: none;">
             
-            <div class="payment-container">
+            <div class="payment-container" style="padding: 40px 60px;">
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -30,74 +30,113 @@
                         <div class="grid-item"><span>Estimated Cost:</span> <span id="originalCostText" data-cost="0">0 VND</span></div>
                     </div>
                 </div>
-          
 
-            <div class="section-card">
-                <h3 class="section-title text-neon">Apply Coupon</h3>
-                <div class="coupon-flex">
-                    <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
-                        <option value="0" disabled selected hidden>Select coupon</option>
-                        @if (Model.AvailableCoupons != null)
-                        {
-                            foreach (var coupon in Model.AvailableCoupons)
+                <div class="section-card">
+                    <h3 class="section-title text-neon">Apply Coupon</h3>
+                    <div class="coupon-flex">
+                        <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
+                            <option value="0" disabled selected hidden>Select coupon</option>
+                            @if (Model.AvailableCoupons != null)
                             {
-                                <option value="@coupon.DiscountValue">@coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)</option>
+                                foreach (var coupon in Model.AvailableCoupons)
+                                {
+                                    <option value="@coupon.DiscountValue">@coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)</option>
+                                }
                             }
+                        </select>
+                        <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
+                    </div>
+
+                    <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
+                        Please choose a discount coupon!
+                    </div>
+                    <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
+                </div>
+
+                <div class="section-card" style="width: 100%;">
+                    <h3 class="section-title text-neon">Payment Method</h3>
+                    <div class="payment-methods" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div class="pm-logo" id="pay_paypal" onclick="selectPaymentMethod('PayPal')">
+                            <img src="~/images/paypal.jpg" alt="PayPal" />
+                        </div>
+                        <div class="pm-logo" id="pay_visa" onclick="selectPaymentMethod('Visa')">
+                            <img src="~/images/visa.jpg" alt="Visa" />
+                        </div>
+                        <div class="pm-logo" id="pay_momo" onclick="selectPaymentMethod('MoMo')">
+                            <img src="~/images/momo.jpg" alt="MoMo" />
+                        </div>
+                        <div class="pm-logo" id="pay_vnpay" onclick="selectPaymentMethod('VNPay')">
+                            <img src="~/images/vnpay.jpg" alt="VNPay" />
+                        </div>
+                    </div>
+                    <div id="paymentError" style="display:none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-top: 10px;">
+                        Vui lòng chọn phương thức thanh toán!
+                    </div>
+                </div>
+
+                <div class="footer-flex">
+                    <div class="total-text">
+                        Total: <span id="totalDisplay" class="text-neon">0 VND</span>
+                    </div>
+    
+                    <form id="paymentForm" asp-controller="Payment" asp-action="ProcessPayment" method="post">
+                        <input type="hidden" name="amount" id="finalAmountInput" />
+                        <input type="hidden" name="paymentMethod" id="selectedMethodInput" />
+                        <button type="button" onclick="handlePaymentSubmit()" class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
+                    </form>
+                </div>
+
+                <script>
+                    let selectedMethod = "";
+
+                    function selectPaymentMethod(method) {
+                        selectedMethod = method;
+                        document.getElementById("selectedMethodInput").value = method;
+        
+                        document.querySelectorAll('.pm-logo').forEach(el => el.classList.remove('selected'));
+                        document.getElementById('pay_' + method.toLowerCase()).classList.add('selected');
+                        document.getElementById("paymentError").style.display = "none";
+                    }
+
+                    function handlePaymentSubmit() {
+                        if (!selectedMethod) {
+                            document.getElementById("paymentError").style.display = "block";
+                            return;
                         }
-                    </select>
-                    <button type="button" id="btnApplyCoupon" class="btn-neon">Apply</button>
-                </div>
 
-                <div id="couponErrorMsg" style="display: none; color: #ff4d4d; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; padding-left: 5px;">
-                    Please choose a discount coupon!
-                </div>
-                <div id="couponMsg" class="coupon-msg" style="display: none;"></div>
-            </div>
+                        const totalStr = document.getElementById("totalDisplay").innerText;
 
-            <div class="section-card" style="width: 100%;">
-                <h3 class="section-title text-neon">Payment Method</h3>
-                <div class="payment-methods">
-                    <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" width="50" alt="PayPal" /></div>
-                    <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" width="45" alt="Visa" /></div>
-                    <div class="pm-logo"><img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="35" alt="MoMo" /></div>
-                    <div class="pm-logo"><img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/9/06ncktiwd6dc1694418186387.png" width="55" alt="VNPay" /></div>
-                </div>
-            </div>
-
-            <div class="footer-flex">
-                <div class="total-text">
-                    Total: <span id="totalDisplay" class="text-neon">0 VND</span>
-                </div>
-                <button class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
+                        document.getElementById("finalAmountInput").value = totalStr;
+                        document.getElementById("paymentForm").submit();
+                    }
+                </script>
             </div>
         </div>
     </div>
 </div>
-</div>
 
 <script>
-    // HÀM LÀM TRÒN: < 500đ xuống, >= 500đ lên
     function lamTronTien(soTien) {
         return Math.round(soTien / 1000) * 1000;
     }
 
-    // Hàm nhận tiền từ trang In Use
     function updateModalWithLiveCost(realTimeCost) {
         var costElement = document.getElementById("originalCostText");
-        
         costElement.setAttribute("data-cost", realTimeCost);
         costElement.innerText = realTimeCost.toLocaleString("vi-VN") + " VND";
-        
         calculateFinalTotal();
     }
 
-    // Tính tổng tiền sau khi trừ Coupon và làm tròn
+    // 3. FIX LOGIC COUPON: Cập nhật hàm tính toán chính xác
     function calculateFinalTotal() {
-        var baseCost = parseInt(document.getElementById("originalCostText").getAttribute("data-cost")) || 0;
+        var costElement = document.getElementById("originalCostText");
+        var baseCost = parseInt(costElement.getAttribute("data-cost")) || 0;
+        
         var select = document.getElementById("couponSelect");
         var btnApply = document.getElementById("btnApplyCoupon");
         var discountValue = 0;
 
+        // Kiểm tra nếu trạng thái nút là Applied thì mới trừ tiền
         if (btnApply.innerText.trim() === "Applied") {
             discountValue = parseInt(select.value) || 0;
         }
@@ -105,9 +144,7 @@
         var finalTotal = baseCost - discountValue;
         if (finalTotal < 0) finalTotal = 0;
 
-        // ÁP DỤNG LÀM TRÒN CHO TỔNG TIỀN CUỐI CÙNG
         var roundedTotal = lamTronTien(finalTotal);
-
         document.getElementById("totalDisplay").innerText = roundedTotal.toLocaleString("vi-VN") + " VND";
     }
 
@@ -130,6 +167,7 @@
         }
 
         btnApply.addEventListener("click", function () {
+            // Nếu đã Apply rồi thì bấm lại để hủy
             if (btnApply.innerText.trim() === "Applied") {
                 resetCouponState();
                 return;
@@ -142,7 +180,6 @@
                 btnApply.innerText = "Applied";
                 btnApply.style.backgroundColor = "#ff4d4d";
                 btnApply.style.color = "#ffffff";
-                
                 msg.innerText = "Using " + couponText;
                 msg.style.display = "block";
                 errorMsg.style.display = "none";
@@ -155,7 +192,12 @@
         });
 
         select.addEventListener("change", function () {
-            resetCouponState();
+            // Khi đổi coupon khác thì reset để người dùng bấm Apply lại
+            btnApply.innerText = "Apply";
+            btnApply.style.backgroundColor = "#cbfb45";
+            btnApply.style.color = "#1a1b2f";
+            msg.style.display = "none";
+            calculateFinalTotal();
         });
 
         var paymentModal = document.getElementById("paymentModal");
@@ -164,4 +206,3 @@
         }
     });
 </script>
-

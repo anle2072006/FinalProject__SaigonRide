@@ -334,15 +334,19 @@ html, body {
     background-color: #1a1b2f;
     color: #ffffff;
     width: 100%;
-    padding: 20px 40px 40px 40px;
+    /* Tăng padding từ 20px 40px lên 30px 50px để scale rộng lòng container */
+    padding: 30px 50px 50px 50px;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
-
 .text-neon {
     color: #cbfb45;
 }
-
+.pm-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; 
+}
 .payment-container h2 {
     font-weight: bold;
     letter-spacing: 1px;
@@ -411,17 +415,29 @@ html, body {
 
 .pm-logo {
     background-color: #ffffff;
-    width: 70px;
-    height: 45px;
+    width: 100px;
+    height: 60px;
     border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.7rem;
-    color: #000;
-    font-weight: bold;
+    overflow: hidden;
+    padding: 0.5px;
+    cursor: pointer;
+    border: 4px solid transparent;  
+    transition: border-color 0.2s;
 }
 
+.pm-logo.selected {
+    border-color: #cbfb45 !important; 
+}
+
+
+    .pm-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
 .footer-flex {
     display: flex;
     justify-content: space-between;
