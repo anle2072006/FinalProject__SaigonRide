@@ -70,7 +70,9 @@
         else
         {
             <div style="color: white; width: 100%; text-align: center; padding: 40px 20px;">
-                <p>Hiện tại trạm này đang hết xe.<br>Vui lòng chọn một trạm khác nhé!</p>
+                <p>
+                    Currently, this station has no buses.<br>Please select another station!
+                </p>
             </div>
         }
     </div>
@@ -80,19 +82,19 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #1a1a2e; color: #fff; border: 1px solid #D1F366;">
             <div class="modal-header" style="border-bottom: 1px solid #333;">
-                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Xác nhận chuyến đi</h5>
+                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Confirm trip</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-3">Bạn đã chọn thông tin sau:</p>
+                <p class="mb-3">You have selected the following information:</p>
 
                 <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444;">
-                    <p class="mb-2">📍 <strong>Trạm:</strong> <span style="color: #D1F366;">@ViewBag.StationName</span></p>
-                    <p class="mb-0">🛴 <strong>Xe:</strong> <span id="displayVehicleName" style="color: #D1F366;"></span> <span class="text-secondary">(ID: <span id="displayVehicleId"></span>)</span></p>
+                    <p class="mb-2">📍 <strong>Station:</strong> <span style="color: #D1F366;">@ViewBag.StationName</span></p>
+                    <p class="mb-0">🛴 <strong>Vehicle:</strong> <span id="displayVehicleName" style="color: #D1F366;"></span> <span class="text-secondary">(ID: <span id="displayVehicleId"></span>)</span></p>
                 </div>
 
                 <p class="text-warning" style="font-size: 0.9rem;">
-                    <em>Ghi chú: Bấm "Go to In Use" để chuyển trang và theo dõi chuyến đi của bạn.</em>
+                    <em>Note: Click "Go to In Use" to navigate to the trip tracking page.</em>
                 </p>
 
                 <form asp-controller="InUse" asp-action="StartTrip" method="post">
