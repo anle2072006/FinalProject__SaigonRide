@@ -136,7 +136,7 @@ namespace FinalProject__SaigonRide.Controllers
         // --- 9. Xử lý Sửa Coupon (Edit Coupon) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCoupon(string Id, string CodeName, int DiscountValue, bool IsActive)
+        public async Task<IActionResult> EditCoupon(int Id, string CodeName, int DiscountValue, bool IsActive)
         {
             var coupon = await _context.Coupons.FindAsync(Id);
             if (coupon != null)
@@ -155,7 +155,7 @@ namespace FinalProject__SaigonRide.Controllers
         // --- 10. Xử lý Xóa Coupon (Delete Coupon) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteCoupon(string id)
+        public async Task<IActionResult> DeleteCoupon(int id)
         {
             var coupon = await _context.Coupons.FindAsync(id);
             if (coupon != null)

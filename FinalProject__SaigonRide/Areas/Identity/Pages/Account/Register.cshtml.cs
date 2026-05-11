@@ -98,6 +98,8 @@ namespace FinalProject__SaigonRide.Areas.Identity.Pages.Account
             /// </summary>
             public bool IsForeigner { get; set; }
             public string DocumentNumber { get; set; }
+            [Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
+            [DataType(DataType.Password)]
             public string Password { get; set; }
 
             /// <summary>
