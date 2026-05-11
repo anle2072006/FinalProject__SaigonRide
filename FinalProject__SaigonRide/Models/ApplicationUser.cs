@@ -6,5 +6,7 @@ namespace FinalProject__SaigonRide.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public bool IsForeigner { get; set; }
+        public string DocumentNumber { get; set; } 
     }
 }

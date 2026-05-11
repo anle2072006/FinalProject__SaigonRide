@@ -1,8 +1,6 @@
 ﻿@model IEnumerable<FinalProject__SaigonRide.Models.Vehicle>
 @{
     ViewData["Title"] = "Select Vehicle";
-    // Ép sử dụng Layout người dùng (nếu cần, bỏ comment dòng dưới)
-    // Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="main-content vehicle-page">
@@ -15,7 +13,7 @@
         <button class="btn-search">Search</button>
     </div>
 
-    <div class="blue-outline-box">
+    <div class="blue-outline-box" style="border: none; background: transparent;">
         @if (Model != null && Model.Any())
         {
             @foreach (var vehicle in Model)
@@ -47,17 +45,20 @@
 
                     <img src="@hinhAnhXe" alt="@vehicle.Name" class="vehicle-img" style="object-fit: cover;" />
 
-                    <div class="vehicle-info">
-                        <div class="info-row">
-                            <h4>@vehicle.Name</h4>
-                            <span class="duration">@vehicle.PricePerHour.ToString("N0") VND/h</span>
+                    <div class="vehicle-info" style="display: flex; justify-content: space-between; align-items: center; flex: 1;">
+                        
+                        <div style="flex: 1; text-align: left;">
+                            <h4 style="margin: 0; font-size: 1.15rem; font-weight: bold; color: #ffffff;">@vehicle.Name</h4>
+                            <span style="font-size: 0.85rem; font-weight: bold; color: #51b56d; display: block; margin-top: 5px;">Available</span>
                         </div>
-                        <div class="info-row mt-2">
-                            <span class="remain">Available</span>
+                        
+                        <div style="flex: 1; text-align: center;">
+                            <span style="font-size: 1rem; font-weight: bold; color: #ffffff;">@vehicle.PricePerHour.ToString("N0") VND/h</span>
                         </div>
                     </div>
 
                     <button type="button" class="btn-book"
+                            style="margin-left: 20px; flex-shrink: 0;"
                             data-bs-toggle="modal"
                             data-bs-target="#confirmModal"
                             data-vehicleid="@vehicle.Id"
@@ -116,7 +117,6 @@
 
 @section Scripts {
     <script>
-        // Script nhỏ để bắt sự kiện khi Popup mở lên và truyền dữ liệu xe vào Popup
         document.addEventListener('DOMContentLoaded', function () {
             var confirmModal = document.getElementById('confirmModal');
 
@@ -124,15 +124,12 @@
                 confirmModal.addEventListener('show.bs.modal', function (event) {
                     var button = event.relatedTarget;
 
-                    // Lấy dữ liệu thật từ nút Book
                     var vehicleId = button.getAttribute('data-vehicleid');
                     var vehicleName = button.getAttribute('data-vehiclename');
 
-                    // Hiển thị lên màn hình
                     document.getElementById('displayVehicleName').textContent = vehicleName;
                     document.getElementById('displayVehicleId').textContent = vehicleId;
 
-                    // Gắn vào form gửi đi
                     document.getElementById('inputModalVehicleId').value = vehicleId;
                 });
             }

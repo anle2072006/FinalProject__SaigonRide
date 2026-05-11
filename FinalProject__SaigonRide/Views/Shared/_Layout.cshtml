@@ -1,10 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Http
 @using FinalProject__SaigonRide.Models
+@using Microsoft.EntityFrameworkCore
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject FinalProject__SaigonRide.Data.ApplicationDbContext ContextDB
+
 @{
     bool hasRightCol = IsSectionDefined("RightContent");
     var mainColClass = hasRightCol ? "col-md-7" : "col-md-10";
+
+    bool hasActiveTrip = false;
+    if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        if (currentUser != null)
+        {
+            hasActiveTrip = await ContextDB.Bookings
+                .AnyAsync(b => b.UserId == currentUser.Id && b.Status == "InUse");
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -36,7 +51,14 @@
                         {
                             /* Chỉ hiện 3 nút này khi ĐÃ đăng nhập */
                             <li class="nav-item">
-                                <a class="nav-link border-item" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
+                                @if (hasActiveTrip)
+                                {
+                                    <a class="nav-link border-item" asp-controller="InUse" asp-action="IndexInUse">In Use</a>
+                                }
+                                else
+                                {
+                                    <a class="nav-link border-item" style="opacity: 0.4; cursor: not-allowed; pointer-events: none;" title="Vui lòng chọn xe trước">In Use</a>
+                                }
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link border-item" asp-controller="History" asp-action="IndexHistory">History</a>
@@ -48,7 +70,6 @@
                     </ul>
                 </div>
 
-                <!-- FIX 1: Chỉ hiện nút Login/Register nếu CHƯA đăng nhập[cite: 2, 3] -->
                 @if (!SignInManager.IsSignedIn(User))
                 {
                     <ul class="nav flex-column mb-4 px-3 sidebar-bottom-content">
@@ -85,7 +106,7 @@
             }
         </div>
     </div>
-
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
