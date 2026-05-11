@@ -178,27 +178,38 @@
         document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
         document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
 
+        const isFrozen = @(ViewBag.IsFrozen != null ? ViewBag.IsFrozen.ToString().ToLower() : "false");
+
         function checkAndEndRide() {
             if (!isDropOffSelected) {
                 var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
                 dropoffModal.show();
             } else {
+                // Nếu đã chốt rồi (bị đẩy về từ trang thanh toán lỗi), chỉ bật Modal thanh toán lên, không gọi API nữa
+                if (isFrozen) {
+                    if (typeof updateModalWithLiveCost === "function") {
+                        updateModalWithLiveCost(costVND);
+                    }
+                    var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                    paymentModal.show();
+                    return;
+                }
+
                 console.log("Đang chốt thời gian vào DB...");
-        
-                // Gọi API lên Controller để lưu EndTime
                 fetch('/InUse/FreezeTrip', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).then(response => {
                     if (response.ok) {
-                        // Sau khi chốt thành công trên DB mới dừng bộ đếm JS
                         clearInterval(rideInterval);
-                
                         if (typeof updateModalWithLiveCost === "function") {
                             updateModalWithLiveCost(costVND);
                         }
                         var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
                         paymentModal.show();
+                        
+                        // Link thành công thì f5 lại trang để biến isFrozen thành true
+                        setTimeout(() => location.reload(), 1500);
                     } else {
                         alert("Có lỗi xảy ra khi kết thúc chuyến đi. Vui lòng thử lại!");
                     }
@@ -209,7 +220,9 @@
             }
         }
 
-        // Khởi chạy timer
-        rideInterval = setInterval(updateRideStats, 1000);
+        // CHỈ KHỞI CHẠY ĐỒNG HỒ NẾU CHUYẾN ĐI CHƯA BỊ CHỐT
+        if (!isFrozen) {
+            rideInterval = setInterval(updateRideStats, 1000);
+        }
     </script>
 }

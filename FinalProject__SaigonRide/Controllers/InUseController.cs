@@ -65,7 +65,7 @@ namespace FinalProject__SaigonRide.Controllers
             // Chỉ dùng 1 lần logic tính thời gian này
             var endTime = (currentBooking.EndTime == DateTime.MinValue) ? DateTime.Now : currentBooking.EndTime; var timeElapsed = endTime - currentBooking.StartTime;
             ViewBag.SecondsPassed = (int)timeElapsed.TotalSeconds;
-
+            ViewBag.IsFrozen = currentBooking.EndTime != DateTime.MinValue;
             ViewBag.StationList = await _context.Stations.ToListAsync();
             ViewBag.HasDropOffStation = !string.IsNullOrEmpty(currentBooking.NextStationId);
 
