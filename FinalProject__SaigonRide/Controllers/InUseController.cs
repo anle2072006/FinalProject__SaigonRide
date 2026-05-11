@@ -27,75 +27,80 @@ namespace FinalProject__SaigonRide.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            // Kiểm tra xem User này có chuyến đi nào đang chạy dở không
             var activeBooking = await _context.Bookings
                 .FirstOrDefaultAsync(b => b.UserId == user.Id && b.Status == "InUse");
 
             if (activeBooking != null)
             {
-                TempData["ErrorMessage"] = "You already have an active trip!";
+                // Nếu có chuyến rồi, bay thẳng vào trang In-Use luôn
                 return RedirectToAction("IndexInUse");
             }
 
-            // Tạo chuyến đi mới lưu vào DB
             var newBooking = new Booking
             {
                 UserId = user.Id,
                 StationId = stationId,
                 VehicleId = vehicleId,
                 StartTime = DateTime.Now,
-                Status = "InUse" // Trạng thái bắt đầu chạy
+                Status = "InUse"
             };
 
             _context.Bookings.Add(newBooking);
             await _context.SaveChangesAsync();
-
             return RedirectToAction("IndexInUse");
         }
 
-        // 2. HÀM HIỂN THỊ GIAO DIỆN IN-USE
         public async Task<IActionResult> IndexInUse()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            // Lấy chuyến đi đang InUse của User từ DB
             var currentBooking = await _context.Bookings
                 .Include(b => b.Station)
                 .Include(b => b.Vehicle)
                 .FirstOrDefaultAsync(b => b.UserId == user.Id && b.Status == "InUse");
 
-            // Nếu không có chuyến nào đang chạy -> Đuổi về trang chọn xe
-            if (currentBooking == null)
-            {
-                TempData["NoTripError"] = "You have not booked any vehicle! Please select a vehicle to start your trip.";
-                return RedirectToAction("Stations", "Home");
-            }
+            if (currentBooking == null) return RedirectToAction("Stations", "Home");
 
-            // Kiểm tra xem đã chọn trạm trả (NextStationId) hay chưa để truyền cờ sang View chặn nút End Ride
+            var timeElapsed = DateTime.Now - currentBooking.StartTime;
+            ViewBag.SecondsPassed = (int)timeElapsed.TotalSeconds;
+
+            // --- CÁC DÒNG CODE CẦN THÊM ĐỂ FIX LỖI DROP-OFF ---
+
+            // 1. Lấy danh sách trạm từ DB truyền sang ViewBag (Đổi .Stations thành tên DbSet của bạn nếu khác)
+            ViewBag.StationList = await _context.Stations.ToListAsync();
+
+            // 2. Kiểm tra xem user đã update trạm trả chưa
             ViewBag.HasDropOffStation = !string.IsNullOrEmpty(currentBooking.NextStationId);
 
-            // Lấy danh sách trạm (loại trừ trạm đi) để hiển thị trong Modal chọn trạm trả
-            ViewBag.StationList = await _context.Stations
-                .Where(s => s.Id != currentBooking.StationId)
-                .ToListAsync();
+            // 3. Lấy tên trạm Drop-off để truyền vào Payment Modal
+            string dropOffName = "Not selected";
+            if (!string.IsNullOrEmpty(currentBooking.NextStationId))
+            {
+                var dropOffStation = await _context.Stations.FindAsync(currentBooking.NextStationId);
+                if (dropOffStation != null)
+                {
+                    dropOffName = dropOffStation.Name;
+                }
+            }
 
-            var activeCoupons = await _context.Coupons.Where(c => c.IsActive).ToListAsync();
+            // --------------------------------------------------
 
-            // Nạp dữ liệu vào ViewModel
             var paymentModel = new PaymentViewModel
             {
                 FirstName = user.FirstName ?? "Rider",
-                LastName = user.LastName ?? "",
+                LastName = user.LastName ?? "User",
                 Email = user.Email ?? "No Email",
                 Phone = user.PhoneNumber ?? "Not updated",
                 PickupStation = currentBooking.Station?.Name ?? "Unknown Station",
-                DropoffStation = "Moving...",
+
+                // 4. Gán tên trạm Drop-off vào Model
+                DropoffStation = dropOffName,
+
                 RentedVehicle = currentBooking.Vehicle?.Name ?? "Unknown Vehicle",
                 VehicleImagePath = currentBooking.Vehicle?.ImagePath,
-                AvailableCoupons = activeCoupons,
-                EstimatedCost = 0,
-                PricePerMinute = currentBooking.Vehicle?.PricePerHour ?? 0,
+                AvailableCoupons = await _context.Coupons.Where(c => c.IsActive).ToListAsync(),
+                PricePerMinute = (currentBooking.Vehicle?.PricePerHour ?? 0) / 60.0,
                 IsForeigner = user.IsForeigner,
                 DocumentNumber = user.DocumentNumber ?? "Not updated",
             };

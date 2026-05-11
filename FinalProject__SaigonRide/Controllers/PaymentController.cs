@@ -20,13 +20,12 @@ namespace FinalProject__SaigonRide.Controllers
             _userManager = userManager;
         }
 
-        // 1. HÀM TẠO THANH TOÁN (Hàm này giúp nút "Payment Confirmation" hoạt động)
+        // 1. PROCESS PAYMENT (VNPay)
         [HttpPost]
         public async Task<IActionResult> ProcessPayment(string paymentMethod, string amount)
         {
             if (paymentMethod == "VNPay")
             {
-                // Làm sạch chuỗi tiền (Ví dụ: "150.000 VND" -> 150000)
                 string cleanAmount = amount.Replace("VND", "").Replace(".", "").Replace(",", "").Trim();
                 if (!long.TryParse(cleanAmount, out long amountInVnd))
                 {
@@ -59,6 +58,7 @@ namespace FinalProject__SaigonRide.Controllers
             return Content("This payment method is currently under maintenance.");
         }
 
+        // 2. PAYMENT CALLBACK (Update Booking Status here)
         public async Task<IActionResult> PaymentCallback()
         {
             var responseData = HttpContext.Request.Query;
@@ -69,6 +69,10 @@ namespace FinalProject__SaigonRide.Controllers
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
+
+            // --- ADDED: Find the active booking for this user ---
+            var activeBooking = await _context.Bookings
+                .FirstOrDefaultAsync(b => b.UserId == user.Id && b.Status == "InUse");
 
             var transaction = new TransactionHistory
             {
@@ -89,6 +93,15 @@ namespace FinalProject__SaigonRide.Controllers
 
                 transaction.Amount = realAmount;
                 transaction.Status = "Success";
+
+                // --- ADDED: Update Booking to Completed ---
+                if (activeBooking != null)
+                {
+                    activeBooking.Status = "Completed"; // Change status to stop the "Active Trip" check
+                    activeBooking.EndTime = DateTime.Now; // Record the end time
+                    activeBooking.TotalPrice = realAmount; // Save final price
+                    _context.Bookings.Update(activeBooking);
+                }
 
                 _context.TransactionHistories.Add(transaction);
                 await _context.SaveChangesAsync();

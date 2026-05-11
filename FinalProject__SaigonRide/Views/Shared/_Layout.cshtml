@@ -1,16 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Http
 @using FinalProject__SaigonRide.Models
+@using Microsoft.EntityFrameworkCore
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject FinalProject__SaigonRide.Data.ApplicationDbContext ContextDB
+
 @{
     bool hasRightCol = IsSectionDefined("RightContent");
     var mainColClass = hasRightCol ? "col-md-7" : "col-md-10";
 
-    // 1. Kiểm tra Session xem đã có xe và trạm được đặt chưa
-    var tripSId = Context.Session.GetString("TripStationId");
-    var tripVId = Context.Session.GetString("TripVehicleId");
-    bool hasActiveTrip = !string.IsNullOrEmpty(tripSId) && !string.IsNullOrEmpty(tripVId);
+    bool hasActiveTrip = false;
+    if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        if (currentUser != null)
+        {
+            hasActiveTrip = await ContextDB.Bookings
+                .AnyAsync(b => b.UserId == currentUser.Id && b.Status == "InUse");
+        }
+    }
 }
 
 <!DOCTYPE html>

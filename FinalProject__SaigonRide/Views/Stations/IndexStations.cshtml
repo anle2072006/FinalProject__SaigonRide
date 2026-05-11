@@ -16,12 +16,10 @@
             foreach (var station in Model)
             {
                 <div class="card">
-                    
                     <div class="info">
                         <h3>@station.Name</h3>
                         <p>@station.Location</p>
                     </div>
-                    
                     <a href="@Url.Action("IndexVehicles", "Vehicles", new { stationId = station.Id, stationName = station.Name })" class="btn-choose">Choose</a>
                 </div>
             }
@@ -29,15 +27,32 @@
         else
         {
             <div style="color: white; width: 100%; text-align: center; margin-top: 20px;">
-                <p>There are currently no stations. Please add stations from the Admin panel.</p>
+                <p>There are currently no stations available.</p>
             </div>
         }
     </div>
 </div>
 
+<div class="modal fade" id="activeTripModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1a1d21; color: white; border-radius: 25px; padding: 20px; border: 1px solid #cbfb45;">
+            <div class="modal-body text-center">
+                <h3 style="color: #cbfb45; font-weight: bold; margin-bottom: 30px;">NOTIFICATION</h3>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 40px;">
+                    <div style="width: 50px; height: 50px; border: 4px solid #cbfb45; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #cbfb45; font-size: 25px; font-weight: bold;">✓</span>
+                    </div>
+                    <span style="font-size: 20px; color: #cbfb45; font-weight: 500;">You already have an active trip!</span>
+                </div>
+                <a href="@Url.Action("IndexInUse", "InUse")" class="btn" style="background-color: #cbfb45; color: black; font-weight: bold; border-radius: 15px; padding: 10px 60px; font-size: 18px;">Go to In-Use</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section RightContent {
     <h5 class="right-panel-title" style="color: #D1F366; font-weight: bold;">Station Sidebar</h5>
-    <p>Thông tin phụ của Station nằm ở bên phải này.</p>
+    <p>Additional station information is displayed here.</p>
 }
 
 @section Styles {
@@ -46,4 +61,16 @@
 
 @section Scripts {
     <script src="~/js/station.js" asp-append-version="true"></script>
+    <script>
+        // FIXED: Merged script logic into one section
+        document.addEventListener('DOMContentLoaded', function () {
+            @if (TempData["AlreadyActive"] != null)
+            {
+                    <text>
+                            var activeModal = new bootstrap.Modal(document.getElementById('activeTripModal'));
+                            activeModal.show();
+                    </text>
+            }
+        });
+    </script>
 }

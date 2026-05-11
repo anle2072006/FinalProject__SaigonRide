@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<FinalProject__SaigonRide.Models.Vehicle>
 @{
     ViewData["Title"] = "Select Vehicle";
-
 }
 
 <div class="main-content vehicle-page">
@@ -49,9 +48,10 @@
         }
         else
         {
+            @* Dịch sang tiếng Anh *@
             <div style="width: 100%; text-align: center; padding: 40px 20px; background-color: #1a1b2f; border-radius: 12px;">
                 <p style="color: #D1F366; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 8px rgba(209, 243, 102, 0.3); margin: 0;">
-                    Hiện tại trạm này đang hết xe.<br>Vui lòng chọn một trạm khác nhé!
+                    This station is currently out of vehicles.<br>Please choose another station!
                 </p>
             </div>
         }
@@ -62,19 +62,22 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #1a1a2e; color: #fff; border: 1px solid #D1F366;">
             <div class="modal-header" style="border-bottom: 1px solid #333;">
-                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Xác nhận chuyến đi</h5>
+                @* Dịch sang tiếng Anh *@
+                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Confirm Trip</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-3">Bạn đã chọn thông tin sau:</p>
+                <p class="mb-3">You have selected the following:</p>
 
                 <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444;">
-                    <p class="mb-2">📍 <strong>Trạm:</strong> <span style="color: #D1F366;">@ViewBag.StationName</span></p>
-                    <p class="mb-0">🛴 <strong>Xe:</strong> <span id="displayVehicleName" style="color: #D1F366;"></span> <span class="text-secondary">(ID: <span id="displayVehicleId"></span>)</span></p>
+                    @* Dịch sang tiếng Anh *@
+                    <p class="mb-2">📍 <strong>Station:</strong> <span style="color: #D1F366;">@ViewBag.StationName</span></p>
+                    <p class="mb-0">🛴 <strong>Vehicle:</strong> <span id="displayVehicleName" style="color: #D1F366;"></span> <span class="text-secondary">(ID: <span id="displayVehicleId"></span>)</span></p>
                 </div>
 
                 <p class="text-warning" style="font-size: 0.9rem;">
-                    <em>Ghi chú: Bấm "Go to In Use" để chuyển trang và theo dõi chuyến đi của bạn.</em>
+                    @* Dịch sang tiếng Anh *@
+                    <em>Note: Click "Go to In Use" to proceed and track your trip.</em>
                 </p>
 
                 <form asp-controller="InUse" asp-action="StartTrip" method="post">
@@ -96,7 +99,6 @@
 
 @section Scripts {
     <script>
-        // Script nhỏ để bắt sự kiện khi Popup mở lên và truyền dữ liệu xe vào Popup
         document.addEventListener('DOMContentLoaded', function () {
             var confirmModal = document.getElementById('confirmModal');
 
@@ -104,15 +106,12 @@
                 confirmModal.addEventListener('show.bs.modal', function (event) {
                     var button = event.relatedTarget;
 
-                    // Lấy dữ liệu thật từ nút Book
                     var vehicleId = button.getAttribute('data-vehicleid');
                     var vehicleName = button.getAttribute('data-vehiclename');
 
-                    // Hiển thị lên màn hình
                     document.getElementById('displayVehicleName').textContent = vehicleName;
                     document.getElementById('displayVehicleId').textContent = vehicleId;
 
-                    // Gắn vào form gửi đi
                     document.getElementById('inputModalVehicleId').value = vehicleId;
                 });
             }

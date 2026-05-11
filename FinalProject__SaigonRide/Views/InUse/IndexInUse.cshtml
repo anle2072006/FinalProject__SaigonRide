@@ -2,11 +2,9 @@
 
 @{
     ViewData["Title"] = "In Use";
-    double pricePerMin = 1500;
-    try { pricePerMin = (double)Model.GetType().GetProperty("PricePerMinute").GetValue(Model); } catch { }
+    double pricePerMin = Model.PricePerMinute;
 
-    // Check if the user has selected a drop-off station from the Controller
-    bool hasDropOff = ViewBag.HasDropOffStation ?? false; 
+    bool hasDropOff = ViewBag.HasDropOffStation ?? false;
 }
 
 @if (TempData["SuccessMessage"] != null)
@@ -135,54 +133,67 @@
 
 @section Scripts {
     <script>
-        const pricePerSec = @pricePerMin / 60; 
-        let secondsPassed = 0; 
-        let distanceMeters = 0;
-        let batteryPercent = 100; 
-        let costVND = 0;
+        // Sửa lỗi dấu phẩy thập phân: Ép kiểu số về định dạng chuẩn quốc tế (dấu chấm)
+        const pricePerMin = @Model.PricePerMinute.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+        const pricePerSec = pricePerMin / 60.0;
+        
+        // Lấy số giây thực tế từ Server
+        let secondsPassed = @(ViewBag.SecondsPassed ?? 0);
+        
+        let costVND = secondsPassed * pricePerSec;
+        let distanceMeters = Math.floor(secondsPassed / 5) * 50;
+        let batteryPercent = Math.max(0, 100 - Math.floor(secondsPassed / 60));
         let rideInterval;
 
         const isDropOffSelected = @hasDropOff.ToString().ToLower();
 
         function formatTime(totalSeconds) {
-            let h = Math.floor(totalSeconds / 3600); 
-            let m = Math.floor((totalSeconds % 3600) / 60); 
-            let s = totalSeconds % 60; 
+            let h = Math.floor(totalSeconds / 3600);
+            let m = Math.floor((totalSeconds % 3600) / 60);
+            let s = totalSeconds % 60;
             return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
         }
 
         function updateRideStats() {
             secondsPassed++;
-            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed); 
-            costVND += pricePerSec; 
+            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
+            
+            // Tính tiền chuẩn: Cộng giá mỗi giây vào tổng tiền
+            costVND += pricePerSec;
             document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
 
             if (secondsPassed % 5 === 0) {
-                distanceMeters += 50; 
-                let distDisplay = distanceMeters >= 1000 ? (distanceMeters / 1000).toFixed(2) + ' km' : distanceMeters + ' m'; 
-                document.getElementById('distanceVal').innerText = distDisplay; 
+                distanceMeters += 50;
+                let distDisplay = distanceMeters >= 1000 ? (distanceMeters / 1000).toFixed(2) + ' km' : distanceMeters + ' m';
+                document.getElementById('distanceVal').innerText = distDisplay;
             }
 
-            if (secondsPassed % 60 === 0) {
-                if (batteryPercent > 0) batteryPercent -= 1; 
+            if (secondsPassed % 60 === 0 && batteryPercent > 0) {
+                batteryPercent -= 1;
                 document.getElementById('batteryVal').innerText = batteryPercent + '%';
             }
         }
 
-        function checkAndEndRide() {
-                    if (!isDropOffSelected) {
-                        var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
-                        dropoffModal.show();
-                    } else {
-                        clearInterval(rideInterval);
-                        if (typeof updateModalWithLiveCost === "function") {
-                            updateModalWithLiveCost(costVND);
-                        }
-                        var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-                        paymentModal.show();
-                    }
-                }
+        // Cập nhật giao diện ngay khi load trang
+        document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
+        document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
 
-        rideInterval = setInterval(updateRideStats, 1000); 
+        function checkAndEndRide() {
+            if (!isDropOffSelected) {
+                var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
+                dropoffModal.show();
+            } else {
+                clearInterval(rideInterval);
+                // Gọi hàm từ _PaymentModal.cshtml [cite: 116]
+                if (typeof updateModalWithLiveCost === "function") {
+                    updateModalWithLiveCost(costVND);
+                }
+                var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                paymentModal.show();
+            }
+        }
+
+        // Khởi chạy timer
+        rideInterval = setInterval(updateRideStats, 1000);
     </script>
 }
