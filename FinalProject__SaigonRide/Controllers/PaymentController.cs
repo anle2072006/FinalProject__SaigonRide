@@ -4,6 +4,9 @@ using FinalProject__SaigonRide.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 
 namespace FinalProject__SaigonRide.Controllers
 {
@@ -54,7 +57,54 @@ namespace FinalProject__SaigonRide.Controllers
                 string paymentUrl = vnpay.CreateRequestUrl(vnpUrl, hashSecret);
                 return Redirect(paymentUrl);
             }
+            if (paymentMethod == "PayPal")
+            {
+                string cleanAmount = amount.Replace("VND", "").Replace(".", "").Replace(",", "").Trim();
+                if (!long.TryParse(cleanAmount, out long amountInVnd)) return BadRequest("Invalid amount.");
 
+                // Quy đổi VND sang USD (Tỉ giá tạm tính: 25.000 VND = 1 USD)
+                decimal amountInUsd = Math.Round((decimal)amountInVnd / 25000, 2);
+
+                var clientId = _configuration["PayPal:ClientId"];
+                var secret = _configuration["PayPal:Secret"];
+                var returnUrl = _configuration["PayPal:ReturnUrl"];
+                var cancelUrl = _configuration["PayPal:CancelUrl"];
+
+                // 1. Lấy Access Token
+                var authBytes = Encoding.ASCII.GetBytes($"{clientId}:{secret}");
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authBytes));
+                var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "https://api-m.sandbox.paypal.com/v1/oauth2/token");
+                tokenRequest.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                var tokenResponse = await client.SendAsync(tokenRequest);
+                var tokenData = await tokenResponse.Content.ReadFromJsonAsync<JsonElement>();
+
+                if (tokenData.TryGetProperty("error", out var errorProp))
+                {
+                    string errorDesc = tokenData.TryGetProperty("error_description", out var descProp) ? descProp.GetString() : "Lỗi xác thực PayPal";
+                    return BadRequest($"Chi tiết lỗi từ PayPal: {errorProp.GetString()} - {errorDesc}");
+                }
+
+                var accessToken = tokenData.GetProperty("access_token").GetString();
+
+                // 2. Tạo Đơn Hàng (Order)
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var orderPayload = new
+                {
+                    intent = "CAPTURE",
+                    purchase_units = new[] { new { amount = new { currency_code = "USD", value = amountInUsd.ToString(System.Globalization.CultureInfo.InvariantCulture) } } },
+                    application_context = new { return_url = returnUrl, cancel_url = cancelUrl }
+                };
+                var orderResponse = await client.PostAsJsonAsync("https://api-m.sandbox.paypal.com/v2/checkout/orders", orderPayload);
+                var orderData = await orderResponse.Content.ReadFromJsonAsync<JsonElement>();
+
+                // 3. Link sang trang thanh toán của PayPal
+                var links = orderData.GetProperty("links").EnumerateArray();
+                string approveLink = links.FirstOrDefault(l => l.GetProperty("rel").GetString() == "approve").GetProperty("href").GetString();
+
+                return Redirect(approveLink);
+            }
             return Content("This payment method is currently under maintenance.");
         }
 
@@ -115,8 +165,15 @@ namespace FinalProject__SaigonRide.Controllers
                 _context.TransactionHistories.Add(transaction);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToAction("IndexInUse", "InUse");
             }
+        }
+        public async Task<IActionResult> PayPalCallback(string token)
+        {
+            var clientId = _configuration["PayPal:ClientId"];
+            // ... (copy toàn bộ nội dung hàm PayPalCallback tôi đã gửi ở trên vào đây)
+
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

@@ -62,18 +62,13 @@ namespace FinalProject__SaigonRide.Controllers
 
             if (currentBooking == null) return RedirectToAction("Stations", "Home");
 
-            var timeElapsed = DateTime.Now - currentBooking.StartTime;
+            // Chỉ dùng 1 lần logic tính thời gian này
+            var endTime = (currentBooking.EndTime == DateTime.MinValue) ? DateTime.Now : currentBooking.EndTime; var timeElapsed = endTime - currentBooking.StartTime;
             ViewBag.SecondsPassed = (int)timeElapsed.TotalSeconds;
 
-            // --- CÁC DÒNG CODE CẦN THÊM ĐỂ FIX LỖI DROP-OFF ---
-
-            // 1. Lấy danh sách trạm từ DB truyền sang ViewBag (Đổi .Stations thành tên DbSet của bạn nếu khác)
             ViewBag.StationList = await _context.Stations.ToListAsync();
-
-            // 2. Kiểm tra xem user đã update trạm trả chưa
             ViewBag.HasDropOffStation = !string.IsNullOrEmpty(currentBooking.NextStationId);
 
-            // 3. Lấy tên trạm Drop-off để truyền vào Payment Modal
             string dropOffName = "Not selected";
             if (!string.IsNullOrEmpty(currentBooking.NextStationId))
             {
@@ -84,8 +79,6 @@ namespace FinalProject__SaigonRide.Controllers
                 }
             }
 
-            // --------------------------------------------------
-
             var paymentModel = new PaymentViewModel
             {
                 FirstName = user.FirstName ?? "Rider",
@@ -93,14 +86,11 @@ namespace FinalProject__SaigonRide.Controllers
                 Email = user.Email ?? "No Email",
                 Phone = user.PhoneNumber ?? "Not updated",
                 PickupStation = currentBooking.Station?.Name ?? "Unknown Station",
-
-                // 4. Gán tên trạm Drop-off vào Model
                 DropoffStation = dropOffName,
-
                 RentedVehicle = currentBooking.Vehicle?.Name ?? "Unknown Vehicle",
                 VehicleImagePath = currentBooking.Vehicle?.ImagePath,
                 AvailableCoupons = await _context.Coupons.Where(c => c.IsActive).ToListAsync(),
-                PricePerMinute = (currentBooking.Vehicle?.PricePerHour ?? 0) / 60.0,
+                PricePerMinute = currentBooking.Vehicle?.PricePerHour ?? 0,
                 IsForeigner = user.IsForeigner,
                 DocumentNumber = user.DocumentNumber ?? "Not updated",
             };
@@ -108,7 +98,24 @@ namespace FinalProject__SaigonRide.Controllers
             return View(paymentModel);
         }
 
-        // 3. HÀM XỬ LÝ KHI NGƯỜI DÙNG CHỌN TRẠM TRẢ TỪ MODAL
+        // Hàm FreezeTrip phải nằm độc lập bên ngoài
+        [HttpPost]
+        public async Task<IActionResult> FreezeTrip()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var currentBooking = await _context.Bookings
+.FirstOrDefaultAsync(b => b.UserId == user.Id && b.Status == "InUse" && b.EndTime == DateTime.MinValue);
+            if (currentBooking != null)
+            {
+                currentBooking.EndTime = DateTime.Now;
+                _context.Bookings.Update(currentBooking);
+                await _context.SaveChangesAsync();
+            }
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<IActionResult> UpdateDropOff(string nextStationId)
         {

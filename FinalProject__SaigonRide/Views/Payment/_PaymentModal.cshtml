@@ -203,7 +203,13 @@
 
         var paymentModal = document.getElementById("paymentModal");
         if (paymentModal) {
-            paymentModal.addEventListener("hidden.bs.modal", resetCouponState);
+            paymentModal.addEventListener("hidden.bs.modal", function () {
+                resetCouponState();
+        
+                if (typeof resumeRideTimer === "function") {
+                    resumeRideTimer();
+                }
+            });
         }
     });
 </script>

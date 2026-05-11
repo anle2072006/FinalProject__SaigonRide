@@ -183,13 +183,29 @@
                 var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
                 dropoffModal.show();
             } else {
-                clearInterval(rideInterval);
-                // Gọi hàm từ _PaymentModal.cshtml [cite: 116]
-                if (typeof updateModalWithLiveCost === "function") {
-                    updateModalWithLiveCost(costVND);
-                }
-                var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-                paymentModal.show();
+                console.log("Đang chốt thời gian vào DB...");
+        
+                // Gọi API lên Controller để lưu EndTime
+                fetch('/InUse/FreezeTrip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        // Sau khi chốt thành công trên DB mới dừng bộ đếm JS
+                        clearInterval(rideInterval);
+                
+                        if (typeof updateModalWithLiveCost === "function") {
+                            updateModalWithLiveCost(costVND);
+                        }
+                        var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                        paymentModal.show();
+                    } else {
+                        alert("Có lỗi xảy ra khi kết thúc chuyến đi. Vui lòng thử lại!");
+                    }
+                }).catch(err => {
+                    console.error("Lỗi hệ thống khi chốt thời gian:", err);
+                    alert("Lỗi kết nối, vui lòng kiểm tra lại mạng!");
+                });
             }
         }
 
