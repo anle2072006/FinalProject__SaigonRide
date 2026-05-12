@@ -61,34 +61,47 @@
 
 @section RightContent {
     <div class="inuse-side-panel px-3" style="padding-top: 50px;">
+
         <div class="side-widget mb-5">
-            <p class="widget-label">Pickup Station:</p>
-            <div class="mini-info-box">
+            <p class="widget-label">Selected Station:</p>
+            <div class="mini-info-box" style="display: flex; align-items: center; gap: 12px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <span style="font-size: 1.5rem;">📍</span>
                 <div>
-                    <strong>@Model.PickupStation</strong> 
-                    <small>Ho Chi Minh City</small>
+                    <strong style="display: block; color: #fff;">@Model.PickupStation</str  ong>
+                    <small style="color: #8a8a9e;">Ho Chi Minh City</small>
                 </div>
             </div>
         </div>
 
         <div class="side-widget">
             <p class="widget-label">Current Vehicle:</p>
-    
-            <div class="mini-info-box" style="display: flex; align-items: center; gap: 15px;">
-        
-                <div class="icon-bg" style="width: 60px; height: 60px; flex-shrink: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #fff; border-radius: 8px;">
-            
-                    <img src="@(string.IsNullOrEmpty(Model.VehicleImagePath) ? "/images/escooter.jpg" : Model.VehicleImagePath)"
-                         alt="Vehicle"
-                         style="width: 100%; height: 100%; object-fit: cover;" />
-                 
+            <div class="mini-info-box" style="display:flex; align-items:center; gap:15px;">
+                @{
+                    // Ảnh mặc định
+                    string vehicleImg = "/images/escooter.jpg";
+
+                    // Lấy tên xe và chuyển hết thành chữ thường
+                    string tenXe = Model.RentedVehicle != null ? Model.RentedVehicle.ToLower() : "";
+
+                    // Chỗ này phải viết CHỮ THƯỜNG 100% thì nó mới khớp được
+                    if (tenXe.Contains("scooter"))
+                    {
+                        vehicleImg = "/images/escooter.jpg";
+                    }
+                    else if (tenXe.Contains("bike"))
+                    {
+                        // Đảm bảo trong thư mục wwwroot/images của ông có file tên là bicycle.jpg nha
+                        vehicleImg = "/images/bicycle.jpg";
+                    }
+                }
+
+                <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <img src="@vehicleImg" style="width: 35px; height: 35px; object-fit: contain;" alt="Vehicle" />
                 </div>
-        
-                <strong style="color: #fff; font-size: 1.1rem; margin: 0;">@Model.RentedVehicle</strong>
+
+                <strong>@Model.RentedVehicle</strong>
             </div>
         </div>
-        
-    </div>
 }
 
 <div class="modal fade" id="selectDropoffModal" tabindex="-1">

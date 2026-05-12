@@ -138,12 +138,16 @@
 
 /* Icon xe */
 .icon-bg {
-    background-color: #1a1e30;
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
-    display: flex;
+    /* ... các thuộc tính khác giữ nguyên ... */
+    display: flex; /* Giữ flex để đảm bảo ảnh nằm giữa khung */
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    overflow: hidden; /* Cần có để khi bo góc ảnh bị cắt bớt cho chuẩn */
 }
+
+    .icon-bg img {
+        width: 100%; /* Ép ảnh lấy chiều rộng bằng khung */
+        height: 100%; /* Ép ảnh lấy chiều cao bằng khung */
+        object-fit: cover; /* PHẢI CÓ DÒNG NÀY: Nó sẽ tự thu phóng để lấp đầy khung mà không làm ảnh biến dạng, sẽ bị cắt bớt các phần thừa ở cạnh */
+        border-radius: inherit; /* Cho ảnh bo góc theo khung nền tối bên ngoài */
+    }

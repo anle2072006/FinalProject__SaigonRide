@@ -18,10 +18,32 @@
         {
             @foreach (var vehicle in Model)
             {
-                <div class="vehicle-card" style="display: flex; align-items: center; padding: 15px 25px; background-color: #1a1b2f; border-radius: 12px; margin-bottom: 15px;">
-                    
-                    <img src="@(string.IsNullOrEmpty(vehicle.ImagePath) ? "/images/escooter.jpg" : vehicle.ImagePath)"
-                         alt="@vehicle.Name" class="vehicle-img" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; margin-right: 25px; flex-shrink: 0;" />
+                <div class="vehicle-card">
+                    @{
+                        // 1. Lấy ảnh từ Database trước (nếu có)
+                        string hinhAnhXe = vehicle.ImagePath;
+
+                        // 2. Nếu Database không có ảnh, bắt đầu tự động nhận diện theo tên xe
+                        if (string.IsNullOrEmpty(hinhAnhXe))
+                        {
+                            string tenLoaiXe = vehicle.Name != null ? vehicle.Name.ToLower() : "";
+
+                            if (tenLoaiXe.Contains("scooter"))
+                            {
+                                hinhAnhXe = "/images/escooter.jpg"; // Lấy ảnh xe trượt
+                            }
+                            else if (tenLoaiXe.Contains("bike"))
+                            {
+                                hinhAnhXe = "/images/bicycle.jpg"; // Lấy ảnh xe đạp
+                            }
+                            else
+                            {
+                                hinhAnhXe = "/images/escooter.jpg"; // Mặc định phòng hờ
+                            }
+                        }
+                    }
+
+                    <img src="@hinhAnhXe" alt="@vehicle.Name" class="vehicle-img" style="object-fit: cover;" />
 
                     <div class="vehicle-info" style="display: flex; justify-content: space-between; align-items: center; flex: 1;">
                         
@@ -48,10 +70,9 @@
         }
         else
         {
-            @* Dịch sang tiếng Anh *@
-            <div style="width: 100%; text-align: center; padding: 40px 20px; background-color: #1a1b2f; border-radius: 12px;">
-                <p style="color: #D1F366; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 8px rgba(209, 243, 102, 0.3); margin: 0;">
-                    This station is currently out of vehicles.<br>Please choose another station!
+            <div style="color: white; width: 100%; text-align: center; padding: 40px 20px;">
+                <p>
+                    Currently, this station has no buses.<br>Please select another station!
                 </p>
             </div>
         }
@@ -62,22 +83,19 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #1a1a2e; color: #fff; border: 1px solid #D1F366;">
             <div class="modal-header" style="border-bottom: 1px solid #333;">
-                @* Dịch sang tiếng Anh *@
-                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Confirm Trip</h5>
+                <h5 class="modal-title" style="color: #D1F366; font-weight: bold;">Confirm trip</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-3">You have selected the following:</p>
+                <p class="mb-3">You have selected the following information:</p>
 
                 <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #444;">
-                    @* Dịch sang tiếng Anh *@
                     <p class="mb-2">📍 <strong>Station:</strong> <span style="color: #D1F366;">@ViewBag.StationName</span></p>
                     <p class="mb-0">🛴 <strong>Vehicle:</strong> <span id="displayVehicleName" style="color: #D1F366;"></span> <span class="text-secondary">(ID: <span id="displayVehicleId"></span>)</span></p>
                 </div>
 
                 <p class="text-warning" style="font-size: 0.9rem;">
-                    @* Dịch sang tiếng Anh *@
-                    <em>Note: Click "Go to In Use" to proceed and track your trip.</em>
+                    <em>Note: Click "Go to In Use" to navigate to the trip tracking page.</em>
                 </p>
 
                 <form asp-controller="InUse" asp-action="StartTrip" method="post">
