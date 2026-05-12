@@ -1,6 +1,6 @@
 ﻿using FinalProject__SaigonRide.Data;
-using FinalProject__SaigonRide.Services;
 using FinalProject__SaigonRide.Models;
+using FinalProject__SaigonRide.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,15 +15,16 @@ namespace FinalProject__SaigonRide.Controllers
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<PaymentController> _logger;
 
-        public PaymentController(IConfiguration configuration, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public PaymentController(IConfiguration configuration, ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<PaymentController> logger)
         {
             _configuration = configuration;
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
-        // 1. PROCESS PAYMENT (VNPay)
         [HttpPost]
         public async Task<IActionResult> ProcessPayment(string paymentMethod, string amount)
         {
@@ -62,7 +63,6 @@ namespace FinalProject__SaigonRide.Controllers
                 string cleanAmount = amount.Replace("VND", "").Replace(".", "").Replace(",", "").Trim();
                 if (!long.TryParse(cleanAmount, out long amountInVnd)) return BadRequest("Invalid amount.");
 
-                // Quy đổi VND sang USD (Tỉ giá tạm tính: 25.000 VND = 1 USD)
                 decimal amountInUsd = Math.Round((decimal)amountInVnd / 25000, 2);
 
                 var clientId = _configuration["PayPal:ClientId"];
@@ -70,7 +70,6 @@ namespace FinalProject__SaigonRide.Controllers
                 var returnUrl = _configuration["PayPal:ReturnUrl"];
                 var cancelUrl = _configuration["PayPal:CancelUrl"];
 
-                // 1. Lấy Access Token
                 var authBytes = Encoding.ASCII.GetBytes($"{clientId}:{secret}");
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authBytes));
@@ -88,7 +87,6 @@ namespace FinalProject__SaigonRide.Controllers
 
                 var accessToken = tokenData.GetProperty("access_token").GetString();
 
-                // 2. Tạo Đơn Hàng (Order)
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var orderPayload = new
                 {
@@ -99,7 +97,6 @@ namespace FinalProject__SaigonRide.Controllers
                 var orderResponse = await client.PostAsJsonAsync("https://api-m.sandbox.paypal.com/v2/checkout/orders", orderPayload);
                 var orderData = await orderResponse.Content.ReadFromJsonAsync<JsonElement>();
 
-                // 3. Link sang trang thanh toán của PayPal
                 var links = orderData.GetProperty("links").EnumerateArray();
                 string approveLink = links.FirstOrDefault(l => l.GetProperty("rel").GetString() == "approve").GetProperty("href").GetString();
 
@@ -108,7 +105,6 @@ namespace FinalProject__SaigonRide.Controllers
             return Content("This payment method is currently under maintenance.");
         }
 
-        // 2. PAYMENT CALLBACK (Update Booking Status here)
         public async Task<IActionResult> PaymentCallback()
         {
             var responseData = HttpContext.Request.Query;
@@ -120,7 +116,6 @@ namespace FinalProject__SaigonRide.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
-            // --- ADDED: Find the active booking for this user ---
             var activeBooking = await _context.Bookings
                 .FirstOrDefaultAsync(b => b.UserId == user.Id && b.Status == "InUse");
 
@@ -144,19 +139,18 @@ namespace FinalProject__SaigonRide.Controllers
                 transaction.Amount = realAmount;
                 transaction.Status = "Success";
 
-                // --- ADDED: Update Booking to Completed ---
                 if (activeBooking != null)
                 {
-                    activeBooking.Status = "Completed"; // Change status to stop the "Active Trip" check
-                    activeBooking.EndTime = DateTime.Now; // Record the end time
-                    activeBooking.TotalPrice = realAmount; // Save final price
+                    activeBooking.Status = "Completed";
+                    activeBooking.EndTime = DateTime.Now;
+                    activeBooking.TotalPrice = realAmount;
                     _context.Bookings.Update(activeBooking);
                 }
 
                 _context.TransactionHistories.Add(transaction);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToAction("Index", "Home");
             }
             else
             {
@@ -168,12 +162,90 @@ namespace FinalProject__SaigonRide.Controllers
                 return RedirectToAction("IndexInUse", "InUse");
             }
         }
+
         public async Task<IActionResult> PayPalCallback(string token)
         {
             var clientId = _configuration["PayPal:ClientId"];
-            // ... (copy toàn bộ nội dung hàm PayPalCallback tôi đã gửi ở trên vào đây)
+            var secret = _configuration["PayPal:Secret"];
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
 
-            return RedirectToAction("Index", "Dashboard");
+            var authBytes = Encoding.ASCII.GetBytes($"{clientId}:{secret}");
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authBytes));
+            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "https://api-m.sandbox.paypal.com/v1/oauth2/token");
+            tokenRequest.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
+            var tokenResponse = await client.SendAsync(tokenRequest);
+            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<JsonElement>();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.GetProperty("access_token").GetString());
+
+            var captureResponse = await client.PostAsync($"https://api-m.sandbox.paypal.com/v2/checkout/orders/{token}/capture",
+                new StringContent("", Encoding.UTF8, "application/json"));
+
+            var captureData = await captureResponse.Content.ReadFromJsonAsync<JsonElement>();
+
+            if (!captureResponse.IsSuccessStatusCode)
+            {
+                var errorJson = captureData.ToString();
+                _logger.LogError($"PayPal Capture Failed: {errorJson}");
+            }
+
+            var activeBooking = await _context.Bookings.FirstOrDefaultAsync(b => b.UserId == user.Id && b.Status == "InUse");
+            var transaction = new TransactionHistory
+            {
+                UserId = user.Id,
+                PaymentMethod = "PayPal",
+                TransactionDate = DateTime.Now,
+                TransactionNo = token,
+                OrderDescription = "SaigonRide PayPal Payment"
+            };
+
+            if (captureResponse.IsSuccessStatusCode)
+            {
+                transaction.Status = "Success";
+                long realAmount = 0;
+                try
+                {
+                    if (captureData.TryGetProperty("purchase_units", out var units) && units.GetArrayLength() > 0)
+                    {
+                        var payments = units[0].GetProperty("payments");
+                        if (payments.TryGetProperty("captures", out var captures) && captures.GetArrayLength() > 0)
+                        {
+                            var amountObj = captures[0].GetProperty("amount");
+                            var amountUsdStr = amountObj.GetProperty("value").GetString();
+                            if (decimal.TryParse(amountUsdStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal amountUsd))
+                            {
+                                realAmount = (long)(amountUsd * 25000);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex) { _logger.LogError("Lỗi JSON PayPal: " + ex.Message); }
+
+                transaction.Amount = realAmount;
+
+                if (activeBooking != null)
+                {
+                    activeBooking.Status = "Completed";
+                    activeBooking.EndTime = DateTime.Now;
+                    activeBooking.TotalPrice = (double)realAmount;
+                    _context.Bookings.Update(activeBooking);
+                }
+
+                _context.TransactionHistories.Add(transaction);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                transaction.Status = "Failed";
+                transaction.Amount = 0;
+                _context.TransactionHistories.Add(transaction);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("IndexInUse", "InUse");
+            }
         }
     }
 }

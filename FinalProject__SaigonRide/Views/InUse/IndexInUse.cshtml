@@ -168,16 +168,13 @@
 
 @section Scripts {
     <script>
-        // Sửa lỗi dấu phẩy thập phân: Ép kiểu số về định dạng chuẩn quốc tế (dấu chấm)
         const pricePerMin = @Model.PricePerMinute.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
-        const pricePerSec = pricePerMin / 60.0;
-        
-        // Lấy số giây thực tế từ Server
+        const pricePerSec = pricePerMin / 60;
         let secondsPassed = @(ViewBag.SecondsPassed ?? 0);
+        const isFrozen = @(ViewBag.IsFrozen != null ? ViewBag.IsFrozen.ToString().ToLower() : "false");
         
+        // Tính tiền ngay lập tức khi load trang để tránh bị về 0
         let costVND = secondsPassed * pricePerSec;
-        let distanceMeters = Math.floor(secondsPassed / 5) * 50;
-        let batteryPercent = Math.max(0, 100 - Math.floor(secondsPassed / 60));
         let rideInterval;
 
         const isDropOffSelected = @hasDropOff.ToString().ToLower();
@@ -191,71 +188,50 @@
 
         function updateRideStats() {
             secondsPassed++;
-            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
+            costVND += pricePerSec; // Tiền cộng nhích dần theo giây
             
-            // Tính tiền chuẩn: Cộng giá mỗi giây vào tổng tiền
-            costVND += pricePerSec;
+            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
             document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
-
-            if (secondsPassed % 5 === 0) {
-                distanceMeters += 50;
-                let distDisplay = distanceMeters >= 1000 ? (distanceMeters / 1000).toFixed(2) + ' km' : distanceMeters + ' m';
-                document.getElementById('distanceVal').innerText = distDisplay;
-            }
-
-            if (secondsPassed % 60 === 0 && batteryPercent > 0) {
-                batteryPercent -= 1;
-                document.getElementById('batteryVal').innerText = batteryPercent + '%';
-            }
+            
+            // Cập nhật các thông số khác (Battery, Distance...) nếu cần
         }
 
-        // Cập nhật giao diện ngay khi load trang
+        // Hiển thị số tiền và thời gian ngay khi vào trang
         document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
         document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
-
-        const isFrozen = @(ViewBag.IsFrozen != null ? ViewBag.IsFrozen.ToString().ToLower() : "false");
 
         function checkAndEndRide() {
             if (!isDropOffSelected) {
                 var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
                 dropoffModal.show();
             } else {
-                // Nếu đã chốt rồi (bị đẩy về từ trang thanh toán lỗi), chỉ bật Modal thanh toán lên, không gọi API nữa
+                // NẾU ĐÃ CHỐT RỒI: Hiện thẳng modal thanh toán với số tiền hiện tại
                 if (isFrozen) {
-                    if (typeof updateModalWithLiveCost === "function") {
-                        updateModalWithLiveCost(costVND);
-                    }
-                    var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-                    paymentModal.show();
+                    showPaymentModal();
                     return;
                 }
 
+                // NẾU CHƯA CHỐT: Gọi server chốt xong mới hiện modal
                 console.log("Đang chốt thời gian vào DB...");
-                fetch('/InUse/FreezeTrip', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                }).then(response => {
+                fetch('/InUse/FreezeTrip', { method: 'POST' })
+                .then(response => {
                     if (response.ok) {
                         clearInterval(rideInterval);
-                        if (typeof updateModalWithLiveCost === "function") {
-                            updateModalWithLiveCost(costVND);
-                        }
-                        var paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-                        paymentModal.show();
-                        
-                        // Link thành công thì f5 lại trang để biến isFrozen thành true
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        alert("Có lỗi xảy ra khi kết thúc chuyến đi. Vui lòng thử lại!");
+                        showPaymentModal();
                     }
-                }).catch(err => {
-                    console.error("Lỗi hệ thống khi chốt thời gian:", err);
-                    alert("Lỗi kết nối, vui lòng kiểm tra lại mạng!");
                 });
             }
         }
 
-        // CHỈ KHỞI CHẠY ĐỒNG HỒ NẾU CHUYẾN ĐI CHƯA BỊ CHỐT
+        function showPaymentModal() {
+            if (typeof updateModalWithLiveCost === "function") {
+                updateModalWithLiveCost(Math.floor(costVND));            
+            }
+            var myModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+            myModal.show();
+        }
+
+        // CHỈ CHẠY ĐỒNG HỒ NẾU CHƯA BỊ CHỐT
         if (!isFrozen) {
             rideInterval = setInterval(updateRideStats, 1000);
         }

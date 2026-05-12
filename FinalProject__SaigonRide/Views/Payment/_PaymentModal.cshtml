@@ -36,12 +36,14 @@
                     <h3 class="section-title text-neon">Apply Coupon</h3>
                     <div class="coupon-flex">
                         <select id="couponSelect" class="coupon-input" style="cursor: pointer;">
-                            <option value="0" disabled selected hidden>Select coupon</option>
+                            <option value="" disabled selected hidden>Select coupon</option>
                             @if (Model.AvailableCoupons != null)
                             {
                                 foreach (var coupon in Model.AvailableCoupons)
                                 {
-                                    <option value="@coupon.DiscountValue">@coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)</option>
+                                    <option value="@coupon.Id" data-discount="@coupon.DiscountValue">
+                                        @coupon.CodeName (-@coupon.DiscountValue.ToString("#,##0") VND)
+                                    </option>
                                 }
                             }
                         </select>
@@ -79,137 +81,126 @@
                     <div class="total-text">
                         Total: <span id="totalDisplay" class="text-neon">0 VND</span>
                     </div>
-    
                     <form id="paymentForm" asp-controller="Payment" asp-action="ProcessPayment" method="post">
                         <input type="hidden" name="amount" id="finalAmountInput" />
                         <input type="hidden" name="paymentMethod" id="selectedMethodInput" />
+        
+                        <input type="hidden" name="couponId" id="appliedCouponIdInput" />
+        
                         <button type="button" onclick="handlePaymentSubmit()" class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
                     </form>
                 </div>
-
-                <script>
-                    let selectedMethod = "";
-
-                    function selectPaymentMethod(method) {
-                        selectedMethod = method;
-                        document.getElementById("selectedMethodInput").value = method;
-        
-                        document.querySelectorAll('.pm-logo').forEach(el => el.classList.remove('selected'));
-                        document.getElementById('pay_' + method.toLowerCase()).classList.add('selected');
-                        document.getElementById("paymentError").style.display = "none";
-                    }
-
-                    function handlePaymentSubmit() {
-                        if (!selectedMethod) {
-                            document.getElementById("paymentError").style.display = "block";
-                            return;
-                        }
-
-                        const totalStr = document.getElementById("totalDisplay").innerText;
-
-                        document.getElementById("finalAmountInput").value = totalStr;
-                        document.getElementById("paymentForm").submit();
-                    }
-                </script>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // PHẦN 1: QUẢN LÝ PHƯƠNG THỨC THANH TOÁN
+    let selectedMethod = "";
+    function selectPaymentMethod(method) {
+        selectedMethod = method;
+        document.getElementById("selectedMethodInput").value = method;
+        
+        // Cập nhật giao diện chọn
+        document.querySelectorAll('.pm-logo').forEach(el => el.classList.remove('selected'));
+        var element = document.getElementById('pay_' + method.toLowerCase());
+        if(element) element.classList.add('selected');
+        
+        document.getElementById("paymentError").style.display = "none";
+    }
+
+    function handlePaymentSubmit() {
+        if (!selectedMethod) {
+            document.getElementById("paymentError").style.display = "block";
+            return;
+        }
+        // Gửi form đi (Dữ liệu đã được cập nhật vào các input ẩn bởi hàm calculateFinalTotal)
+        document.getElementById("paymentForm").submit();
+    }
+
+    // PHẦN 2: LOGIC TÍNH TIỀN VÀ COUPON
     function lamTronTien(soTien) {
         return Math.round(soTien / 1000) * 1000;
     }
 
+    // Đây là hàm quan trọng nhất để "In" giá từ trang InUse vào Modal
     function updateModalWithLiveCost(realTimeCost) {
         var costElement = document.getElementById("originalCostText");
-        costElement.setAttribute("data-cost", realTimeCost);
-        costElement.innerText = realTimeCost.toLocaleString("vi-VN") + " VND";
-        calculateFinalTotal();
+        if(costElement) {
+            costElement.setAttribute("data-cost", realTimeCost);
+            costElement.innerText = realTimeCost.toLocaleString("vi-VN") + " VND";
+            calculateFinalTotal();
+        }
     }
 
-    // 3. FIX LOGIC COUPON: Cập nhật hàm tính toán chính xác
     function calculateFinalTotal() {
         var costElement = document.getElementById("originalCostText");
+        if(!costElement) return;
+
         var baseCost = parseInt(costElement.getAttribute("data-cost")) || 0;
-        
         var select = document.getElementById("couponSelect");
         var btnApply = document.getElementById("btnApplyCoupon");
         var discountValue = 0;
+        var appliedId = "";
 
-        // Kiểm tra nếu trạng thái nút là Applied thì mới trừ tiền
-        if (btnApply.innerText.trim() === "Applied") {
-            discountValue = parseInt(select.value) || 0;
+        // Kiểm tra nếu đã áp dụng mã giảm giá
+        if (btnApply && btnApply.innerText.trim() === "Applied") {
+            var selectedOption = select.options[select.selectedIndex];
+            discountValue = parseInt(selectedOption.getAttribute("data-discount")) || 0;
+            appliedId = select.value;
         }
 
-        var finalTotal = baseCost - discountValue;
-        if (finalTotal < 0) finalTotal = 0;
-
+        var finalTotal = Math.max(0, baseCost - discountValue);
         var roundedTotal = lamTronTien(finalTotal);
+
+        // Hiển thị số tiền cuối cùng lên Modal
         document.getElementById("totalDisplay").innerText = roundedTotal.toLocaleString("vi-VN") + " VND";
+        
+        // Cập nhật giá trị vào input ẩn để gửi về PaymentController
+        document.getElementById("finalAmountInput").value = roundedTotal;
+        
+        var couponInput = document.getElementById("appliedCouponIdInput");
+        if (couponInput) couponInput.value = appliedId;
     }
 
+    // PHẦN 3: XỬ LÝ SỰ KIỆN KHI BẤM APPLY COUPON
     document.addEventListener("DOMContentLoaded", function () {
         var select = document.getElementById("couponSelect");
         var btnApply = document.getElementById("btnApplyCoupon");
         var msg = document.getElementById("couponMsg");
         var errorMsg = document.getElementById("couponErrorMsg");
 
-        if (!select || !btnApply) return;
-
-        function resetCouponState() {
-            select.value = "0";
-            btnApply.innerText = "Apply";
-            btnApply.style.backgroundColor = "#cbfb45";
-            btnApply.style.color = "#1a1b2f";
-            msg.style.display = "none";
-            errorMsg.style.display = "none";
-            calculateFinalTotal();
-        }
+        if (!btnApply) return;
 
         btnApply.addEventListener("click", function () {
-            // Nếu đã Apply rồi thì bấm lại để hủy
             if (btnApply.innerText.trim() === "Applied") {
-                resetCouponState();
+                // Reset nếu muốn hủy mã
+                select.value = "";
+                btnApply.innerText = "Apply";
+                btnApply.style.backgroundColor = "#cbfb45";
+                btnApply.style.color = "#1a1b2f";
+                if(msg) msg.style.display = "none";
+                calculateFinalTotal();
                 return;
             }
 
-            var discountValue = parseInt(select.value);
-            if (!isNaN(discountValue) && discountValue > 0) {
-                var couponText = select.options[select.selectedIndex].text;
-                
+            var selectedOption = select.options[select.selectedIndex];
+            var discount = parseInt(selectedOption?.getAttribute("data-discount")) || 0;
+
+            if (discount > 0) {
                 btnApply.innerText = "Applied";
                 btnApply.style.backgroundColor = "#ff4d4d";
                 btnApply.style.color = "#ffffff";
-                msg.innerText = "Using " + couponText;
-                msg.style.display = "block";
-                errorMsg.style.display = "none";
-
+                if(msg) {
+                    msg.innerText = "Using " + selectedOption.text;
+                    msg.style.display = "block";
+                }
+                if(errorMsg) errorMsg.style.display = "none";
                 calculateFinalTotal();
             } else {
-                errorMsg.style.display = "block";
-                msg.style.display = "none";
+                if(errorMsg) errorMsg.style.display = "block";
             }
         });
-
-        select.addEventListener("change", function () {
-            // Khi đổi coupon khác thì reset để người dùng bấm Apply lại
-            btnApply.innerText = "Apply";
-            btnApply.style.backgroundColor = "#cbfb45";
-            btnApply.style.color = "#1a1b2f";
-            msg.style.display = "none";
-            calculateFinalTotal();
-        });
-
-        var paymentModal = document.getElementById("paymentModal");
-        if (paymentModal) {
-            paymentModal.addEventListener("hidden.bs.modal", function () {
-                resetCouponState();
-        
-                if (typeof resumeRideTimer === "function") {
-                    resumeRideTimer();
-                }
-            });
-        }
     });
 </script>
