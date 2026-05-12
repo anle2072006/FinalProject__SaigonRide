@@ -64,15 +64,11 @@
 
         <div class="side-widget mb-5">
             <p class="widget-label">Selected Station:</p>
-            <div class="mini-info-box" style="display: flex; align-items: center; gap: 12px;">
+            <div class="mini-info-box" style="display: flex; align-items: center; gap: 12px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
                 <span style="font-size: 1.5rem;">📍</span>
-            <p class="widget-label">Pickup Station:</p>
-            <div class="mini-info-box">
                 <div>
-                    <strong style="display: block;">@Model.PickupStation</strong>
+                    <strong style="display: block; color: #fff;">@Model.PickupStation</strong>
                     <small style="color: #8a8a9e;">Ho Chi Minh City</small>
-                    <strong>@Model.PickupStation</strong> 
-                    <small>Ho Chi Minh City</small>
                 </div>
             </div>
         </div>
@@ -106,24 +102,6 @@
                 <strong>@Model.RentedVehicle</strong>
             </div>
         </div>
-
-    </div>
-    
-            <div class="mini-info-box" style="display: flex; align-items: center; gap: 15px;">
-        
-                <div class="icon-bg" style="width: 60px; height: 60px; flex-shrink: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #fff; border-radius: 8px;">
-            
-                    <img src="@(string.IsNullOrEmpty(Model.VehicleImagePath) ? "/images/escooter.jpg" : Model.VehicleImagePath)"
-                         alt="Vehicle"
-                         style="width: 100%; height: 100%; object-fit: cover;" />
-                 
-                </div>
-        
-                <strong style="color: #fff; font-size: 1.1rem; margin: 0;">@Model.RentedVehicle</strong>
-            </div>
-        </div>
-        
-    </div>
 }
 
 <div class="modal fade" id="selectDropoffModal" tabindex="-1">
