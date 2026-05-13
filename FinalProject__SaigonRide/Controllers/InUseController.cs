@@ -97,6 +97,14 @@ namespace FinalProject__SaigonRide.Controllers
                 DocumentNumber = user.DocumentNumber ?? "Not updated",
             };
 
+            var vehicleCountByStation = await _context.Vehicles
+               .GroupBy(v => v.StationId)
+               .Select(g => new { StationId = g.Key, Count = g.Count() })
+               .ToDictionaryAsync(x => x.StationId, x => x.Count);
+
+            ViewBag.VehicleCountByStation = vehicleCountByStation;
+            ViewBag.MaxVehiclePerStation = 100;
+
             return View(paymentModel);
         }
 
