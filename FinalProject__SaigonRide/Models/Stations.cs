@@ -14,5 +14,7 @@ namespace FinalProject__SaigonRide.Models
         public string Location { get; set; } = "";
 
         public string ImagePath { get; set; } = "";
+        public int MaxCapacity { get; set; }
+        public int CurrentVehicles { get; set; }
     }
 }

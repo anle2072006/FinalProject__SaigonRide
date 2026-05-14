@@ -1,6 +1,5 @@
 ﻿@model FinalProject__SaigonRide.Models.PaymentViewModel
 
-
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 800px;">
         <div class="modal-content" style="background-color: transparent; border: none;">
@@ -29,6 +28,13 @@
                         <div class="grid-item"><span>Drop-off:</span> @Model.DropoffStation</div>
                         <div class="grid-item"><span>Vehicles:</span> @Model.RentedVehicle</div>
                         <div class="grid-item"><span>Estimated Cost:</span> <span id="originalCostText" data-cost="0">0 VND</span></div>
+                        
+                        @if (Model.IsCapacityDiscount)
+                        {
+                            <div class="grid-item" style="color: #cbfb45; font-weight: bold;">
+                                <span>Station discounts:</span> -20%
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -84,8 +90,8 @@
                     <form id="paymentForm" asp-controller="Payment" asp-action="ProcessPayment" method="post">
                         <input type="hidden" name="amount" id="finalAmountInput" />
                         <input type="hidden" name="paymentMethod" id="selectedMethodInput" />
-        
                         <input type="hidden" name="couponId" id="appliedCouponIdInput" />
+                        <input type="hidden" name="dropoffStationId" value="@Model.DropoffStationId" />
         
                         <button type="button" onclick="handlePaymentSubmit()" class="btn-neon" style="padding: 12px 25px;">Payment Confirmation</button>
                     </form>
@@ -98,10 +104,11 @@
 <script>
     // PHẦN 1: QUẢN LÝ PHƯƠNG THỨC THANH TOÁN
     let selectedMethod = "";
+
     function selectPaymentMethod(method) {
         selectedMethod = method;
         document.getElementById("selectedMethodInput").value = method;
-        
+
         // Cập nhật giao diện chọn
         document.querySelectorAll('.pm-logo').forEach(el => el.classList.remove('selected'));
         var element = document.getElementById('pay_' + method.toLowerCase());
@@ -115,7 +122,7 @@
             document.getElementById("paymentError").style.display = "block";
             return;
         }
-        // Gửi form đi (Dữ liệu đã được cập nhật vào các input ẩn bởi hàm calculateFinalTotal)
+        // Gửi form đi
         document.getElementById("paymentForm").submit();
     }
 
@@ -124,7 +131,6 @@
         return Math.round(soTien / 1000) * 1000;
     }
 
-    // Đây là hàm quan trọng nhất để "In" giá từ trang InUse vào Modal
     function updateModalWithLiveCost(realTimeCost) {
         var costElement = document.getElementById("originalCostText");
         if(costElement) {
@@ -139,25 +145,33 @@
         if(!costElement) return;
 
         var baseCost = parseInt(costElement.getAttribute("data-cost")) || 0;
+        
+        // 1. LẤY TRẠNG THÁI GIẢM GIÁ 20% TỪ MODEL
+        var hasCapacityDiscount = '@Model.IsCapacityDiscount'.toLowerCase() === 'true';
+        
+        // 2. TÍNH TIỀN SAU KHI ĐÃ ĐƯỢC GIẢM TỪ TRẠM (Nếu có)
+        var costAfterStationDiscount = hasCapacityDiscount ? (baseCost * 0.8) : baseCost;
+
         var select = document.getElementById("couponSelect");
         var btnApply = document.getElementById("btnApplyCoupon");
         var discountValue = 0;
         var appliedId = "";
 
-        // Kiểm tra nếu đã áp dụng mã giảm giá
+        // 3. XỬ LÝ MÃ GIẢM GIÁ
         if (btnApply && btnApply.innerText.trim() === "Applied") {
             var selectedOption = select.options[select.selectedIndex];
             discountValue = parseInt(selectedOption.getAttribute("data-discount")) || 0;
             appliedId = select.value;
         }
 
-        var finalTotal = Math.max(0, baseCost - discountValue);
+        // 4. CÔNG THỨC CUỐI CÙNG (Giá đã trừ trạm - Giá trị Coupon)
+        var finalTotal = Math.max(0, costAfterStationDiscount - discountValue);
         var roundedTotal = lamTronTien(finalTotal);
 
         // Hiển thị số tiền cuối cùng lên Modal
         document.getElementById("totalDisplay").innerText = roundedTotal.toLocaleString("vi-VN") + " VND";
         
-        // Cập nhật giá trị vào input ẩn để gửi về PaymentController
+        // Cập nhật giá trị vào input ẩn
         document.getElementById("finalAmountInput").value = roundedTotal;
         
         var couponInput = document.getElementById("appliedCouponIdInput");
@@ -175,7 +189,6 @@
 
         btnApply.addEventListener("click", function () {
             if (btnApply.innerText.trim() === "Applied") {
-                // Reset nếu muốn hủy mã
                 select.value = "";
                 btnApply.innerText = "Apply";
                 btnApply.style.backgroundColor = "#cbfb45";

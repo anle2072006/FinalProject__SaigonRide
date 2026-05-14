@@ -3,56 +3,192 @@
 @{
     ViewData["Title"] = "In Use";
     double pricePerMin = Model.PricePerMinute;
-
     bool hasDropOff = ViewBag.HasDropOffStation ?? false;
+    var vehicleCounts = ViewBag.VehicleCountByStation as Dictionary<string, int> ?? new Dictionary<string, int>();
+    int maxVehicles = ViewBag.MaxVehiclePerStation ?? 100;
 }
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <script>
-        alert('@TempData["SuccessMessage"]');
-    </script>
+    <script>alert('@TempData["SuccessMessage"]');</script>
 }
 @if (TempData["ErrorMessage"] != null)
 {
-    <script>
-        alert('@TempData["ErrorMessage"]');
-    </script>
+    <script>alert('@TempData["ErrorMessage"]');</script>
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/Inuse.css" asp-append-version="true" />
-}
-<div class="inuse-main-section py-3">
+    <style>
+        /* ── Station card list ── */
+        .station-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 340px;
+        overflow-y: auto;
+        padding-right: 4px;
+        }
 
-    <div class="rider-display-box">
-        </div>
+        .station-list::-webkit-scrollbar {
+        width: 4px;
+        }
+
+        .station-list::-webkit-scrollbar-track {
+        background: #1a1d21;
+        }
+
+        .station-list::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+        }
+
+        .station-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: #0f1215;
+        border: 1px solid #2c2e3e;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        gap: 12px;
+        }
+
+        .station-card:hover {
+        background: #1a1f28;
+        border-color: #cbfb45;
+        }
+
+        .station-card.selected {
+        background: rgba(203,251,69,0.08);
+        border-color: #cbfb45;
+        }
+
+        .station-card-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        }
+
+        .station-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #2c2e3e;
+        border: 2px solid #2c2e3e;
+        flex-shrink: 0;
+        transition: all 0.2s;
+        }
+
+        .station-card.selected .station-dot {
+        background: #cbfb45;
+        border-color: #cbfb45;
+        }
+
+        .station-name {
+        color: white;
+        font-size: 0.92rem;
+        font-weight: 600;
+        }
+
+        .station-location {
+        color: #8a8a9e;
+        font-size: 0.78rem;
+        margin-top: 2px;
+        }
+
+        /* ── Capacity badge ── */
+        .cap-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        white-space: nowrap;
+        flex-shrink: 0;
+        }
+
+        .cap-badge .cap-bar-wrap {
+        width: 36px;
+        height: 5px;
+        border-radius: 99px;
+        background: rgba(255,255,255,0.15);
+        overflow: hidden;
+        }
+
+        .cap-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        }
+
+        /* màu theo % */
+        .cap-verylow {
+        background: rgba(0,230,118,0.12);
+        color: #00e676;
+        }
+
+        .cap-low {
+        background: rgba(212,255,0,0.12);
+        color: #d4ff00;
+        }
+
+        .cap-medium {
+        background: rgba(255,165,0,0.12);
+        color: #ffa500;
+        }
+
+        .cap-high {
+        background: rgba(255,80,80,0.12);
+        color: #ff5050;
+        }
+
+        .cap-verylow .cap-bar-fill {
+        background: #00e676;
+        }
+
+        .cap-low .cap-bar-fill {
+        background: #d4ff00;
+        }
+
+        .cap-medium .cap-bar-fill {
+        background: #ffa500;
+        }
+
+        .cap-high .cap-bar-fill {
+        background: #ff5050;
+        }
+    </style>
+}
+
+<div class="inuse-main-section py-3">
+    <div class="rider-display-box"></div>
 
     <div class="ride-stats-card mt-4">
         <div class="stat-group">
-            <p><span class="label">Usage Time:</span> <span class="val" id="usageTimeVal">00 : 00 : 00</span></p> 
-            <p><span class="label">Distance Traveled:</span> <span class="val" id="distanceVal">0 m</span></p> 
+            <p><span class="label">Usage Time:</span> <span class="val" id="usageTimeVal">00 : 00 : 00</span></p>
+            <p><span class="label">Distance Traveled:</span> <span class="val" id="distanceVal">0 m</span></p>
         </div>
         <div class="stat-group">
-            <p><span class="label">Battery Remaining:</span> <span class="val neon" id="batteryVal">100%</span></p> 
-            <p><span class="label">Estimated Cost:</span> <span class="val" id="costVal">0 VND</span></p> 
+            <p><span class="label">Battery Remaining:</span> <span class="val neon" id="batteryVal">100%</span></p>
+            <p><span class="label">Estimated Cost:</span> <span class="val" id="costVal">0 VND</span></p>
         </div>
     </div>
 
-    <div class="action-footer mt-4" style="display: flex; gap: 40px; justify-content: center;">
-        
+    <div class="action-footer mt-4" style="display:flex; gap:40px; justify-content:center;">
         <button type="button"
                 class="btn-main-action"
-                style="background-color: #D1F366; color: #000; min-width: 180px; padding: 12px 20px; font-weight: bold; border-radius: 8px; border: none;"
-                data-bs-toggle="modal"
-                data-bs-target="#selectDropoffModal">
+                style="background-color:#D1F366;color:#000;min-width:180px;padding:12px 20px;font-weight:bold;border-radius:8px;border:none;"
+                data-bs-toggle="modal" data-bs-target="#selectDropoffModal">
             Select Drop-off
         </button>
-
         <button type="button"
                 class="btn-main-action"
                 id="btnPayment"
-                style="background-color: #D1F366; color: #000; min-width: 180px; padding: 12px 20px; font-weight: bold; border-radius: 8px; border: none;"
+                style="background-color:#D1F366;color:#000;min-width:180px;padding:12px 20px;font-weight:bold;border-radius:8px;border:none;"
                 onclick="checkAndEndRide()">
             End Ride
         </button>
@@ -60,82 +196,99 @@
 </div>
 
 @section RightContent {
-    <div class="inuse-side-panel px-3" style="padding-top: 50px;">
-
+    <div class="inuse-side-panel px-3" style="padding-top:50px;">
         <div class="side-widget mb-5">
             <p class="widget-label">Selected Station:</p>
-            <div class="mini-info-box" style="display: flex; align-items: center; gap: 12px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <span style="font-size: 1.5rem;">📍</span>
+            <div class="mini-info-box" style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;">
+                <span style="font-size:1.5rem;">📍</span>
                 <div>
-                    <strong style="display: block; color: #fff;">@Model.PickupStation</strong>
-                    <small style="color: #8a8a9e;">Ho Chi Minh City</small>
+                    <strong style="display:block;color:#fff;">@Model.PickupStation</strong>
+                    <small style="color:#8a8a9e;">Ho Chi Minh City</small>
                 </div>
             </div>
         </div>
-
         <div class="side-widget">
             <p class="widget-label">Current Vehicle:</p>
-            <div class="mini-info-box" style="display:flex; align-items:center; gap:15px;">
+            <div class="mini-info-box" style="display:flex;align-items:center;gap:15px;">
                 @{
-                    // Ảnh mặc định
                     string vehicleImg = "/images/escooter.jpg";
-
-                    // Lấy tên xe và chuyển hết thành chữ thường
                     string tenXe = Model.RentedVehicle != null ? Model.RentedVehicle.ToLower() : "";
-
-                    // Chỗ này phải viết CHỮ THƯỜNG 100% thì nó mới khớp được
-                    if (tenXe.Contains("scooter"))
-                    {
-                        vehicleImg = "/images/escooter.jpg";
-                    }
-                    else if (tenXe.Contains("bike"))
-                    {
-                        // Đảm bảo trong thư mục wwwroot/images của ông có file tên là bicycle.jpg nha
-                        vehicleImg = "/images/bicycle.jpg";
-                    }
+                    if (tenXe.Contains("scooter")) vehicleImg = "/images/escooter.jpg";
+                    else if (tenXe.Contains("bike")) vehicleImg = "/images/bicycle.jpg";
                 }
-
-                <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                    <img src="@vehicleImg" style="width: 35px; height: 35px; object-fit: contain;" alt="Vehicle" />
+                <div style="width:50px;height:50px;background:rgba(255,255,255,0.05);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                    <img src="@vehicleImg" style="width:35px;height:35px;object-fit:contain;" alt="Vehicle" />
                 </div>
-
                 <strong>@Model.RentedVehicle</strong>
             </div>
         </div>
+    </div>
 }
 
+@* ── Modal chọn trạm trả ── *@
 <div class="modal fade" id="selectDropoffModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background-color: #1a1d21; color: white; border: 1px solid #333;">
-            <form asp-controller="InUse" asp-action="UpdateDropOff" method="post">
-                <div class="modal-header" style="border-bottom: 1px solid #333;">
-                    <h5 class="modal-title" style="color: #cbfb45;">Select Drop-off Station</h5>
+        <div class="modal-content" style="background-color:#1a1d21;color:white;border:1px solid #333;">
+            <form asp-controller="InUse" asp-action="UpdateDropOff" method="post" id="dropoffForm">
+                <input type="hidden" name="nextStationId" id="selectedStationId">
+
+                <div class="modal-header" style="border-bottom:1px solid #333;">
+                    <h5 class="modal-title" style="color:#cbfb45;">Select Drop-off Station</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+
                 <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label class="mb-2">Available Stations:</label>
-                        <select name="nextStationId" class="form-select" style="background-color: #0f1215; color: white; border-color: #333;" required>
-                            <option value="">-- Please select a station --</option>
-                            @if (ViewBag.StationList != null)
+                    <label class="mb-3" style="color:#8a8a9e;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">
+                        Available Stations:
+                    </label>
+
+                    <div class="station-list">
+                        @if (ViewBag.StationList != null)
+                        {
+                            foreach (var st in ViewBag.StationList)
                             {
-                                foreach (var st in ViewBag.StationList)
-                                {
-                                    <option value="@st.Id">@st.Name</option>
-                                }
+                                int count = vehicleCounts.ContainsKey((string)st.Id) ? vehicleCounts[(string)st.Id] : 0;
+                                double pct = (double)count / maxVehicles * 100;
+                                string capClass = pct >= 85 ? "cap-high"
+                                               : pct >= 60 ? "cap-medium"
+                                               : pct >= 20 ? "cap-low"
+                                               : "cap-verylow";
+                                string pctStr = pct.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+
+                                <div class="station-card" onclick="selectStation('@st.Id', this)">
+                                    <div class="station-card-left">
+                                        <div class="station-dot"></div>
+                                        <div>
+                                            <div class="station-name">@st.Name</div>
+                                            <div class="station-location">@st.Location</div>
+                                        </div>
+                                    </div>
+                                    <span class="cap-badge @capClass">
+                                        <div class="cap-bar-wrap">
+                                            <div class="cap-bar-fill" style="width:@(pctStr)%"></div>
+                                        </div>
+                                        @pctStr% full
+                                    </span>
+                                </div>
                             }
-                        </select>
+                        }
                     </div>
+
                     @if (hasDropOff)
                     {
-                        <div class="alert alert-success p-2 mt-2" style="font-size: 14px;">
+                        <div class="alert alert-success p-2 mt-3" style="font-size:14px;">
                             Destination selected. You can update it if needed.
                         </div>
                     }
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid #333;">
+
+                <div class="modal-footer" style="border-top:1px solid #333;">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn" style="background-color: #cbfb45; color: #000; font-weight: bold;">Save Destination</button>
+                    <button type="submit" id="btnSaveDestination" class="btn"
+                            style="background-color:#cbfb45;color:#000;font-weight:bold;"
+                            disabled>
+                        Save Destination
+                    </button>
                 </div>
             </form>
         </div>
@@ -150,68 +303,56 @@
         const pricePerSec = pricePerMin / 60;
         let secondsPassed = @(ViewBag.SecondsPassed ?? 0);
         const isFrozen = @(ViewBag.IsFrozen != null ? ViewBag.IsFrozen.ToString().ToLower() : "false");
-        
-        // Tính tiền ngay lập tức khi load trang để tránh bị về 0
         let costVND = secondsPassed * pricePerSec;
         let rideInterval;
-
         const isDropOffSelected = @hasDropOff.ToString().ToLower();
 
+        // ── Chọn trạm ──
+        function selectStation(id, card) {
+        document.querySelectorAll('.station-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        document.getElementById('selectedStationId').value = id;
+        document.getElementById('btnSaveDestination').disabled = false;
+        }
+
         function formatTime(totalSeconds) {
-            let h = Math.floor(totalSeconds / 3600);
-            let m = Math.floor((totalSeconds % 3600) / 60);
-            let s = totalSeconds % 60;
-            return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
+        let h = Math.floor(totalSeconds / 3600);
+        let m = Math.floor((totalSeconds % 3600) / 60);
+        let s = totalSeconds % 60;
+        return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${s.toString().padStart(2, '0')}`;
         }
 
         function updateRideStats() {
-            secondsPassed++;
-            costVND += pricePerSec; // Tiền cộng nhích dần theo giây
-            
-            document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
-            document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
-            
-            // Cập nhật các thông số khác (Battery, Distance...) nếu cần
+        secondsPassed++;
+        costVND += pricePerSec;
+        document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
+        document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
         }
 
-        // Hiển thị số tiền và thời gian ngay khi vào trang
         document.getElementById('usageTimeVal').innerText = formatTime(secondsPassed);
         document.getElementById('costVal').innerText = Math.floor(costVND).toLocaleString('vi-VN') + ' VND';
 
         function checkAndEndRide() {
-            if (!isDropOffSelected) {
-                var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
-                dropoffModal.show();
-            } else {
-                // NẾU ĐÃ CHỐT RỒI: Hiện thẳng modal thanh toán với số tiền hiện tại
-                if (isFrozen) {
-                    showPaymentModal();
-                    return;
-                }
-
-                // NẾU CHƯA CHỐT: Gọi server chốt xong mới hiện modal
-                console.log("Đang chốt thời gian vào DB...");
-                fetch('/InUse/FreezeTrip', { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        clearInterval(rideInterval);
-                        showPaymentModal();
-                    }
-                });
-            }
+        if (!isDropOffSelected) {
+        var dropoffModal = new bootstrap.Modal(document.getElementById('selectDropoffModal'));
+        dropoffModal.show();
+        } else {
+        if (isFrozen) { showPaymentModal(); return; }
+        fetch('/InUse/FreezeTrip', { method: 'POST' })
+        .then(response => {
+        if (response.ok) { clearInterval(rideInterval); showPaymentModal(); }
+        });
+        }
         }
 
         function showPaymentModal() {
-            if (typeof updateModalWithLiveCost === "function") {
-                updateModalWithLiveCost(Math.floor(costVND));            
-            }
-            var myModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            myModal.show();
+        if (typeof updateModalWithLiveCost === "function") {
+        updateModalWithLiveCost(Math.floor(costVND));
+        }
+        var myModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+        myModal.show();
         }
 
-        // CHỈ CHẠY ĐỒNG HỒ NẾU CHƯA BỊ CHỐT
-        if (!isFrozen) {
-            rideInterval = setInterval(updateRideStats, 1000);
-        }
+        if (!isFrozen) { rideInterval = setInterval(updateRideStats, 1000); }
     </script>
 }

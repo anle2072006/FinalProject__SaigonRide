@@ -17,43 +17,47 @@ namespace FinalProject__SaigonRide.Controllers
             _context = context;
         }
 
-        // --- 1. Dashboard (Trang chủ Admin) ---
+        // --- 1. Dashboard ---
         public async Task<IActionResult> Index()
         {
             ViewBag.TotalVehicles = await _context.Vehicles.CountAsync();
             ViewBag.TotalStations = await _context.Stations.CountAsync();
-            // Có thể đếm thêm coupon nếu cần:
-            // ViewBag.TotalCoupons = await _context.Coupons.CountAsync();
-
             return View();
         }
 
-        // --- 2. Quản lý Xe (Vehicles) ---
+        // --- 2. Vehicles ---
         public async Task<IActionResult> Vehicles()
         {
-            // Lấy danh sách trạm xe để truyền vào ViewBag cho modal "Add Vehicles"
             ViewBag.Stations = await _context.Stations.ToListAsync();
-
             var vehicles = await _context.Vehicles.ToListAsync();
             return View(vehicles);
         }
-        // --- 3. Quản lý Trạm (Stations) ---
+
+        // --- 3. Stations ---
         public async Task<IActionResult> Stations()
         {
             var stations = await _context.Stations.ToListAsync();
-            return View(stations); // Sẽ tìm file Views/Admin/Stations.cshtml
+
+            // Đếm số xe theo từng StationId
+            var vehicleCountByStation = await _context.Vehicles
+                .GroupBy(v => v.StationId)
+                .Select(g => new { StationId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.StationId, x => x.Count);
+
+            ViewBag.VehicleCountByStation = vehicleCountByStation;
+            ViewBag.MaxVehiclePerStation = 100;
+
+            return View(stations);
         }
 
-        // --- 4. Quản lý Mã giảm giá (Coupons) ---
+        // --- 4. Coupons ---
         public async Task<IActionResult> Coupons()
         {
             var coupons = await _context.Coupons.ToListAsync();
-            return View(coupons); // Sẽ tìm file Views/Admin/Coupons.cshtml
+            return View(coupons);
         }
 
-
-
-        // --- 5. Xử lý Thêm Trạm (Create Station) ---
+        // --- 5. Create Station ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateStation(string Name, string Location)
@@ -62,11 +66,10 @@ namespace FinalProject__SaigonRide.Controllers
             {
                 var station = new Station
                 {
-                    Id = Guid.NewGuid().ToString(), // Tạo ID ngẫu nhiên vì Model của bạn dùng kiểu string
+                    Id = Guid.NewGuid().ToString(),
                     Name = Name,
                     Location = Location
                 };
-
                 _context.Stations.Add(station);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Đã thêm trạm mới thành công!";
@@ -75,7 +78,39 @@ namespace FinalProject__SaigonRide.Controllers
             return RedirectToAction(nameof(Stations));
         }
 
-        // --- 8. Xử lý Thêm Coupon (Create Coupon) ---
+        // --- 6. Edit Station ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStation(string Id, string Name, string Location)
+        {
+            var station = await _context.Stations.FindAsync(Id);
+            if (station != null)
+            {
+                station.Name = Name;
+                station.Location = Location;
+                _context.Stations.Update(station);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Cập nhật thông tin trạm thành công!";
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+        // --- 7. Delete Station ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStation(string id)
+        {
+            var station = await _context.Stations.FindAsync(id);
+            if (station != null)
+            {
+                _context.Stations.Remove(station);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã xóa trạm thành công!";
+            }
+            return RedirectToAction(nameof(Stations));
+        }
+
+        // --- 8. Create Coupon ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCoupon(string CodeName, int DiscountValue, bool IsActive)
@@ -84,14 +119,10 @@ namespace FinalProject__SaigonRide.Controllers
             {
                 var coupon = new Coupon
                 {
-                    // Nếu Id của Coupon là int tự tăng thì không cần dòng này. 
-                    // Nếu là string như Station/Vehicle thì dùng Guid:
-                    // Id = Guid.NewGuid().ToString(), 
                     CodeName = CodeName,
                     DiscountValue = DiscountValue,
                     IsActive = IsActive
                 };
-
                 _context.Coupons.Add(coupon);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Đã tạo mã giảm giá mới!";
@@ -99,7 +130,7 @@ namespace FinalProject__SaigonRide.Controllers
             return RedirectToAction(nameof(Coupons));
         }
 
-        // --- 9. Xử lý Sửa Coupon (Edit Coupon) ---
+        // --- 9. Edit Coupon ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCoupon(int Id, string CodeName, int DiscountValue, bool IsActive)
@@ -110,7 +141,6 @@ namespace FinalProject__SaigonRide.Controllers
                 coupon.CodeName = CodeName;
                 coupon.DiscountValue = DiscountValue;
                 coupon.IsActive = IsActive;
-
                 _context.Update(coupon);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Đã cập nhật mã giảm giá!";
@@ -118,7 +148,7 @@ namespace FinalProject__SaigonRide.Controllers
             return RedirectToAction(nameof(Coupons));
         }
 
-        // --- 10. Xử lý Xóa Coupon (Delete Coupon) ---
+        // --- 10. Delete Coupon ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCoupon(int id)
@@ -132,7 +162,8 @@ namespace FinalProject__SaigonRide.Controllers
             }
             return RedirectToAction(nameof(Coupons));
         }
-        // --- Các hàm xử lý dữ liệu (Ví dụ cho Vehicle) ---
+
+        // --- 11. Create Vehicle ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVehicle(string Name, double PricePerHour, string StationId, int Quantity)
@@ -156,43 +187,8 @@ namespace FinalProject__SaigonRide.Controllers
             }
             return RedirectToAction(nameof(Vehicles));
         }
-        // --- Xử lý Sửa Trạm (Edit Station) ---
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStation(string Id, string Name, string Location)
-        {
-            var station = await _context.Stations.FindAsync(Id);
-            if (station != null)
-            {
-                station.Name = Name;
-                station.Location = Location;
 
-                _context.Stations.Update(station);
-                await _context.SaveChangesAsync();
-
-                TempData["Success"] = "Cập nhật thông tin trạm thành công!";
-            }
-            return RedirectToAction(nameof(Stations));
-        }
-
-        // --- Xử lý Xóa Trạm (Delete Station) ---
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteStation(string id) // Chữ id viết thường
-        {
-            var station = await _context.Stations.FindAsync(id);
-            if (station != null)
-            {
-                // Lưu ý: Nếu trạm này ĐANG CÓ XE (Vehicles) thì không xóa được (lỗi khóa ngoại). 
-                // Muốn xóa trạm, ông phải xóa hết xe trong trạm đó trước!
-                _context.Stations.Remove(station);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã xóa trạm thành công!";
-            }
-            return RedirectToAction(nameof(Stations));
-        }
-
-        // --- Xử lý Sửa Xe (Edit Vehicle) ---
+        // --- 12. Edit Vehicle ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditVehicle(string Id, string Name, double PricePerHour, string StationId)
@@ -203,7 +199,6 @@ namespace FinalProject__SaigonRide.Controllers
                 vehicle.Name = Name;
                 vehicle.PricePerHour = PricePerHour;
                 vehicle.StationId = StationId;
-
                 _context.Vehicles.Update(vehicle);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Đã cập nhật thông tin xe thành công!";
@@ -211,6 +206,7 @@ namespace FinalProject__SaigonRide.Controllers
             return RedirectToAction(nameof(Vehicles));
         }
 
+        // --- 13. Delete Vehicle ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteVehicle(string id)

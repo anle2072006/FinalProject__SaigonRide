@@ -26,16 +26,34 @@ namespace FinalProject__SaigonRide.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPayment(string paymentMethod, string amount)
+        // Thêm string dropoffStationId vào tham số
+        public async Task<IActionResult> ProcessPayment(string paymentMethod, string amount, string dropoffStationId)
         {
+            // 1. Xử lý chuỗi tiền tệ chung
+            string cleanAmount = amount.Replace("VND", "").Replace(".", "").Replace(",", "").Trim();
+            if (!long.TryParse(cleanAmount, out long amountInVnd))
+            {
+                return BadRequest("Invalid amount.");
+            }
+
+            // 2. Logic giảm 20% nếu trạm đích có sức chứa < 20%
+            if (!string.IsNullOrEmpty(dropoffStationId))
+            {
+                System.Diagnostics.Debug.WriteLine($"---> TEST TRẠM: ID={dropoffStationId}");
+                var dropoffStation = await _context.Stations.FindAsync(dropoffStationId);
+                if (dropoffStation != null && dropoffStation.MaxCapacity > 0)
+                {
+                    double capacityPercentage = ((double)dropoffStation.CurrentVehicles / dropoffStation.MaxCapacity) * 100;
+                    if (capacityPercentage < 20)
+                    {
+                        amountInVnd = (long)(amountInVnd * 0.8); // Giảm thẳng 20%
+                    }
+                }
+            }
+
+            // 3. Xử lý thanh toán VNPay
             if (paymentMethod == "VNPay")
             {
-                string cleanAmount = amount.Replace("VND", "").Replace(".", "").Replace(",", "").Trim();
-                if (!long.TryParse(cleanAmount, out long amountInVnd))
-                {
-                    return BadRequest("Invalid amount.");
-                }
-
                 string tmnCode = _configuration["Vnpay:TmnCode"];
                 string hashSecret = _configuration["Vnpay:HashSecret"];
                 string vnpUrl = _configuration["Vnpay:BaseUrl"];
@@ -45,7 +63,7 @@ namespace FinalProject__SaigonRide.Controllers
                 vnpay.AddRequestData("vnp_Version", "2.1.0");
                 vnpay.AddRequestData("vnp_Command", "pay");
                 vnpay.AddRequestData("vnp_TmnCode", tmnCode);
-                vnpay.AddRequestData("vnp_Amount", (amountInVnd * 100).ToString());
+                vnpay.AddRequestData("vnp_Amount", (amountInVnd * 100).ToString()); // Sử dụng số tiền đã giảm
                 vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
                 vnpay.AddRequestData("vnp_CurrCode", "VND");
                 vnpay.AddRequestData("vnp_IpAddr", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1");
@@ -58,11 +76,11 @@ namespace FinalProject__SaigonRide.Controllers
                 string paymentUrl = vnpay.CreateRequestUrl(vnpUrl, hashSecret);
                 return Redirect(paymentUrl);
             }
+
+            // 4. Xử lý thanh toán PayPal
             if (paymentMethod == "PayPal")
             {
-                string cleanAmount = amount.Replace("VND", "").Replace(".", "").Replace(",", "").Trim();
-                if (!long.TryParse(cleanAmount, out long amountInVnd)) return BadRequest("Invalid amount.");
-
+                // Chuyển đổi số tiền đã giảm sang USD
                 decimal amountInUsd = Math.Round((decimal)amountInVnd / 25000, 2);
 
                 var clientId = _configuration["PayPal:ClientId"];
@@ -102,6 +120,7 @@ namespace FinalProject__SaigonRide.Controllers
 
                 return Redirect(approveLink);
             }
+
             return Content("This payment method is currently under maintenance.");
         }
 

@@ -10,7 +10,7 @@ namespace FinalProject__SaigonRide.Models
         public string Email { get; set; }
         public string Phone { get; set; }
         public string PickupStation { get; set; }
-        public string DropoffStation { get; set; } = "Ba Son";
+        public string DropoffStation { get; set; } 
         public string RentedVehicle { get; set; }
         public string VehicleImagePath { get; set; }
         public decimal EstimatedCost { get; set; }
@@ -18,5 +18,7 @@ namespace FinalProject__SaigonRide.Models
         public string DocumentNumber { get; set; }
         public double PricePerMinute { get; set; }
         public List<Coupon> AvailableCoupons { get; set; } = new List<Coupon>();
+        public string DropoffStationId { get; set; }
+        public bool IsCapacityDiscount { get; set; }
     }
 }
