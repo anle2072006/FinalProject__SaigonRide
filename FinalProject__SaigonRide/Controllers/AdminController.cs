@@ -38,7 +38,6 @@ namespace FinalProject__SaigonRide.Controllers
         {
             var stations = await _context.Stations.ToListAsync();
 
-            // Đếm số xe theo từng StationId
             var vehicleCountByStation = await _context.Vehicles
                 .GroupBy(v => v.StationId)
                 .Select(g => new { StationId = g.Key, Count = g.Count() })
@@ -60,7 +59,7 @@ namespace FinalProject__SaigonRide.Controllers
         // --- 5. Create Station ---
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateStation(string Name, string Location)
+        public async Task<IActionResult> CreateStation(string Name, string Location, int MaxCapacity)
         {
             if (ModelState.IsValid)
             {
@@ -68,11 +67,13 @@ namespace FinalProject__SaigonRide.Controllers
                 {
                     Id = Guid.NewGuid().ToString(),
                     Name = Name,
-                    Location = Location
+                    Location = Location,
+                    MaxCapacity = MaxCapacity,
+                    CurrentVehicles = 0 // Mặc định khi mới tạo là 0 xe
                 };
                 _context.Stations.Add(station);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã thêm trạm mới thành công!";
+                TempData["Success"] = "New station added successfully!";
                 return RedirectToAction(nameof(Stations));
             }
             return RedirectToAction(nameof(Stations));
@@ -81,13 +82,15 @@ namespace FinalProject__SaigonRide.Controllers
         // --- 6. Edit Station ---
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditStation(string Id, string Name, string Location)
+        public async Task<IActionResult> EditStation(string Id, string Name, string Location, int MaxCapacity)
         {
             var station = await _context.Stations.FindAsync(Id);
             if (station != null)
             {
                 station.Name = Name;
                 station.Location = Location;
+                station.MaxCapacity = MaxCapacity;
+
                 _context.Stations.Update(station);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Cập nhật thông tin trạm thành công!";
@@ -182,7 +185,17 @@ namespace FinalProject__SaigonRide.Controllers
                     };
                     _context.Vehicles.Add(vehicle);
                 }
+
+                // Tăng CurrentVehicles của Trạm
+                var station = await _context.Stations.FindAsync(StationId);
+                if (station != null)
+                {
+                    station.CurrentVehicles += Quantity;
+                    _context.Stations.Update(station);
+                }
+
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Vehicle added successfully!";
                 return RedirectToAction(nameof(Vehicles));
             }
             return RedirectToAction(nameof(Vehicles));
@@ -196,6 +209,24 @@ namespace FinalProject__SaigonRide.Controllers
             var vehicle = await _context.Vehicles.FindAsync(Id);
             if (vehicle != null)
             {
+                // Nếu xe bị đổi sang trạm khác, cần tính toán lại CurrentVehicles của cả 2 trạm
+                if (vehicle.StationId != StationId)
+                {
+                    var oldStation = await _context.Stations.FindAsync(vehicle.StationId);
+                    if (oldStation != null && oldStation.CurrentVehicles > 0)
+                    {
+                        oldStation.CurrentVehicles -= 1;
+                        _context.Stations.Update(oldStation);
+                    }
+
+                    var newStation = await _context.Stations.FindAsync(StationId);
+                    if (newStation != null)
+                    {
+                        newStation.CurrentVehicles += 1;
+                        _context.Stations.Update(newStation);
+                    }
+                }
+
                 vehicle.Name = Name;
                 vehicle.PricePerHour = PricePerHour;
                 vehicle.StationId = StationId;
@@ -214,8 +245,17 @@ namespace FinalProject__SaigonRide.Controllers
             var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle != null)
             {
+                // Giảm CurrentVehicles của Trạm
+                var station = await _context.Stations.FindAsync(vehicle.StationId);
+                if (station != null && station.CurrentVehicles > 0)
+                {
+                    station.CurrentVehicles -= 1;
+                    _context.Stations.Update(station);
+                }
+
                 _context.Vehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã xóa xe thành công!";
             }
             return RedirectToAction(nameof(Vehicles));
         }

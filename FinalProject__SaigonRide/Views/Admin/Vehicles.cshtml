@@ -15,6 +15,8 @@
         .table-card td { padding: 16px 20px; font-size: 0.92rem; border-bottom: 1px solid #2c2e3e; }
         .price-chip { background: rgba(212, 255, 0, 0.12); color: #d4ff00; border-radius: 20px; padding: 4px 12px; font-weight: 600; }
         .btn-neon { background: #d4ff00; color: #1a1a2e; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer; }
+        .btn-action { background: #2c2e3e; color: #d4ff00; padding: 6px 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 5px; }
+        .btn-action.delete { background: #ff5050; color: white; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10, 11, 22, 0.85); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: #1B1D2F; border: 1px solid #2c2e3e; border-radius: 18px; padding: 30px; width: 100%; max-width: 450px; }
@@ -31,7 +33,7 @@
 <div class="admin-header">
     <div>
         <h2>⚡ Vehicle Management</h2>
-        <div class="subtitle">Quản lý và cấp phát phương tiện theo trạm</div>
+        <div class="subtitle">Manage and allocate vehicles to stations</div>
     </div>
     <button class="btn-neon" onclick="openAddModal()">+ Add Vehicles</button>
 </div>
@@ -54,13 +56,13 @@
                     <td>@v.Name</td>
                     <td><span class="price-chip">@v.PricePerHour.ToString("N0") VND</span></td>
                     <td style="text-align:right">
-                        <button class="btn-neon" style="background: #2c2e3e; color: #d4ff00; padding: 5px 10px; margin-right: 5px;"
-                                onclick='openEditModal("@v.Id", @Html.Raw(Json.Serialize(v.Name)), @v.PricePerHour, "@v.StationId")'>
+                        <button class="btn-action" 
+                                onclick='openEditModal("@v.Id", "@Html.Raw(v.Name)", @v.PricePerHour.ToString(System.Globalization.CultureInfo.InvariantCulture), "@v.StationId")'>
                             Edit
                         </button>
 
-                        <button class="btn-neon" style="background:#ff5050; padding: 5px 10px;"
-                                onclick="openDeleteModal('@v.Id', '@v.Name')">
+                        <button class="btn-action delete" 
+                                onclick="openDeleteModal('@v.Id', '@Html.Raw(v.Name)')">
                             Delete
                         </button>
                     </td>
@@ -95,7 +97,7 @@
             <div style="display:flex; gap:15px">
                 <div style="flex:1">
                     <label class="modal-label">Price (VND/min)</label>
-                    <input class="modal-input" name="PricePerHour" type="number" value="1500" required>
+                    <input class="modal-input" name="PricePerHour" type="number" step="any" value="1500" required>
                 </div>
                 <div style="flex:1">
                     <label class="modal-label">Quantity</label>
@@ -115,7 +117,7 @@
 <div class="modal-overlay" id="deleteModal">
     <div class="modal-box">
         <h4 style="color:#ff5050">🗑️ Confirm Delete</h4>
-        <p style="color:#8a8a9e">Bạn có chắc muốn xóa xe <span id="delName" style="color:#fff"></span>?</p>
+        <p style="color:#8a8a9e">Are you sure you want to delete <span id="delName" style="color:#fff; font-weight:bold;"></span>?</p>
         <form method="post" asp-action="DeleteVehicle" asp-controller="Admin">
             @Html.AntiForgeryToken()
             <input type="hidden" id="delId" name="id">
@@ -132,6 +134,7 @@
     <div class="modal-box">
         <h4 style="color:#d4ff00; margin-bottom:20px">✏️ Edit Vehicle</h4>
         <form method="post" asp-action="EditVehicle" asp-controller="Admin">
+            @Html.AntiForgeryToken()
             <input type="hidden" id="editVehicleId" name="Id">
 
             <div class="mb-3">
@@ -150,7 +153,6 @@
                     <option value="">-- Chọn Trạm --</option>
                     @if (ViewBag.Stations != null)
                     {
-                        // Đã thêm ép kiểu giống hệt Modal Add
                         foreach (var station in (IEnumerable<FinalProject__SaigonRide.Models.Station>)ViewBag.Stations)
                         {
                             <option value="@station.Id">@station.Name</option>
@@ -170,7 +172,7 @@
 @section Scripts {
     <script>
         function openAddModal() { document.getElementById('addModal').classList.add('active'); }
-        // Mở Modal Edit (Phần mới thêm)
+        
         function openEditModal(id, name, price, stationId) {
             document.getElementById('editVehicleId').value = id;
             document.getElementById('editVehicleName').value = name;
@@ -183,11 +185,13 @@
 
             document.getElementById('editVehicleModal').classList.add('active');
         }
+        
         function openDeleteModal(id, name) { 
             document.getElementById('delId').value = id;
             document.getElementById('delName').innerText = name;
             document.getElementById('deleteModal').classList.add('active'); 
         }
+        
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
         setTimeout(() => { document.getElementById('toastMsg')?.remove(); }, 4000);

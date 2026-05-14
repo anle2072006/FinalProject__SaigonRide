@@ -46,7 +46,7 @@ namespace FinalProject__SaigonRide.Controllers
                     double capacityPercentage = ((double)dropoffStation.CurrentVehicles / dropoffStation.MaxCapacity) * 100;
                     if (capacityPercentage < 20)
                     {
-                        amountInVnd = (long)(amountInVnd * 0.8); // Giảm thẳng 20%
+                        amountInVnd = (long)(amountInVnd * 0.85); // Giảm thẳng 20%
                     }
                 }
             }

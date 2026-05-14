@@ -1,124 +1,79 @@
-﻿/*SETTING*/ /* --- BỐ CỤC CHÍNH (GRID 3 CỘT) --- */
-
+﻿/* --- BỐ CỤC CHÍNH (DARK THEME) --- */
 .settings-wrapper {
     display: grid;
-    grid-template-columns: 280px 1fr 300px; /* Cột trái 280px - Giữa co giãn - Cột phải 300px */
-
+    grid-template-columns: 280px 1fr; /* 2 cột: Profile và Form */
     gap: 25px;
     padding: 30px;
-    background-color: #0d111d; /* Nền tối */
-
+    background-color: #0d111d; /* Nền tổng thể tối */
     min-height: 100vh;
     font-family: sans-serif;
-    color: #1a1e30; /* Chữ mặc định trong thẻ sáng */
+    color: #ffffff;
 }
-/* --- THẺ CARD CHUNG --- */
 
+/* --- THẺ CARD (KHUNG) --- */
 .st-card {
-    background-color: #e9ebf0; /* Màu xám sáng của thẻ */
-
+    background-color: #1B1D2F; /* Nền khung màu tối thay vì trắng */
+    border: 1px solid #2c2e3e; /* Giữ lại viền khung */
     border-radius: 16px;
     padding: 25px;
     margin-bottom: 20px;
+    color: #ffffff; /* Chữ trong khung thành màu trắng */
 }
 
 .st-card-title {
     font-size: 1rem;
     font-weight: bold;
     margin: 0 0 15px 0;
+    color: #d4ff00; /* Tiêu đề màu Neon để nổi bật */
 }
 
-.mt-4 {
-    margin-top: 20px;
-}
-
-.mt-5 {
-    margin-top: 40px;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.h-100 {
-    height: 100%;
-    box-sizing: border-box;
-}
-/* --- CỘT 1: PROFILE & INFO --- */
-
+/* --- PROFILE & INFO --- */
 .profile-img {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
+    border: 2px solid #d4ff00;
 }
 
 .profile-name {
-    margin: 0 0 5px 0;
-    font-size: 1.2rem;
+    color: #ffffff;
+    margin-bottom: 5px;
 }
 
 .profile-email {
-    margin: 0;
-    color: #666a80;
+    color: #8a8a9e;
     font-size: 0.85rem;
 }
 
 .info-list {
     list-style: none;
     padding: 0;
-    margin: 0;
 }
-
-
 
     .info-list li {
         display: flex;
         justify-content: space-between;
         margin-bottom: 12px;
         font-size: 0.85rem;
+        border-bottom: 1px solid #2c2e3e; /* Viền ngăn cách nhẹ */
+        padding-bottom: 5px;
     }
 
-
-
         .info-list li strong {
-            color: #1a1e30;
+            color: #ffffff;
         }
-
-
 
         .info-list li span {
-            color: #666a80;
+            color: #8a8a9e;
         }
-/* Nút Toggle gạt mượt mà */
 
-.toggle-switch {
-    width: 36px;
-    height: 20px;
-    background-color: #D1F366;
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
+.text-neon {
+    color: #d4ff00 !important;
 }
 
-.toggle-circle {
-    width: 14px;
-    height: 14px;
-    background-color: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    /* Để bật toggle sang phải, đổi left thành right: 3px */
-}
-/* --- CỘT 2: FORM SETTINGS --- */
-
-.st-section-title {
-    font-size: 1.1rem;
-    margin: 0 0 25px 0;
-}
-
+/* --- FORM SETTINGS --- */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -131,201 +86,60 @@
     font-size: 0.85rem;
     font-weight: bold;
     margin-bottom: 8px;
-    color: #1a1e30;
-}
-
-.invisible-label {
-    visibility: hidden;
+    color: #ffffff;
 }
 
 .form-group input {
     width: 100%;
-    background-color: #d8dbe4;
-    border: none;
+    background-color: #141627; /* Nền input tối */
+    border: 1px solid #2c2e3e; /* Viền input */
     border-radius: 8px;
     padding: 12px 15px;
-    font-size: 0.85rem;
-    color: #333;
+    color: #ffffff; /* Chữ gõ vào màu trắng */
     outline: none;
-    box-sizing: border-box;
 }
 
-
-
-    .form-group input::placeholder {
-        color: #9aa0b6;
+    .form-group input:focus {
+        border-color: #d4ff00;
     }
 
-.phone-input-group {
-    display: flex;
-    gap: 10px;
-}
+    .form-group input[readonly] {
+        background-color: #0d111d;
+        color: #555;
+        cursor: not-allowed;
+    }
 
-.input-prefix {
-    width: 60px !important;
-    text-align: center;
-}
-
-.input-phone {
-    flex: 1;
-}
-
+/* --- BUTTONS --- */
 .btn-neon {
-    background-color: #D1F366;
+    background-color: #d4ff00;
     color: #000;
     border: none;
     padding: 10px 24px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
-    font-size: 0.85rem;
 }
 
-.form-actions {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+.btn-logout-red {
+    background-color: #ff4d4d; /* Màu đỏ cho nút Logout */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.3s;
 }
+
+    .btn-logout-red:hover {
+        background-color: #ff3333;
+    }
 
 .btn-transparent {
     background: transparent;
     border: none;
-    color: #666a80;
-    font-weight: bold;
-    cursor: pointer;
+    color: #8a8a9e;
     text-decoration: underline;
-    font-size: 0.85rem;
-}
-/* --- CỘT 3: WALLET --- */
-
-.wallet-widget {
-    background-color: #D1F366;
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 15px;
-}
-
-.wallet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-
-
-    .wallet-header h2 {
-        margin: 0;
-        font-size: 1.3rem;
-    }
-
-.coin-badge {
-    background: rgba(255,255,255,0.4);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.wallet-inner-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.wallet-type {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.icon-cash {
-    background-color: #34d399;
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-.type-info strong {
-    display: block;
-    font-size: 0.95rem;
-}
-
-.type-info p {
-    margin: 0;
-    font-size: 0.75rem;
-    color: #a0a4b8;
-}
-
-.wallet-balance-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-
-
-    .wallet-balance-row span {
-        font-size: 0.7rem;
-        color: #a0a4b8;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-
-
-    .wallet-balance-row h2.text-red {
-        margin: 0;
-        color: #ff3b3b;
-        font-size: 1.6rem;
-    }
-
-
-
-    .wallet-balance-row h4 {
-        margin: 0;
-        font-size: 1rem;
-        color: #1a1e30;
-    }
-
-.balance-right {
-    text-align: right;
-}
-
-.wallet-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.menu-item {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-    font-weight: bold;
     cursor: pointer;
-}
-
-.menu-value {
-    color: #a0a4b8;
-    font-weight: normal;
-}
-
-.arrow {
-    color: #a0a4b8;
-    margin-left: 10px;
-    font-weight: normal;
 }

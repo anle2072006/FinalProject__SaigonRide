@@ -2,413 +2,67 @@
 @{
     ViewData["Title"] = "Admin – Stations";
     var vehicleCounts = ViewBag.VehicleCountByStation as Dictionary<string, int> ?? new Dictionary<string, int>();
-    int maxVehicles = ViewBag.MaxVehiclePerStation ?? 100;
+    // Lấy MaxVehiclePerStation đã được loại bỏ, sẽ dùng MaxCapacity của từng trạm
 }
 
 @section Styles {
     <style>
-        .admin-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-        }
-
-            .admin-header h2 {
-                color: #d4ff00;
-                font-weight: 700;
-                font-size: 1.7rem;
-                margin: 0;
-            }
-
-            .admin-header .subtitle {
-                color: #8a8a9e;
-                font-size: 0.85rem;
-                margin-top: 2px;
-            }
-
-        .toast-neon {
-            background: #1B1D2F;
-            border: 1px solid #d4ff00;
-            border-radius: 10px;
-            color: #d4ff00;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-            .toast-neon .close-toast {
-                margin-left: auto;
-                cursor: pointer;
-                color: #8a8a9e;
-                background: none;
-                border: none;
-            }
-
-        .search-bar {
-            background: #1B1D2F;
-            border: 1px solid #2c2e3e;
-            border-radius: 10px;
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 280px;
-        }
-
-            .search-bar input {
-                background: transparent;
-                border: none;
-                outline: none;
-                color: white;
-                padding: 10px 0;
-                font-size: 0.9rem;
-                width: 100%;
-            }
-
-                .search-bar input::placeholder {
-                    color: #8a8a9e;
-                }
-
-        /* ── Table card ── */
-        .table-card {
-            background: #1B1D2F;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #2c2e3e;
-        }
-
-            .table-card table {
-                width: 100%;
-                border-collapse: collapse;
-                color: white;
-            }
-
-            .table-card thead th {
-                background: #141627;
-                color: #8a8a9e;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                padding: 16px 20px;
-                font-weight: 600;
-                border-bottom: 1px solid #2c2e3e;
-            }
-
-            .table-card tbody tr {
-                border-bottom: 1px solid #2c2e3e;
-                transition: background 0.2s;
-            }
-
-                .table-card tbody tr:last-child {
-                    border-bottom: none;
-                }
-
-                .table-card tbody tr:hover {
-                    background: #20223a;
-                }
-
-            .table-card tbody td {
-                padding: 16px 20px;
-                font-size: 0.92rem;
-                vertical-align: middle;
-            }
-
-        .id-badge {
-            background: #2c2e3e;
-            color: #8a8a9e;
-            border-radius: 6px;
-            padding: 3px 10px;
-            font-size: 0.75rem;
-            font-family: monospace;
-            max-width: 180px;
-            display: inline-block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-        .location-chip {
-            background: rgba(138,138,158,0.12);
-            color: #b0b0c8;
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.82rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* ── Vehicle capacity bar ── */
-        .capacity-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 160px;
-        }
-
-        .capacity-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .capacity-count {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .capacity-max {
-            font-size: 0.75rem;
-            color: #8a8a9e;
-        }
-
-        .capacity-bar-bg {
-            background: #2c2e3e;
-            border-radius: 99px;
-            height: 7px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .capacity-bar-fill {
-            height: 100%;
-            border-radius: 99px;
-            transition: width 0.4s ease;
-        }
-        /* Màu theo % lấp đầy */
-        .fill-verylow {
-            background: #00e676;
-        }
-
-        .fill-low {
-            background: #d4ff00;
-        }
-
-        .fill-medium {
-            background: #ffa500;
-        }
-
-        .fill-high {
-            background: #ff5050;
-        }
-
-        .capacity-label {
-            font-size: 0.72rem;
-            color: #8a8a9e;
-        }
-
-        .capacity-full {
-            font-size: 0.72rem;
-            color: #ff5050;
-            font-weight: 600;
-        }
-
-        /* ── Buttons ── */
-        .btn-neon {
-            background: #d4ff00;
-            color: #1a1a2e;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 700;
-            font-size: 0.88rem;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-            .btn-neon:hover {
-                opacity: 0.88;
-                transform: translateY(-1px);
-            }
-
-        .btn-icon {
-            background: #2c2e3e;
-            border: none;
-            border-radius: 8px;
-            padding: 7px 10px;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-        }
-
-            .btn-icon.edit:hover {
-                background: rgba(212,255,0,0.18);
-            }
-
-            .btn-icon.delete:hover {
-                background: rgba(255,80,80,0.18);
-            }
-
-            .btn-icon.edit svg {
-                stroke: #d4ff00;
-            }
-
-            .btn-icon.delete svg {
-                stroke: #ff5050;
-            }
-
-        /* ── Stats bar ── */
-        .stats-bar {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-pill {
-            background: #1B1D2F;
-            border: 1px solid #2c2e3e;
-            border-radius: 12px;
-            padding: 12px 20px;
-            flex: 1;
-        }
-
-            .stat-pill .label {
-                color: #8a8a9e;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.8px;
-            }
-
-            .stat-pill .value {
-                color: white;
-                font-size: 1.5rem;
-                font-weight: 700;
-                margin-top: 2px;
-            }
-
-                .stat-pill .value span {
-                    color: #d4ff00;
-                }
-
-        /* ── Modal ── */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10,11,22,0.82);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .modal-overlay.active {
-                display: flex;
-            }
-
-        .modal-box {
-            background: #1B1D2F;
-            border: 1px solid #2c2e3e;
-            border-radius: 18px;
-            padding: 32px 36px;
-            width: 100%;
-            max-width: 440px;
-            animation: modalIn 0.25s ease;
-        }
-
-        @@keyframes modalIn {
-            from {
-                transform: scale(0.92);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-box h4 {
-            color: #d4ff00;
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin: 0 0 24px;
-        }
-
-        .modal-label {
-            color: #8a8a9e;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        .modal-input {
-            background: #141627;
-            border: 1px solid #2c2e3e;
-            border-radius: 10px;
-            color: white;
-            padding: 11px 14px;
-            font-size: 0.92rem;
-            width: 100%;
-            outline: none;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
-        }
-
-            .modal-input:focus {
-                border-color: #d4ff00;
-            }
-
-        .modal-footer {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 28px;
-        }
-
-        .btn-ghost {
-            background: #2c2e3e;
-            border: none;
-            color: #8a8a9e;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 0.88rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-            .btn-ghost:hover {
-                background: #353649;
-            }
-
-        .confirm-text {
-            color: #c0c0d0;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 0;
-        }
-
-            .confirm-text span {
-                color: #d4ff00;
-                font-weight: 600;
-            }
-
-        .btn-danger {
-            background: #ff5050;
-            border: none;
-            color: white;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 700;
-            font-size: 0.88rem;
-            cursor: pointer;
-        }
-
-            .btn-danger:hover {
-                opacity: 0.85;
-            }
+        .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .admin-header h2 { color: #d4ff00; font-weight: 700; font-size: 1.7rem; margin: 0; }
+        .admin-header .subtitle { color: #8a8a9e; font-size: 0.85rem; margin-top: 2px; }
+        .toast-neon { background: #1B1D2F; border: 1px solid #d4ff00; border-radius: 10px; color: #d4ff00; padding: 12px 20px; margin-bottom: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
+        .toast-neon .close-toast { margin-left: auto; cursor: pointer; color: #8a8a9e; background: none; border: none; }
+        .search-bar { background: #1B1D2F; border: 1px solid #2c2e3e; border-radius: 10px; padding: 0 16px; display: flex; align-items: center; gap: 10px; width: 280px; }
+        .search-bar input { background: transparent; border: none; outline: none; color: white; padding: 10px 0; font-size: 0.9rem; width: 100%; }
+        .search-bar input::placeholder { color: #8a8a9e; }
+        .table-card { background: #1B1D2F; border-radius: 16px; overflow: hidden; border: 1px solid #2c2e3e; }
+        .table-card table { width: 100%; border-collapse: collapse; color: white; }
+        .table-card thead th { background: #141627; color: #8a8a9e; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 16px 20px; font-weight: 600; border-bottom: 1px solid #2c2e3e; }
+        .table-card tbody tr { border-bottom: 1px solid #2c2e3e; transition: background 0.2s; }
+        .table-card tbody tr:last-child { border-bottom: none; }
+        .table-card tbody tr:hover { background: #20223a; }
+        .table-card tbody td { padding: 16px 20px; font-size: 0.92rem; vertical-align: middle; }
+        .id-badge { background: #2c2e3e; color: #8a8a9e; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; font-family: monospace; max-width: 180px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+        .location-chip { background: rgba(138,138,158,0.12); color: #b0b0c8; border-radius: 20px; padding: 4px 12px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 5px; }
+        .capacity-wrap { display: flex; flex-direction: column; gap: 5px; min-width: 160px; }
+        .capacity-top { display: flex; justify-content: space-between; align-items: center; }
+        .capacity-count { font-size: 0.85rem; font-weight: 700; color: white; }
+        .capacity-max { font-size: 0.75rem; color: #8a8a9e; }
+        .capacity-bar-bg { background: #2c2e3e; border-radius: 99px; height: 7px; overflow: hidden; width: 100%; }
+        .capacity-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+        .fill-verylow { background: #00e676; }
+        .fill-low { background: #d4ff00; }
+        .fill-medium { background: #ffa500; }
+        .fill-high { background: #ff5050; }
+        .capacity-label { font-size: 0.72rem; color: #8a8a9e; }
+        .capacity-full { font-size: 0.72rem; color: #ff5050; font-weight: 600; }
+        .btn-neon { background: #d4ff00; color: #1a1a2e; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: opacity 0.2s, transform 0.1s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-neon:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-icon { background: #2c2e3e; border: none; border-radius: 8px; padding: 7px 10px; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; }
+        .btn-icon.edit:hover { background: rgba(212,255,0,0.18); }
+        .btn-icon.delete:hover { background: rgba(255,80,80,0.18); }
+        .btn-icon.edit svg { stroke: #d4ff00; }
+        .btn-icon.delete svg { stroke: #ff5050; }
+        .stats-bar { display: flex; gap: 16px; margin-bottom: 24px; }
+        .stat-pill { background: #1B1D2F; border: 1px solid #2c2e3e; border-radius: 12px; padding: 12px 20px; flex: 1; }
+        .stat-pill .label { color: #8a8a9e; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.8px; }
+        .stat-pill .value { color: white; font-size: 1.5rem; font-weight: 700; margin-top: 2px; }
+        .stat-pill .value span { color: #d4ff00; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,11,22,0.82); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: #1B1D2F; border: 1px solid #2c2e3e; border-radius: 18px; padding: 32px 36px; width: 100%; max-width: 440px; animation: modalIn 0.25s ease; }
+        @@keyframes modalIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-box h4 { color: #d4ff00; font-weight: 700; font-size: 1.2rem; margin: 0 0 24px; }
+        .modal-label { color: #8a8a9e; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block; }
+        .modal-input { background: #141627; border: 1px solid #2c2e3e; border-radius: 10px; color: white; padding: 11px 14px; font-size: 0.92rem; width: 100%; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
+        .modal-input:focus { border-color: #d4ff00; }
+        .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 28px; }
+        .btn-ghost { background: #2c2e3e; border: none; color: #8a8a9e; border-radius: 8px; padding: 10px 20px; font-size: 0.88rem; cursor: pointer; transition: background 0.2s; }
+        .btn-ghost:hover { background: #353649; }
+        .confirm-text { color: #c0c0d0; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; }
+        .confirm-text span { color: #d4ff00; font-weight: 600; }
+        .btn-danger { background: #ff5050; border: none; color: white; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+        .btn-danger:hover { opacity: 0.85; }
     </style>
 }
 
@@ -426,7 +80,7 @@
 <div class="admin-header">
     <div>
         <h2>🗺️ Station Management</h2>
-        <div class="subtitle">Quản lý tất cả trạm xe trong hệ thống SaiGonRide</div>
+        <div class="subtitle">Manage all vehicle stations in SaigonRide system</div>
     </div>
     <button class="btn-neon" onclick="openAddModal()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -475,19 +129,19 @@
             {
                 <tr>
                     <td colspan="5" style="text-align:center;padding:60px;color:#8a8a9e;">
-                        Chưa có station nào. Nhấn <strong>Add Station</strong> để bắt đầu.
+                        No stations available. Click <strong>Add Station</strong> to begin.
                     </td>
                 </tr>
             }
             @foreach (var s in Model)
             {
-                // Lấy số xe của trạm này
-                int count = vehicleCounts.ContainsKey(s.Id) ? vehicleCounts[s.Id] : 0;
-                double pct = (double)count / maxVehicles * 100;
+                // Sử dụng CurrentVehicles và MaxCapacity thật từ Database
+                int count = s.CurrentVehicles;
+                int max = s.MaxCapacity > 0 ? s.MaxCapacity : 1; // Tránh lỗi chia cho 0
+                double pct = (double)count / max * 100;
                 string fillClass = pct >= 85 ? "fill-high" : pct >= 60 ? "fill-medium" : "fill-low";
-
                 <tr>
-                    <td><span class="id-badge" title="@s.Id">#@s.Id</span></td>
+                    <td><span class="id-badge" title="@s.Id">#@s.Id.Substring(0,8)...</span></td>
                     <td><strong>@s.Name</strong></td>
                     <td>
                         <span class="location-chip">
@@ -501,34 +155,34 @@
                     <td>
                         <div class="capacity-wrap">
                             <div class="capacity-top">
-                                <span class="capacity-count">@count xe</span>
-                                <span class="capacity-max">/ @maxVehicles</span>
+                                <span class="capacity-count">@count vehicles</span>
+                                <span class="capacity-max">/ @s.MaxCapacity</span>
                             </div>
                             <div class="capacity-bar-bg">
                                 <div class="capacity-bar-fill @fillClass"
-                                     style="width: @(pct.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))%">
+                                     style="width: @(pct > 100 ? 100 : pct.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture))%">
                                 </div>
                             </div>
-                            @if (count >= maxVehicles)
+                            @if (count >= s.MaxCapacity)
                             {
-                                <span class="capacity-full">⚠ Đã đầy</span>
+                                <span class="capacity-full">⚠ Full</span>
                             }
                             else
                             {
-                                <span class="capacity-label">Còn @(maxVehicles - count) chỗ trống</span>
+                                <span class="capacity-label">@(s.MaxCapacity - count) slots remaining</span>
                             }
                         </div>
                     </td>
                     <td style="text-align:right">
                         <button class="btn-icon edit" title="Edit"
-                                onclick="openEditModal(@Html.Raw(Json.Serialize(s.Id)), @Html.Raw(Json.Serialize(s.Name)), @Html.Raw(Json.Serialize(s.Location)))">
+                                onclick="openEditModal('@s.Id', '@Html.Raw(s.Name)', '@Html.Raw(s.Location)', @s.MaxCapacity)">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                       d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
                         <button class="btn-icon delete ms-1" title="Delete"
-                                onclick="openDeleteModal(@Html.Raw(Json.Serialize(s.Id)), @Html.Raw(Json.Serialize(s.Name)))">
+                                onclick="openDeleteModal('@s.Id', '@Html.Raw(s.Name)')">
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                 <polyline points="3 6 5 6 21 6" />
                                 <path stroke-linecap="round" d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
@@ -555,6 +209,10 @@
                 <label class="modal-label">Location / District</label>
                 <input class="modal-input" name="Location" placeholder="e.g. Quận 1" required autocomplete="off">
             </div>
+            <div class="mb-3">
+                <label class="modal-label">Maximum Capacity</label>
+                <input type="number" class="modal-input" name="MaxCapacity" placeholder="e.g. 50" required min="1">
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn-ghost" onclick="closeModal('addModal')">Cancel</button>
                 <button type="submit" class="btn-neon">Save Station</button>
@@ -578,6 +236,10 @@
                 <label class="modal-label">Location / District</label>
                 <input class="modal-input" id="editLocation" name="Location" required autocomplete="off">
             </div>
+            <div class="mb-3">
+                <label class="modal-label">Maximum Capacity</label>
+                <input type="number" class="modal-input" id="editMaxCapacity" name="MaxCapacity" required min="1">
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn-ghost" onclick="closeModal('editModal')">Cancel</button>
                 <button type="submit" class="btn-neon">Save Changes</button>
@@ -591,8 +253,8 @@
     <div class="modal-box">
         <h4>🗑️ Delete Station</h4>
         <p class="confirm-text">
-            Bạn có chắc muốn xóa station <span id="deleteStationName"></span>?
-            Hành động này <strong>không thể hoàn tác</strong>.
+            Are you sure you want to delete station <span id="deleteStationName"></span>?
+            This action <strong>cannot be undone</strong>.
         </p>
         <form method="post" action="/Admin/DeleteStation">
             @Html.AntiForgeryToken()
@@ -608,10 +270,11 @@
 @section Scripts {
     <script>
         function openAddModal() { document.getElementById('addModal').classList.add('active'); }
-        function openEditModal(id, name, location) {
+        function openEditModal(id, name, location, maxCapacity) {
             document.getElementById('editId').value = id;
             document.getElementById('editName').value = name;
             document.getElementById('editLocation').value = location;
+            document.getElementById('editMaxCapacity').value = maxCapacity; // Set giá trị MaxCapacity
             document.getElementById('editModal').classList.add('active');
         }
         function openDeleteModal(id, name) {
