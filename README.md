@@ -15,7 +15,7 @@ Tương thích đa nền tảng: Chạy mượt mà trên trình duyệt nhờ k
 ## 🛠 Công nghệ sử dụng
 Dự án là sự kết hợp giữa tư duy lập trình hiện đại và quy trình triển khai chuyên nghiệp:
 
-Backend/Frontend: (Bạn hãy điền ngôn ngữ chính vào đây, ví dụ: Node.js/React hoặc Java/Spring Boot).
+Backend/Frontend: JavaScript, HTML, CSS, Node.js, C#
 
 Database: Quản lý dữ liệu thông minh với MySQL/PostgreSQL.
 
