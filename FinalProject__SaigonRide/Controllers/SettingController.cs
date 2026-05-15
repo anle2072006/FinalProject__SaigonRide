@@ -23,7 +23,7 @@ namespace FinalProject__SaigonRide.Controllers
             // Lấy thông tin người dùng hiện tại trực tiếp từ Identity
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null) return NotFound();
+            if (user == null) return Redirect("/Identity/Account/Login");
 
             return View(user);
         }
