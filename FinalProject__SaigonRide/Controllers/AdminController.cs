@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalProject__SaigonRide.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -93,7 +95,7 @@ namespace FinalProject__SaigonRide.Controllers
 
                 _context.Stations.Update(station);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Cập nhật thông tin trạm thành công!";
+                TempData["Success"] = "Updated station information successfully!";
             }
             return RedirectToAction(nameof(Stations));
         }
@@ -108,7 +110,7 @@ namespace FinalProject__SaigonRide.Controllers
             {
                 _context.Stations.Remove(station);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã xóa trạm thành công!";
+                TempData["Success"] = "Deleted station successfully!";
             }
             return RedirectToAction(nameof(Stations));
         }
@@ -128,7 +130,7 @@ namespace FinalProject__SaigonRide.Controllers
                 };
                 _context.Coupons.Add(coupon);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã tạo mã giảm giá mới!";
+                TempData["Success"] = "Created new discount code!";
             }
             return RedirectToAction(nameof(Coupons));
         }
@@ -146,7 +148,7 @@ namespace FinalProject__SaigonRide.Controllers
                 coupon.IsActive = IsActive;
                 _context.Update(coupon);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã cập nhật mã giảm giá!";
+                TempData["Success"] = "Updated discount code!";
             }
             return RedirectToAction(nameof(Coupons));
         }
@@ -161,7 +163,7 @@ namespace FinalProject__SaigonRide.Controllers
             {
                 _context.Coupons.Remove(coupon);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã xóa mã giảm giá!";
+                TempData["Success"] = "Deleted discount code!";
             }
             return RedirectToAction(nameof(Coupons));
         }

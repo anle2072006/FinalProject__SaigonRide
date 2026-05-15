@@ -57,7 +57,7 @@
                                 }
                                 else
                                 {
-                                    <a class="nav-link border-item" style="opacity: 0.4; cursor: not-allowed; pointer-events: none;" title="Vui lòng chọn xe trước">In Use</a>
+                                    <a class="nav-link border-item" style="opacity: 0.4; cursor: not-allowed; pointer-events: none;" title="Please select your vehicle in advance.">In Use</a>
                                 }
                             </li>
                             <li class="nav-item">
@@ -66,6 +66,15 @@
                             <li class="nav-item">
                                 <a class="nav-link border-item" asp-controller="Setting" asp-action="IndexSetting">Setting</a>
                             </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item mt-1">
+                                    <a class="nav-link border-item" style="color: #d4ff00;"
+                                           asp-controller="Admin" asp-action="Index">
+                                        ⚙️ Admin Panel
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

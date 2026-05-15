@@ -107,47 +107,61 @@
     color: #d4ff00;
     font-weight: 700;
     margin-bottom: 15px;
-    font-size: 16px;
+    font-size: 14px; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .mini-info-box {
-    background-color: #242945;
-    border-radius: 20px;
-    padding: 20px;
+    background-color: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 15px;
     display: flex;
     align-items: center;
     gap: 15px;
+    transition: 0.3s;
 }
 
+    .mini-info-box:hover {
+        border-color: #d4ff00;
+        box-shadow: 0 0 10px rgba(212, 255, 0, 0.1);
+    }
+
     .mini-info-box img {
-        width: 90px;
-        height: 60px;
-        border-radius: 12px;
+        width: 70px; 
+        height: 50px;
+        border-radius: 10px;
         object-fit: cover;
+        background-color: #141627;
     }
 
     .mini-info-box strong {
         display: block;
-        font-size: 16px;
-        color: white;
+        font-size: 15px;
+        color: #ffffff;
+        margin-bottom: 2px;
     }
 
     .mini-info-box small {
         color: #8a8a9e;
+        font-size: 12px;
     }
 
-/* Icon xe */
+.text-neon-small {
+    color: #d4ff00;
+    font-weight: bold;
+}
+
 .icon-bg {
-    /* ... các thuộc tính khác giữ nguyên ... */
-    display: flex; /* Giữ flex để đảm bảo ảnh nằm giữa khung */
+    display: flex; 
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Cần có để khi bo góc ảnh bị cắt bớt cho chuẩn */
+    overflow: hidden;
 }
 
     .icon-bg img {
-        width: 100%; /* Ép ảnh lấy chiều rộng bằng khung */
-        height: 100%; /* Ép ảnh lấy chiều cao bằng khung */
-        object-fit: cover; /* PHẢI CÓ DÒNG NÀY: Nó sẽ tự thu phóng để lấp đầy khung mà không làm ảnh biến dạng, sẽ bị cắt bớt các phần thừa ở cạnh */
-        border-radius: inherit; /* Cho ảnh bo góc theo khung nền tối bên ngoài */
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        border-radius: inherit;
     }

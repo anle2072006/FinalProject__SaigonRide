@@ -97,7 +97,11 @@ namespace FinalProject__SaigonRide.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             public bool IsForeigner { get; set; }
+
+            [Required(ErrorMessage = "Please enter your Phone Number or Passport Number.")]
+            [Display(Name = "Document Number")]
             public string DocumentNumber { get; set; }
+
             [Required(ErrorMessage = "Please enter the password.")]
             [DataType(DataType.Password)]
             public string Password { get; set; }

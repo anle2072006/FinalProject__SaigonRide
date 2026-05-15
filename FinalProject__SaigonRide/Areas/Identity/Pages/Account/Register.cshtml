@@ -13,17 +13,22 @@
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
-    <!-- Gọi chung file CSS gộp -->
     <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <style>
+            .text-danger {
+                font-size: 0.95rem !important;
+                font-weight: 600;
+                color: #ff4d4d !important;
+                margin-top: 5px;
+                display: block;
+            }
+    </style>
 </head>
 <body>
 
     <div class="full-page-wrapper">
-        <!-- Bỏ các class chia cột của Bootstrap, để Flexbox tự lo -->
         <div class="main-card">
             
-            <!-- Đổi thành regis-form-half -->
             <div class="regis-form-half">
                 <h1 class="regis-title">Registration</h1>
                 
@@ -41,15 +46,23 @@
                         <input asp-for="Input.Username" placeholder="Username" />
                         <i class="bi bi-person"></i>
                     </div>
+                    <span asp-validation-for="Input.Username" class="text-danger"></span>
 
                     <div class="input-row">
-                        <div class="custom-input-group">
-                            <input asp-for="Input.FirstName" placeholder="First Name" />
-                    </div>
-                    <div class="custom-input-group">
-                            <input asp-for="Input.LastName" placeholder="Last Name" />
+                        <div style="flex:1">
+                            <div class="custom-input-group">
+                                <input asp-for="Input.FirstName" placeholder="First Name" />
+                            </div>
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        </div>
+                        <div style="flex:1">
+                            <div class="custom-input-group">
+                                <input asp-for="Input.LastName" placeholder="Last Name" />
+                            </div>
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
                         </div>
                     </div>
+                   
                     <div style="display: flex; gap: 20px; margin-bottom: 15px; color: #8a8a9e; font-weight: bold;">
                         <label style="cursor: pointer;">
                             <input type="radio" asp-for="Input.IsForeigner" value="false" checked onchange="toggleDocType()" id="radioLocal">
@@ -62,25 +75,27 @@
                     </div>
 
                     <div class="custom-input-group">
-                        <input asp-for="Input.DocumentNumber" id="docInput" placeholder="Số điện thoại / CCCD" required />
+                        <input asp-for="Input.DocumentNumber" id="docInput" placeholder="Phone Number" />
                         <i class="bi bi-telephone" id="docIcon"></i>
                     </div>
+                    <span asp-validation-for="Input.DocumentNumber" class="text-danger"></span>
 
                     <div class="custom-input-group">
                         <input asp-for="Input.Email" placeholder="Email" />
                         <i class="bi bi-envelope"></i>
                     </div>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
 
                     <div class="custom-input-group">
                         <input asp-for="Input.Password" type="password" placeholder="Password" />
                         <i class="bi bi-lock"></i>
                     </div>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
 
-                    <button type="submit" class="btn btn-register-action w-100">Registration</button>
+                    <button type="submit" class="btn btn-register-action w-100">Register Now</button>
                 </form>
             </div>
 
-            <!-- Đổi thành regis-welcome-half và thêm welcome-dark-panel -->
             <div class="regis-welcome-half welcome-dark-panel">
                 <h1 class="fw-bold mb-3">Welcome to<br>SaiGonRide!</h1>
                 <div class="bike-icon">
@@ -93,22 +108,29 @@
 
         </div>
     </div>
-</body>
-<script>
-    function toggleDocType() {
-        var isForeign = document.getElementById('radioForeign').checked;
-        var input = document.getElementById('docInput');
-        var icon = document.getElementById('docIcon');
 
-        if (isForeign) {
-            // Đổi thành giao diện nhập Passport
-            input.placeholder = "Passport Number";
-            icon.className = "bi bi-globe"; // Đổi icon
-        } else {
-            // Đổi thành giao diện nhập SĐT
-            input.placeholder = "Phone Number";
-            icon.className = "bi bi-telephone"; // Đổi icon
-        }
-    }
-</script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+            function toggleDocType() {
+                var isForeign = document.getElementById('radioForeign').checked;
+                var input = document.getElementById('docInput');
+                var icon = document.getElementById('docIcon');
+
+                if (isForeign) {
+                    input.placeholder = "Passport Number";
+                    icon.className = "bi bi-globe";
+                } else {
+                    input.placeholder = "Phone Number";
+                    icon.className = "bi bi-telephone";
+                }
+
+                if (typeof $ !== 'undefined') {
+                    $(input).valid();
+                }
+            }
+    </script>
+</body>
 </html>
